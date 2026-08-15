@@ -482,11 +482,14 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
 
 <section>
   <h2>Gol attesi e mercati derivati</h2>
-  <p class="note">Tutti questi numeri escono dalla stessa matrice dei risultati esatti,
-  quindi sono coerenti fra loro per costruzione.</p>
+  <p class="note">I mercati gol escono dalle lambda del <strong>modello</strong>, non dalla
+  fusione col mercato: il banco ha quotato solo l'1X2, e invertirlo per ricavarne un totale
+  impone al modello un'opinione sui gol che nessun prezzo sostiene. Il totale implicito
+  dall'inversione e' {pct(dm['market_implied_totals']['over_2.5'])} su Over 2.5 contro
+  {pct(dm['totals']['over_2.5'])} del modello: la differenza e' artefatto, non informazione.</p>
   {kv_grid([
-      ("xG Roma", f"{lam['fused']['home']:.2f}"),
-      ("xG Fiorentina", f"{lam['fused']['away']:.2f}"),
+      ("Gol attesi Roma", f"{lam['model']['home']:.2f}"),
+      ("Gol attesi Fiorentina", f"{lam['model']['away']:.2f}"),
       ("Totale gol attesi", f"{mc['goals']['expected_total']:.2f}"),
       ("Over 1.5", pct(dm['totals']['over_1.5'])),
       ("Over 2.5", pct(dm['totals']['over_2.5'])),
@@ -573,12 +576,13 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
   ma una distribuzione di previsioni: dice quanto del numero in cima alla pagina e dato
   e quanto sono io.</p>
   <div class="callout">
-    <div class="tile-label">P(vittoria Roma), intervallo al 90%</div>
-    <div class="big">{pct(au['distributions']['p_home']['p05'])} &ndash;
-      {pct(au['distributions']['p_home']['p95'])}</div>
-    <div class="tile-sub">mediana {pct(au['distributions']['p_home']['median'])}.
-      Gol totali fra {au['distributions']['total_goals']['p05']:.2f} e
-      {au['distributions']['total_goals']['p95']:.2f}.</div>
+    <div class="tile-label">P(vittoria Roma), intervallo al 90% &mdash; modello puro</div>
+    <div class="big">{pct(au['verdict']['p_home_range_90pct_MODEL_ONLY'][0])} &ndash;
+      {pct(au['verdict']['p_home_range_90pct_MODEL_ONLY'][1])}</div>
+    <div class="tile-sub">Sulla probabilita fusa col mercato l'intervallo sarebbe
+      {pct(au['verdict']['p_home_range_90pct'][0])}&ndash;{pct(au['verdict']['p_home_range_90pct'][1])},
+      ma si restringe <em>per costruzione</em>: e' ancorato al prezzo contro cui si scommette.
+      Il numero onesto e' il primo.</div>
   </div>
   <h3 class="sub3">Da dove viene l'incertezza</h3>
   <p class="note">Quota della varianza di P(vittoria Roma) attribuibile a ogni input.

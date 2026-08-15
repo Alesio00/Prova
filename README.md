@@ -2,7 +2,7 @@
 
 Serie A 2026/27, Giornata 1 — Stadio Olimpico, lunedì 24 agosto 2026, 20:45 CEST.
 
-**Roma 59.5% · Pareggio 24.7% · Fiorentina 15.8%** — xG 1.82 – 0.84 · Over 2.5 49.5% · BTTS 48.5%
+**Roma 59.5% · Pareggio 24.7% · Fiorentina 15.8%** — gol attesi 1.60 – 0.83 · Over 2.5 43.7% · BTTS 46.0%
 
 Intervallo al 90% su P(vittoria Roma), propagando l'incertezza di ogni parametro scelto a giudizio:
 **55.6% – 61.7%**. Verdetto finale: **nessuna scommessa**.

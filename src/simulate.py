@@ -36,7 +36,12 @@ def load_players(path: Path = PLAYERS) -> dict:
 def _weights(team_block: dict) -> tuple[list[str], np.ndarray]:
     people = team_block["xi"] + team_block.get("bench_contributors", [])
     names = [p["name"] for p in people]
-    w = np.array([p["goal_share"] * (p["minutes"] / 90.0) for p in people], dtype=float)
+    # NON moltiplicare per minutes/90: goal_share e gia una quota attesa
+    # sull'INTERA partita (somma ~1.02 Roma, ~1.075 Fiorentina su XI+panchina),
+    # quindi i minuti sono gia dentro. Moltiplicarli di nuovo li contava due
+    # volte e schiacciava i subentranti di un fattore 2-3, cambiando
+    # l'ORDINAMENTO dei marcatori e non solo la scala.
+    w = np.array([p["goal_share"] for p in people], dtype=float)
     if w.sum() <= 0:
         w = np.ones(len(names))
     return names, w / w.sum()

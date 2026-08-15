@@ -68,6 +68,17 @@ ROMA_DELTA_ATT = (-0.02, 0.08)
 # multiplier on the derived (not sourced) Fiorentina ritorno goal split
 FIO_RITORNO_SCALE = (0.85, 1.15)
 
+# Le quote NON sono un dato esatto. Trattarle come costante in tutte le
+# estrazioni era il difetto piu subdolo di questo audit: il 60% del log-odds
+# fuso veniva da un input a varianza zero, quindi l'intervallo pubblicato su
+# P(Roma) risultava circa META di quello del modello puro - per aritmetica, non
+# per solidita. E rendeva tautologico il "96.9% di disaccordo col mercato".
+# Perturbazione moltiplicativa di ~2-3 tick per quota.
+ODDS_JITTER = 0.015
+# Anche la scelta del metodo di de-vig e' incerta: Shin e proporzionale
+# differiscono di ~1 pp sul longshot. Si campiona quale usare.
+P_USE_SHIN = 0.7
+
 
 def _draw(rng, lo, hi):
     return float(rng.uniform(lo, hi))
@@ -112,7 +123,13 @@ def audit(n: int = 4000, seed: int = 99) -> dict:
             fx = ratings.fixture_lambdas(ctx, "Roma", "Fiorentina")
             p_model = dc.outcome_probs(dc.score_matrix(fx.lam_home, fx.lam_away,
                                                        rho=d["RHO"]))
-            p_mkt = mk.devig_shin(odds)
+            # le quote hanno un errore, e il metodo di de-vig e' una scelta
+            jitter = {k: v * float(rng.uniform(1 - ODDS_JITTER, 1 + ODDS_JITTER))
+                      for k, v in odds.items()}
+            d["odds_home_drawn"] = jitter["home"]
+            use_shin = rng.random() < P_USE_SHIN
+            d["devig_shin"] = float(use_shin)
+            p_mkt = mk.devig_shin(jitter) if use_shin else mk.devig_proportional(jitter)
             p_fused = mk.log_pool(p_model, p_mkt, d["MARKET_WEIGHT"])
 
             samples.append({
@@ -222,7 +239,12 @@ def audit(n: int = 4000, seed: int = 99) -> dict:
 
 def _verdict(S, ev_positive, ev_meaningful) -> dict:
     """Turn the distributions into a stated decision, with its own confidence."""
-    best = max(ev_positive, key=ev_positive.get)
+    # Scegliere con max(P(EV>0)) e insensibile alla DIMENSIONE del margine:
+    # 'draw' batteva 'away' di 0.7 pp contro un errore standard Monte Carlo di
+    # 0.76 pp, cioe la selezione la decideva il seed. Si ordina per la
+    # probabilita di un margine che valga la pena (EV > 5%), con P(EV>0) come
+    # spareggio.
+    best = max(ev_meaningful, key=lambda k: (ev_meaningful[k], ev_positive[k]))
     stability = ev_positive[best]
     strong = ev_meaningful[best]
 
@@ -246,6 +268,12 @@ def _verdict(S, ev_positive, ev_meaningful) -> dict:
         "reason": reason,
         "p_home_range_90pct": [float(np.percentile(S["p_home"], 5)),
                                float(np.percentile(S["p_home"], 95))],
+        "p_home_range_90pct_MODEL_ONLY": [float(np.percentile(S["p_model_home"], 5)),
+                                          float(np.percentile(S["p_model_home"], 95))],
+        "_why_two_ranges": ("Il primo e' sulla probabilita fusa, che e' ancorata al "
+                            "prezzo contro cui si scommette: si restringe per "
+                            "costruzione. Il secondo e' l'incertezza vera del "
+                            "modello, ed e' quello da guardare."),
         "headline_vs_uncertainty": (
             "La forchetta al 90% su P(vittoria Roma) e larga "
             f"{(np.percentile(S['p_home'], 95) - np.percentile(S['p_home'], 5)) * 100:.1f} "

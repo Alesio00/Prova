@@ -175,8 +175,8 @@ def _prime(data: dict) -> None:
 
 def _shares(players: list[dict]) -> tuple[list[str], np.ndarray]:
     names = [p["name"] for p in players]
-    w = np.array([p["goal_share"] * (p["minutes"] / 90.0) for p in players],
-                 dtype=float)
+    # vedi simulate._weights: goal_share e gia una quota sull'intera partita
+    w = np.array([p["goal_share"] for p in players], dtype=float)
     return names, w / w.sum()
 
 

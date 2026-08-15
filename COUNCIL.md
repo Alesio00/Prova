@@ -100,6 +100,21 @@ Membri e Chairman si cambiano in cima al file. Lo stadio 2 mescola l'ordine dell
 revisore, così la posizione non fa da sostituto dell'identità, e salva la mappa etichetta→modello
 per poter ricostruire chi ha detto cosa a valle.
 
+## La regola che è costata un membro
+
+**Durante un council i file sono congelati.**
+
+Nel primo run ho corretto cinque numeri obsoleti mentre l'arbitro stava ancora lavorando. L'arbitro
+ha trovato i file già puliti, ha concluso che il revisore che li aveva segnalati se li era inventati,
+e l'ha bollato come "l'unico interamente non affidabile". Il revisore aveva ragione: le stringhe
+esistevano nel commit che aveva letto.
+
+Modificare gli artefatti sotto revisione non rallenta soltanto il protocollo — **produce accuse
+false contro i membri che hanno fatto bene il loro lavoro**. Le correzioni si applicano dopo la
+sintesi del Chairman, mai durante.
+
 ## Esito del primo run
 
-Vedi `results/council.md`.
+Vedi `results/council.md`. In sintesi: cinque bug confermati e corretti, nove falsi allarmi smontati,
+un errore di arbitrato causato dalla regola qui sopra, e il verdetto finale invariato ma con una
+motivazione diversa e tre numeri pubblicati corretti.

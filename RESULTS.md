@@ -8,7 +8,7 @@ Convenzione: ✅ funziona · ⚠️ funziona ma è fragile · ❌ non funziona /
 ## Run 001 — 2026-08-15 · baseline
 
 **Output finale:** Roma **59.5%** · Pareggio **24.7%** · Fiorentina **15.8%**
-xG 1.82 – 0.84 · Over 2.5 49.5% · BTTS 48.5% · risultato più probabile 1-1 (11.8%)
+gol attesi 1.60 – 0.83 · Over 2.5 43.7% · BTTS 46.0% · risultato più probabile 1-1 (11.8%)
 
 ### ✅ Cosa funziona
 

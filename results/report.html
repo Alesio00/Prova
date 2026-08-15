@@ -123,7 +123,7 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
   <h1>Roma &ndash; Fiorentina &middot; modello predittivo</h1>
   <p class="sub">Serie A 2026/27 - Giornata 1 &middot; Stadio Olimpico, Roma
      &middot; lunedi 24 agosto 2026, 20:45 CEST</p>
-  <p class="stamp">Generato il 2026-08-15 10:36 UTC &middot;
+  <p class="stamp">Generato il 2026-08-15 19:29 UTC &middot;
      200,000 simulazioni Monte Carlo &middot; peso mercato 60%</p>
 </header>
 
@@ -139,10 +139,10 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
   <div class="callout verdict">
     <div class="tile-label">Verdetto</div>
     <div class="big">NESSUNA SCOMMESSA</div>
-    <p class="note" style="margin-top:8px">La selezione migliore ('draw') resta in profitto solo nel 64% dello spazio dei parametri: e una monetina.
+    <p class="note" style="margin-top:8px">La selezione migliore ('away') resta in profitto solo nel 70% dello spazio dei parametri: e una monetina.
     Su 4,000 versioni del modello con parametri diversi, l'EV positivo sul
-    pareggio compare nel 64% dei casi
-    e sulla Fiorentina nel 63%:
+    pareggio compare nel 70% dei casi
+    e sulla Fiorentina nel 70%:
     entrambi troppo vicini a una monetina per essere una decisione.
     Sulla Roma l'EV e negativo nel 100% dei casi.</p>
   </div>
@@ -167,9 +167,12 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
 
 <section>
   <h2>Gol attesi e mercati derivati</h2>
-  <p class="note">Tutti questi numeri escono dalla stessa matrice dei risultati esatti,
-  quindi sono coerenti fra loro per costruzione.</p>
-  <div class="kv"><div><span>xG Roma</span><strong>1.82</strong></div><div><span>xG Fiorentina</span><strong>0.84</strong></div><div><span>Totale gol attesi</span><strong>2.65</strong></div><div><span>Over 1.5</span><strong>75.3%</strong></div><div><span>Over 2.5</span><strong>49.5%</strong></div><div><span>Under 2.5</span><strong>50.5%</strong></div><div><span>Over 3.5</span><strong>27.5%</strong></div><div><span>Gol/Gol (BTTS)</span><strong>48.5%</strong></div><div><span>Clean sheet Roma</span><strong>43.3%</strong></div><div><span>Clean sheet Fiorentina</span><strong>16.3%</strong></div><div><span>Roma vince di 2+</span><strong>35.0%</strong></div><div><span>Handicap Roma -1</span><strong>35.2%</strong></div><div><span>Doppia chance 1X</span><strong>84.2%</strong></div></div>
+  <p class="note">I mercati gol escono dalle lambda del <strong>modello</strong>, non dalla
+  fusione col mercato: il banco ha quotato solo l'1X2, e invertirlo per ricavarne un totale
+  impone al modello un'opinione sui gol che nessun prezzo sostiene. Il totale implicito
+  dall'inversione e' 49.5% su Over 2.5 contro
+  43.7% del modello: la differenza e' artefatto, non informazione.</p>
+  <div class="kv"><div><span>Gol attesi Roma</span><strong>1.60</strong></div><div><span>Gol attesi Fiorentina</span><strong>0.83</strong></div><div><span>Totale gol attesi</span><strong>2.65</strong></div><div><span>Over 1.5</span><strong>70.9%</strong></div><div><span>Over 2.5</span><strong>43.7%</strong></div><div><span>Under 2.5</span><strong>56.3%</strong></div><div><span>Over 3.5</span><strong>22.6%</strong></div><div><span>Gol/Gol (BTTS)</span><strong>46.0%</strong></div><div><span>Clean sheet Roma</span><strong>43.8%</strong></div><div><span>Clean sheet Fiorentina</span><strong>20.2%</strong></div><div><span>Roma vince di 2+</span><strong>35.0%</strong></div><div><span>Handicap Roma -1</span><strong>35.2%</strong></div><div><span>Doppia chance 1X</span><strong>84.2%</strong></div></div>
 </section>
 
 <section>
@@ -188,11 +191,11 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
   <div class="two">
     <div class="card">
       <div class="legend"><span><i class="sw s-roma"></i>Roma</span></div>
-      <div class="hb"><div class="hb-l">Donyell Malen</div><div class="hb-t"><div class="hb-f s-roma" style="width:100.00%"></div></div><div class="hb-v">42.8%</div></div><div class="hb"><div class="hb-l">Paulo Dybala</div><div class="hb-t"><div class="hb-f s-roma" style="width:59.75%"></div></div><div class="hb-v">25.5%</div></div><div class="hb"><div class="hb-l">Matias Soule</div><div class="hb-t"><div class="hb-f s-roma" style="width:45.92%"></div></div><div class="hb-v">19.6%</div></div><div class="hb"><div class="hb-l">Wesley</div><div class="hb-t"><div class="hb-f s-roma" style="width:26.89%"></div></div><div class="hb-v">11.5%</div></div><div class="hb"><div class="hb-l">Nahuel Molina</div><div class="hb-t"><div class="hb-f s-roma" style="width:22.27%"></div></div><div class="hb-v">9.5%</div></div><div class="hb"><div class="hb-l">Manu Kone</div><div class="hb-t"><div class="hb-f s-roma" style="width:22.27%"></div></div><div class="hb-v">9.5%</div></div><div class="hb"><div class="hb-l">Gianluca Mancini</div><div class="hb-t"><div class="hb-f s-roma" style="width:21.02%"></div></div><div class="hb-v">9.0%</div></div><div class="hb"><div class="hb-l">Bryan Cristante</div><div class="hb-t"><div class="hb-f s-roma" style="width:21.02%"></div></div><div class="hb-v">9.0%</div></div>
+      <div class="hb"><div class="hb-l">Donyell Malen</div><div class="hb-t"><div class="hb-f s-roma" style="width:100.00%"></div></div><div class="hb-v">39.6%</div></div><div class="hb"><div class="hb-l">Paulo Dybala</div><div class="hb-t"><div class="hb-f s-roma" style="width:66.72%"></div></div><div class="hb-v">26.4%</div></div><div class="hb"><div class="hb-l">Matias Soule</div><div class="hb-t"><div class="hb-f s-roma" style="width:48.09%"></div></div><div class="hb-v">19.0%</div></div><div class="hb"><div class="hb-l">Santiago Castro</div><div class="hb-t"><div class="hb-f s-roma" style="width:37.08%"></div></div><div class="hb-v">14.7%</div></div><div class="hb"><div class="hb-l">Wesley</div><div class="hb-t"><div class="hb-f s-roma" style="width:23.41%"></div></div><div class="hb-v">9.3%</div></div><div class="hb"><div class="hb-l">Nahuel Molina</div><div class="hb-t"><div class="hb-f s-roma" style="width:19.34%"></div></div><div class="hb-v">7.7%</div></div><div class="hb"><div class="hb-l">Bryan Cristante</div><div class="hb-t"><div class="hb-f s-roma" style="width:19.34%"></div></div><div class="hb-v">7.7%</div></div><div class="hb"><div class="hb-l">Manu Kone</div><div class="hb-t"><div class="hb-f s-roma" style="width:19.34%"></div></div><div class="hb-v">7.7%</div></div>
     </div>
     <div class="card">
       <div class="legend"><span><i class="sw s-fio"></i>Fiorentina</span></div>
-      <div class="hb"><div class="hb-l">Moise Kean</div><div class="hb-t"><div class="hb-f s-fio" style="width:56.65%"></div></div><div class="hb-v">24.2%</div></div><div class="hb"><div class="hb-l">Albert Gudmundsson</div><div class="hb-t"><div class="hb-f s-fio" style="width:35.29%"></div></div><div class="hb-v">15.1%</div></div><div class="hb"><div class="hb-l">Arthur Atta</div><div class="hb-t"><div class="hb-f s-fio" style="width:16.17%"></div></div><div class="hb-v">6.9%</div></div><div class="hb"><div class="hb-l">Radu Dragusin</div><div class="hb-t"><div class="hb-f s-fio" style="width:10.54%"></div></div><div class="hb-v">4.5%</div></div><div class="hb"><div class="hb-l">Luca Ranieri</div><div class="hb-t"><div class="hb-f s-fio" style="width:10.31%"></div></div><div class="hb-v">4.4%</div></div><div class="hb"><div class="hb-l">Cher Ndour</div><div class="hb-t"><div class="hb-f s-fio" style="width:10.31%"></div></div><div class="hb-v">4.4%</div></div><div class="hb"><div class="hb-l">Nicolo Fagioli</div><div class="hb-t"><div class="hb-f s-fio" style="width:9.62%"></div></div><div class="hb-v">4.1%</div></div><div class="hb"><div class="hb-l">Marco Brescianini</div><div class="hb-t"><div class="hb-f s-fio" style="width:8.47%"></div></div><div class="hb-v">3.6%</div></div>
+      <div class="hb"><div class="hb-l">Moise Kean</div><div class="hb-t"><div class="hb-f s-fio" style="width:51.99%"></div></div><div class="hb-v">20.6%</div></div><div class="hb"><div class="hb-l">Albert Gudmundsson</div><div class="hb-t"><div class="hb-f s-fio" style="width:34.41%"></div></div><div class="hb-v">13.6%</div></div><div class="hb"><div class="hb-l">Arthur Atta</div><div class="hb-t"><div class="hb-f s-fio" style="width:16.98%"></div></div><div class="hb-v">6.7%</div></div><div class="hb"><div class="hb-l">Franco Mastantuono</div><div class="hb-t"><div class="hb-f s-fio" style="width:15.16%"></div></div><div class="hb-v">6.0%</div></div><div class="hb"><div class="hb-l">Mateo Pellegrino</div><div class="hb-t"><div class="hb-f s-fio" style="width:13.32%"></div></div><div class="hb-v">5.3%</div></div><div class="hb"><div class="hb-l">Cher Ndour</div><div class="hb-t"><div class="hb-f s-fio" style="width:10.53%"></div></div><div class="hb-v">4.2%</div></div><div class="hb"><div class="hb-l">Radu Dragusin</div><div class="hb-t"><div class="hb-f s-fio" style="width:8.65%"></div></div><div class="hb-v">3.4%</div></div><div class="hb"><div class="hb-l">Luca Ranieri</div><div class="hb-t"><div class="hb-f s-fio" style="width:8.65%"></div></div><div class="hb-v">3.4%</div></div>
     </div>
   </div>
 </section>
@@ -211,18 +214,18 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
 <section>
   <h2>La partita piu probabile, giocatore per giocatore</h2>
   <p class="note">Ogni combinazione di risultato esatto e attribuzione dei gol e un esito
-  distinto: ce ne sono <strong>46,209</strong>. La risposta alla domanda
+  distinto: ce ne sono <strong>51,330</strong>. La risposta alla domanda
   "qual e la piu probabile" esiste, ma il numero che le sta accanto e la vera informazione.</p>
   <div class="callout">
     <div class="tile-label">Esito singolo piu probabile con almeno un gol</div>
     <div class="big">1-0 &mdash; Donyell Malen</div>
-    <div class="tile-sub">4.10% di probabilita. Servono
-      155 esiti diversi per coprire meta della
+    <div class="tile-sub">3.69% di probabilita. Servono
+      183 esiti diversi per coprire meta della
       probabilita totale, e i primi dieci messi insieme arrivano solo al
       21%.</div>
   </div>
-  <div class="card"><div class="scroll"><table><thead><tr><th>Risultato</th><th>Marcatori Roma</th><th>Marcatori Fiorentina</th><th>Probabilita</th></tr></thead><tbody><tr><td>0-0</td><td>nessuno</td><td>nessuno</td><td>7.34%</td></tr><tr><td>1-0</td><td>Donyell Malen</td><td>nessuno</td><td>4.10%</td></tr><tr><td>0-1</td><td>nessuno</td><td>Moise Kean</td><td>1.75%</td></tr><tr><td>1-0</td><td>Paulo Dybala</td><td>nessuno</td><td>1.60%</td></tr><tr><td>1-0</td><td>Matias Soule</td><td>nessuno</td><td>1.54%</td></tr><tr><td>0-1</td><td>nessuno</td><td>Albert Gudmundsson</td><td>1.21%</td></tr><tr><td>2-0</td><td>Donyell Malen x2</td><td>nessuno</td><td>1.15%</td></tr><tr><td>1-1</td><td>Donyell Malen</td><td>Moise Kean</td><td>0.98%</td></tr><tr><td>2-0</td><td>Paulo Dybala, Donyell Malen</td><td>nessuno</td><td>0.91%</td></tr><tr><td>1-0</td><td>Wesley</td><td>nessuno</td><td>0.89%</td></tr></tbody><caption>Ogni riga e una partita completa: risultato esatto piu chi ha segnato. Include il rischio cessione di Kean e quello di indisponibilita di Dybala.</caption></table></div></div>
-  <div class="card"><div class="scroll"><table><thead><tr><th>Marcatore Roma</th><th>Marcatore Fiorentina</th><th>Entrambi segnano</th></tr></thead><tbody><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Moise Kean</td><td>9.07%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>6.51%</td></tr><tr><td><i class="sw s-roma"></i>Matias Soule</td><td><i class="sw s-fio"></i>Moise Kean</td><td>4.08%</td></tr><tr><td><i class="sw s-roma"></i>Paulo Dybala</td><td><i class="sw s-fio"></i>Moise Kean</td><td>4.04%</td></tr><tr><td><i class="sw s-roma"></i>Paulo Dybala</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>2.97%</td></tr><tr><td><i class="sw s-roma"></i>Matias Soule</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>2.96%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Arthur Atta</td><td>2.95%</td></tr><tr><td><i class="sw s-roma"></i>Wesley</td><td><i class="sw s-fio"></i>Moise Kean</td><td>2.40%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Mateo Pellegrino</td><td>2.18%</td></tr><tr><td><i class="sw s-roma"></i>Nahuel Molina</td><td><i class="sw s-fio"></i>Moise Kean</td><td>1.96%</td></tr></tbody><caption>Probabilita congiunta presa dalla simulazione, non dal prodotto delle due marginali: l'incertezza condivisa sulle lambda li rende positivamente correlati.</caption></table></div></div>
+  <div class="card"><div class="scroll"><table><thead><tr><th>Risultato</th><th>Marcatori Roma</th><th>Marcatori Fiorentina</th><th>Probabilita</th></tr></thead><tbody><tr><td>0-0</td><td>nessuno</td><td>nessuno</td><td>7.34%</td></tr><tr><td>1-0</td><td>Donyell Malen</td><td>nessuno</td><td>3.69%</td></tr><tr><td>1-0</td><td>Paulo Dybala</td><td>nessuno</td><td>1.63%</td></tr><tr><td>1-0</td><td>Matias Soule</td><td>nessuno</td><td>1.52%</td></tr><tr><td>0-1</td><td>nessuno</td><td>Moise Kean</td><td>1.45%</td></tr><tr><td>1-0</td><td>Lorenzo Pellegrini</td><td>nessuno</td><td>1.18%</td></tr><tr><td>1-0</td><td>Santiago Castro</td><td>nessuno</td><td>1.15%</td></tr><tr><td>0-1</td><td>nessuno</td><td>Albert Gudmundsson</td><td>1.08%</td></tr><tr><td>2-0</td><td>Donyell Malen x2</td><td>nessuno</td><td>0.94%</td></tr><tr><td>2-0</td><td>Paulo Dybala, Donyell Malen</td><td>nessuno</td><td>0.83%</td></tr></tbody><caption>Ogni riga e una partita completa: risultato esatto piu chi ha segnato. Include il rischio cessione di Kean e quello di indisponibilita di Dybala.</caption></table></div></div>
+  <div class="card"><div class="scroll"><table><thead><tr><th>Marcatore Roma</th><th>Marcatore Fiorentina</th><th>Entrambi segnano</th></tr></thead><tbody><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Moise Kean</td><td>7.14%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>5.45%</td></tr><tr><td><i class="sw s-roma"></i>Paulo Dybala</td><td><i class="sw s-fio"></i>Moise Kean</td><td>3.57%</td></tr><tr><td><i class="sw s-roma"></i>Matias Soule</td><td><i class="sw s-fio"></i>Moise Kean</td><td>3.38%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Mateo Pellegrino</td><td>3.24%</td></tr><tr><td><i class="sw s-roma"></i>Paulo Dybala</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>2.72%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Arthur Atta</td><td>2.69%</td></tr><tr><td><i class="sw s-roma"></i>Matias Soule</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>2.61%</td></tr><tr><td><i class="sw s-roma"></i>Santiago Castro</td><td><i class="sw s-fio"></i>Moise Kean</td><td>2.59%</td></tr><tr><td><i class="sw s-roma"></i>Lorenzo Pellegrini</td><td><i class="sw s-fio"></i>Moise Kean</td><td>2.38%</td></tr></tbody><caption>Probabilita congiunta presa dalla simulazione, non dal prodotto delle due marginali: l'incertezza condivisa sulle lambda li rende positivamente correlati.</caption></table></div></div>
 </section>
 
 <section>
@@ -265,21 +268,22 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
   ma una distribuzione di previsioni: dice quanto del numero in cima alla pagina e dato
   e quanto sono io.</p>
   <div class="callout">
-    <div class="tile-label">P(vittoria Roma), intervallo al 90%</div>
-    <div class="big">55.6% &ndash;
-      61.7%</div>
-    <div class="tile-sub">mediana 59.4%.
-      Gol totali fra 2.25 e
-      2.64.</div>
+    <div class="tile-label">P(vittoria Roma), intervallo al 90% &mdash; modello puro</div>
+    <div class="big">47.3% &ndash;
+      59.6%</div>
+    <div class="tile-sub">Sulla probabilita fusa col mercato l'intervallo sarebbe
+      55.3%&ndash;61.5%,
+      ma si restringe <em>per costruzione</em>: e' ancorato al prezzo contro cui si scommette.
+      Il numero onesto e' il primo.</div>
   </div>
   <h3 class="sub3">Da dove viene l'incertezza</h3>
   <p class="note">Quota della varianza di P(vittoria Roma) attribuibile a ogni input.
   Il primo posto e la scoperta piu scomoda dell'analisi: la fonte principale di
   incertezza non e un fatto sul calcio, e <strong>quanto peso decido di dare al
   mercato</strong>.</p>
-  <div class="card"><div class="hb"><div class="hb-l">MARKET_WEIGHT</div><div class="hb-t"><div class="hb-f s-fio" style="width:100.0%"></div></div><div class="hb-v">35.6%</div></div><div class="hb"><div class="hb-l">SHRINK</div><div class="hb-t"><div class="hb-f s-roma" style="width:41.7%"></div></div><div class="hb-v">14.9%</div></div><div class="hb"><div class="hb-l">home_goal_share</div><div class="hb-t"><div class="hb-f s-roma" style="width:27.7%"></div></div><div class="hb-v">9.9%</div></div><div class="hb"><div class="hb-l">fio_delta_att</div><div class="hb-t"><div class="hb-f s-roma" style="width:26.1%"></div></div><div class="hb-v">9.3%</div></div><div class="hb"><div class="hb-l">Fiorentina_goals_against</div><div class="hb-t"><div class="hb-f s-roma" style="width:20.6%"></div></div><div class="hb-v">7.4%</div></div><div class="hb"><div class="hb-l">roma_delta_att</div><div class="hb-t"><div class="hb-f s-roma" style="width:16.4%"></div></div><div class="hb-v">5.8%</div></div><div class="hb"><div class="hb-l">fio_ritorno_scale</div><div class="hb-t"><div class="hb-f s-roma" style="width:14.9%"></div></div><div class="hb-v">5.3%</div></div><div class="hb"><div class="hb-l">Fiorentina_goals_for</div><div class="hb-t"><div class="hb-f s-roma" style="width:8.7%"></div></div><div class="hb-v">3.1%</div></div></div>
+  <div class="card"><div class="hb"><div class="hb-l">MARKET_WEIGHT</div><div class="hb-t"><div class="hb-f s-fio" style="width:100.0%"></div></div><div class="hb-v">35.4%</div></div><div class="hb"><div class="hb-l">SHRINK</div><div class="hb-t"><div class="hb-f s-roma" style="width:38.1%"></div></div><div class="hb-v">13.5%</div></div><div class="hb"><div class="hb-l">fio_delta_att</div><div class="hb-t"><div class="hb-f s-roma" style="width:25.0%"></div></div><div class="hb-v">8.9%</div></div><div class="hb"><div class="hb-l">Fiorentina_goals_against</div><div class="hb-t"><div class="hb-f s-roma" style="width:24.2%"></div></div><div class="hb-v">8.6%</div></div><div class="hb"><div class="hb-l">home_goal_share</div><div class="hb-t"><div class="hb-f s-roma" style="width:23.2%"></div></div><div class="hb-v">8.2%</div></div><div class="hb"><div class="hb-l">roma_delta_att</div><div class="hb-t"><div class="hb-f s-roma" style="width:15.8%"></div></div><div class="hb-v">5.6%</div></div><div class="hb"><div class="hb-l">fio_ritorno_scale</div><div class="hb-t"><div class="hb-f s-roma" style="width:15.6%"></div></div><div class="hb-v">5.5%</div></div><div class="hb"><div class="hb-l">Fiorentina_goals_for</div><div class="hb-t"><div class="hb-f s-roma" style="width:10.0%"></div></div><div class="hb-v">3.5%</div></div></div>
   <h3 class="sub3">E se l'edge fosse solo scetticismo?</h3>
-  <div class="card"><div class="scroll"><table><thead><tr><th>Peso dato al mercato</th><th>EV medio sul pareggio</th><th>EV medio sulla Fiorentina</th></tr></thead><tbody><tr><td>0.40-0.50</td><td class="pos">+4.6%</td><td class="pos">+7.8%</td></tr><tr><td>0.50-0.60</td><td class="pos">+2.7%</td><td class="pos">+4.9%</td></tr><tr><td>0.60-0.70</td><td class="pos">+0.6%</td><td class="pos">+1.3%</td></tr><tr><td>0.70-0.80</td><td class="neg">-1.1%</td><td class="neg">-1.2%</td></tr></tbody><caption>L'EV cambia segno lungo questa colonna. Il "valore" non e una scoperta sulla partita: e la misura di quanto ho scelto di non fidarmi del banco.</caption></table></div></div>
+  <div class="card"><div class="scroll"><table><thead><tr><th>Peso dato al mercato</th><th>EV medio sul pareggio</th><th>EV medio sulla Fiorentina</th></tr></thead><tbody><tr><td>0.40-0.50</td><td class="pos">+4.8%</td><td class="pos">+9.0%</td></tr><tr><td>0.50-0.60</td><td class="pos">+2.9%</td><td class="pos">+5.7%</td></tr><tr><td>0.60-0.70</td><td class="pos">+1.0%</td><td class="pos">+2.5%</td></tr><tr><td>0.70-0.80</td><td class="neg">-0.9%</td><td class="neg">-0.4%</td></tr></tbody><caption>L'EV cambia segno lungo questa colonna. Il "valore" non e una scoperta sulla partita: e la misura di quanto ho scelto di non fidarmi del banco.</caption></table></div></div>
 </section>
 
 <section>

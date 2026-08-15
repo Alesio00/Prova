@@ -256,5 +256,23 @@
       "_confidence": "med"
     },
     "_model_note": "Asimmetria di preparazione reale e documentata, ma NON inserita come parametro nel modello: non ho una stima difendibile di quanto valga in gol una partita ufficiale di vantaggio contro una squadra di Serie B. E' registrata qui perche influenzi la lettura del risultato, non i numeri."
+  },
+  "uefa_coefficient_5y": {
+    "_source": "UEFA club coefficient ranking (it.uefa.com), screenshot utente 2026-08",
+    "_confidence": "high",
+    "Fiorentina": {
+      "rank": 14,
+      "points": 76.25,
+      "country_coeff": 16.846
+    },
+    "Roma": {
+      "rank": 15,
+      "points": 74.75,
+      "country_coeff": 16.846
+    },
+    "_gap": "La Fiorentina e' 1.5 punti SOPRA la Roma su cinque anni di coppe europee.",
+    "_why_it_matters": "E' la prima misura di forza indipendente sia dalla classifica di Serie A sia dallo split andata/ritorno. Due canali indipendenti che puntano nella stessa direzione valgono piu di uno.",
+    "_caveat_that_must_be_read": "NON e' una misura pura di forza. Il coefficiente premia il cammino europeo, e la Fiorentina ha accumulato i suoi punti in Conference League - tre stagioni consecutive andando molto avanti, ma contro avversarie mediamente piu deboli di quelle che la Roma ha incontrato in Europa League. Un cammino lungo in una coppa minore vale piu punti di un'uscita precoce in una coppa maggiore. Quindi il coefficiente sovrastima la Fiorentina rispetto a un confronto diretto.",
+    "_how_it_is_used": "Come CONTROLLO sui rating, non come input del modello. Introdurlo come terzo canale di rating senza saper correggere il bias di competizione aggiungerebbe rumore travestito da segnale."
   }
 }

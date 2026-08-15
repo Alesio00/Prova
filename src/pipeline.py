@@ -38,11 +38,19 @@ def run(n_sims: int = 200_000, seed: int = 42, train_ml: bool = True) -> dict:
 
     # ---- 3. fusion ------------------------------------------------------
     p_fused = mk.log_pool(p_model, p_mkt_shin, mk.MARKET_WEIGHT)
-    # translate the fused 1X2 back into lambdas so every derived market
-    # (totals, BTTS, correct score) is consistent with the fused view
+    # Translate the fused 1X2 back into lambdas. NOTE WHAT THIS DOES AND DOES
+    # NOT MEAN. The market priced 1X2 only; it never quoted a total. Inverting
+    # a 1X2 vector with rho held fixed is under-determined in the total: the
+    # solver raises BOTH lambdas until P(draw) matches, so the fused total
+    # (2.65) sits well above the model's own (2.42) purely as an artefact of
+    # that inversion. It even lands outside the self-audit's own p95 band.
+    # So: 1X2 and its direct projections come from the fused lambdas, but the
+    # GOAL markets are published from the model's lambdas, and the inverted
+    # total is reported separately and labelled as market-implied.
     lam_f_h, lam_f_a = mk.solve_lambdas_for_probs(p_fused,
                                                   lam0=fx.lam_home, mu0=fx.lam_away)
     m_fused = dc.score_matrix(lam_f_h, lam_f_a)
+    m_model = dc.score_matrix(fx.lam_home, fx.lam_away)
 
     # ---- 4. Monte Carlo with parameter uncertainty -----------------------
     mc = sim.simulate(lam_f_h, lam_f_a, n=n_sims, seed=seed,
@@ -73,10 +81,22 @@ def run(n_sims: int = 200_000, seed: int = 42, train_ml: bool = True) -> dict:
 
     # ---- 6. derived markets ---------------------------------------------
     derived = {
-        "totals": {**dc.totals(m_fused, 1.5), **dc.totals(m_fused, 2.5),
-                   **dc.totals(m_fused, 3.5)},
-        "btts": dc.btts(m_fused),
-        "clean_sheets": dc.clean_sheets(m_fused),
+        # goal markets from the MODEL's lambdas - the market never priced these
+        "totals": {**dc.totals(m_model, 1.5), **dc.totals(m_model, 2.5),
+                   **dc.totals(m_model, 3.5)},
+        "btts": dc.btts(m_model),
+        "clean_sheets": dc.clean_sheets(m_model),
+        "_goal_markets_basis": "model lambdas (%.3f + %.3f = %.3f)"
+                               % (fx.lam_home, fx.lam_away,
+                                  fx.lam_home + fx.lam_away),
+        "market_implied_totals": {
+            **dc.totals(m_fused, 2.5),
+            "_total": lam_f_h + lam_f_a,
+            "_warning": ("Ricavato invertendo l'1X2 fuso con rho fisso. Il mercato "
+                         "non ha mai quotato un totale: questo numero e' quello che "
+                         "l'inversione impone, non un prezzo. Va letto come "
+                         "'totale implicito', mai come opinione del modello."),
+        },
         "asian_handicap": {
             "home_-0.5": dc.asian_handicap(m_fused, -0.5),
             "home_-1.0": dc.asian_handicap(m_fused, -1.0),
@@ -115,6 +135,7 @@ def run(n_sims: int = 200_000, seed: int = 42, train_ml: bool = True) -> dict:
         "scorers": mc["scorers"],
         "derived_markets": derived,
         "score_matrix_fused": m_fused[:7, :7].tolist(),
+        "score_matrix_model": m_model[:7, :7].tolist(),
         "ml": ml_block,
         "duels": {
             "pairs_evaluated": duel_block["duel_matrix"]["pairs_evaluated"],

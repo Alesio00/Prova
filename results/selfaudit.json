@@ -2,196 +2,206 @@
   "n_draws": 4000,
   "distributions": {
     "p_home": {
-      "p05": 0.5558290339856581,
-      "median": 0.5937509774980578,
-      "p95": 0.6171026967239892,
-      "mean": 0.5908758851582395,
-      "sd": 0.018727368412592798
+      "p05": 0.5534211632464762,
+      "median": 0.5903591204377827,
+      "p95": 0.615387081253728,
+      "mean": 0.5882333418218336,
+      "sd": 0.018871925237871387
     },
     "p_draw": {
-      "p05": 0.23605136377733604,
-      "median": 0.24677536984451193,
-      "p95": 0.2635587921010001,
-      "mean": 0.24796277042192458,
-      "sd": 0.008383183493522794
+      "p05": 0.23647177673714564,
+      "median": 0.24804587844145376,
+      "p95": 0.26414018288079,
+      "mean": 0.24884239973534766,
+      "sd": 0.008458883763953113
     },
     "p_away": {
-      "p05": 0.1452606669293756,
-      "median": 0.15941157750098983,
-      "p95": 0.182419618464774,
-      "mean": 0.16116134441983584,
-      "sd": 0.011304562615952553
+      "p05": 0.14652458781805971,
+      "median": 0.16158658742934676,
+      "p95": 0.18411934152277584,
+      "mean": 0.1629242584428187,
+      "sd": 0.01148503328421617
     },
     "p_model_home": {
-      "p05": 0.47365178149275794,
-      "median": 0.5346056051266814,
-      "p95": 0.5986472316368069,
-      "mean": 0.5350377271946662,
-      "sd": 0.037726780395098955
+      "p05": 0.4734613732584009,
+      "median": 0.5333228733708113,
+      "p95": 0.595727819667059,
+      "mean": 0.533939434137958,
+      "sd": 0.037266349589167067
     },
     "total_goals": {
-      "p05": 2.2539349576437235,
-      "median": 2.439805623252738,
-      "p95": 2.6389272332330176,
-      "mean": 2.442980937962326,
-      "sd": 0.11749584227450569
+      "p05": 2.2535298010442624,
+      "median": 2.4455829689587003,
+      "p95": 2.6423526612625463,
+      "mean": 2.4455609095225204,
+      "sd": 0.11786743104462541
     },
     "ev_home": {
-      "p05": -0.13846499732223,
-      "median": -0.07968598487801026,
-      "p95": -0.04349082007781675,
-      "mean": -0.08414237800472862,
-      "sd": 0.029027421039518837
+      "p05": -0.14219719696796185,
+      "median": -0.08494336332143676,
+      "p95": -0.046150024056721486,
+      "mean": -0.08823832017615788,
+      "sd": 0.029251484118700648
     },
     "ev_draw": {
-      "p05": -0.03218940851292238,
-      "median": 0.011779016362498895,
-      "p95": 0.0805910476141004,
-      "mean": 0.01664735872989072,
-      "sd": 0.03437105232344346
+      "p05": -0.030465715377702894,
+      "median": 0.016988101609960338,
+      "p95": 0.08297474981123897,
+      "mean": 0.020253838914925403,
+      "sd": 0.03468142343220776
     },
     "ev_away": {
-      "p05": -0.07033173165199624,
-      "median": 0.020234096006334967,
-      "p95": 0.16748555817455363,
-      "mean": 0.0314326042869494,
-      "sd": 0.07234920074209635
+      "p05": -0.06224263796441768,
+      "median": 0.03415415954781931,
+      "p95": 0.17836378574576542,
+      "mean": 0.04271525403403972,
+      "sd": 0.07350421301898348
     }
   },
   "variance_attribution": [
     {
       "input": "MARKET_WEIGHT",
-      "share_of_variance": 0.3563425145789069,
-      "correlation": 0.5810302068408948
+      "share_of_variance": 0.35402797880822534,
+      "correlation": 0.5766636727034882
     },
     {
       "input": "SHRINK",
-      "share_of_variance": 0.14856815281138389,
-      "correlation": 0.37516969735419786
-    },
-    {
-      "input": "home_goal_share",
-      "share_of_variance": 0.0986578130070718,
-      "correlation": 0.3057247743396531
+      "share_of_variance": 0.13497187373158268,
+      "correlation": 0.3560618461386351
     },
     {
       "input": "fio_delta_att",
-      "share_of_variance": 0.0930540969560971,
-      "correlation": -0.29691534322726176
+      "share_of_variance": 0.0886293884537666,
+      "correlation": -0.2885311303360877
     },
     {
       "input": "Fiorentina_goals_against",
-      "share_of_variance": 0.07350390862618632,
-      "correlation": 0.26388828332442504
+      "share_of_variance": 0.08550478889864176,
+      "correlation": 0.28339946127306703
+    },
+    {
+      "input": "home_goal_share",
+      "share_of_variance": 0.08199157854229758,
+      "correlation": 0.27751625401933794
     },
     {
       "input": "roma_delta_att",
-      "share_of_variance": 0.05836545563001182,
-      "correlation": 0.23514883485586427
+      "share_of_variance": 0.05610445978037638,
+      "correlation": 0.22956331803901397
     },
     {
       "input": "fio_ritorno_scale",
-      "share_of_variance": 0.05305484467400879,
-      "correlation": -0.22419577025247045
+      "share_of_variance": 0.05522229551330813,
+      "correlation": -0.22775138602504563
     },
     {
       "input": "Fiorentina_goals_for",
-      "share_of_variance": 0.03085406011051829,
-      "correlation": -0.17097044880610993
+      "share_of_variance": 0.03549397550421617,
+      "correlation": -0.1825917383944652
     },
     {
-      "input": "Roma_goals_for",
-      "share_of_variance": 0.019042305322425256,
-      "correlation": 0.13431504231879943
-    },
-    {
-      "input": "NEW_MANAGER_DISCOUNT",
-      "share_of_variance": 0.017040422011752012,
-      "correlation": -0.12705889208557797
+      "input": "devig_shin",
+      "share_of_variance": 0.022288486479708235,
+      "correlation": 0.1446918568202339
     },
     {
       "input": "RECENCY_MANAGER_CHANGE_DISCOUNT",
-      "share_of_variance": 0.012893647219220953,
-      "correlation": -0.11052303003890251
+      "share_of_variance": 0.01772465859886366,
+      "correlation": -0.12903060696185922
     },
     {
-      "input": "MATCHDAY1_GOAL_FACTOR",
-      "share_of_variance": 0.012179518315411676,
-      "correlation": 0.10741871369061191
+      "input": "NEW_MANAGER_DISCOUNT",
+      "share_of_variance": 0.015365158635250854,
+      "correlation": -0.12013576687447533
     },
     {
-      "input": "RECENCY_WEIGHT",
-      "share_of_variance": 0.011204739997464292,
-      "correlation": -0.10303049414557007
+      "input": "Roma_goals_for",
+      "share_of_variance": 0.013049322763385773,
+      "correlation": 0.11071278798383795
     },
     {
-      "input": "RHO",
-      "share_of_variance": 0.004671165053287272,
-      "correlation": 0.06652386869358926
+      "input": "odds_home_drawn",
+      "share_of_variance": 0.009942804653846995,
+      "correlation": -0.09664029661626133
     },
     {
       "input": "Roma_goals_against",
-      "share_of_variance": 0.004600486723752767,
-      "correlation": -0.06601867168717154
+      "share_of_variance": 0.008209332745199787,
+      "correlation": -0.0878127807995254
     },
     {
-      "input": "GOALS_HEAT_FACTOR",
-      "share_of_variance": 0.0037299965640638444,
-      "correlation": 0.05944551679323674
+      "input": "MATCHDAY1_GOAL_FACTOR",
+      "share_of_variance": 0.007709953964436636,
+      "correlation": 0.08510002609377909
+    },
+    {
+      "input": "RECENCY_WEIGHT",
+      "share_of_variance": 0.007049272451509505,
+      "correlation": -0.08137217958385468
+    },
+    {
+      "input": "RHO",
+      "share_of_variance": 0.004714952743289949,
+      "correlation": 0.06654914388840666
     },
     {
       "input": "H2H_WEIGHT",
-      "share_of_variance": 0.002236872398437061,
-      "correlation": 0.046034718988243545
+      "share_of_variance": 0.0012911223855505921,
+      "correlation": 0.03482470981864003
+    },
+    {
+      "input": "GOALS_HEAT_FACTOR",
+      "share_of_variance": 0.0007085953465433207,
+      "correlation": 0.02579900452878643
     }
   ],
   "decision_stability": {
     "p_ev_positive": {
       "home": 0.0,
-      "draw": 0.639,
-      "away": 0.63225
+      "draw": 0.6965,
+      "away": 0.696
     },
     "p_ev_above_5pct": {
       "home": 0.0,
-      "draw": 0.17425,
-      "away": 0.34425
+      "draw": 0.1945,
+      "away": 0.41625
     },
     "p_roma_remains_favourite": 1.0,
-    "p_model_disagrees_with_market_on_fiorentina": 0.969
+    "p_model_disagrees_with_market_on_fiorentina": 0.97425
   },
   "market_weight_conditioning": {
     "bands": [
       {
         "market_weight": "0.40-0.50",
-        "n": 985,
-        "mean_ev_draw": 0.04593255486136556,
-        "mean_ev_away": 0.07838057341781432,
-        "p_ev_positive_draw": 0.8944162436548223,
-        "p_ev_positive_away": 0.8091370558375635
+        "n": 1032,
+        "mean_ev_draw": 0.048065442481524986,
+        "mean_ev_away": 0.08951241925769034,
+        "p_ev_positive_draw": 0.9224806201550387,
+        "p_ev_positive_away": 0.8614341085271318
       },
       {
         "market_weight": "0.50-0.60",
-        "n": 989,
-        "mean_ev_draw": 0.02669190242112953,
-        "mean_ev_away": 0.048588450840443526,
-        "p_ev_positive_draw": 0.8230535894843276,
-        "p_ev_positive_away": 0.7623862487360971
+        "n": 1014,
+        "mean_ev_draw": 0.029373851823383458,
+        "mean_ev_away": 0.05681884225794493,
+        "p_ev_positive_draw": 0.8382642998027613,
+        "p_ev_positive_away": 0.7928994082840237
       },
       {
         "market_weight": "0.60-0.70",
-        "n": 1026,
-        "mean_ev_draw": 0.005740618304544852,
-        "mean_ev_away": 0.012621601537243227,
-        "p_ev_positive_draw": 0.5994152046783626,
-        "p_ev_positive_away": 0.5925925925925926
+        "n": 988,
+        "mean_ev_draw": 0.010252888171566273,
+        "mean_ev_away": 0.025041939246623218,
+        "p_ev_positive_draw": 0.6811740890688259,
+        "p_ev_positive_away": 0.6700404858299596
       },
       {
         "market_weight": "0.70-0.80",
-        "n": 1000,
-        "mean_ev_draw": -0.010942297493842335,
-        "mean_ev_away": -0.012478188727159726,
-        "p_ev_positive_draw": 0.246,
-        "p_ev_positive_away": 0.37
+        "n": 966,
+        "mean_ev_draw": -0.008802401908540858,
+        "mean_ev_away": -0.0040078080362292365,
+        "p_ev_positive_draw": 0.3219461697722567,
+        "p_ev_positive_away": 0.4440993788819876
       }
     ],
     "edge_is_an_artefact_of_market_weight": true,
@@ -199,13 +209,18 @@
   },
   "verdict": {
     "action": "NESSUNA SCOMMESSA",
-    "best_selection": "draw",
-    "stability": 0.639,
-    "reason": "la selezione migliore ('draw') resta in profitto solo nel 64% dello spazio dei parametri: e una monetina",
+    "best_selection": "away",
+    "stability": 0.696,
+    "reason": "la selezione migliore ('away') resta in profitto solo nel 70% dello spazio dei parametri: e una monetina",
     "p_home_range_90pct": [
-      0.5558290339856581,
-      0.6171026967239892
+      0.5534211632464762,
+      0.615387081253728
     ],
-    "headline_vs_uncertainty": "La forchetta al 90% su P(vittoria Roma) e larga 6.1 punti percentuali. Qualsiasi lettura che si fermi al numero singolo sta buttando via questa informazione."
+    "p_home_range_90pct_MODEL_ONLY": [
+      0.4734613732584009,
+      0.595727819667059
+    ],
+    "_why_two_ranges": "Il primo e' sulla probabilita fusa, che e' ancorata al prezzo contro cui si scommette: si restringe per costruzione. Il secondo e' l'incertezza vera del modello, ed e' quello da guardare.",
+    "headline_vs_uncertainty": "La forchetta al 90% su P(vittoria Roma) e larga 6.2 punti percentuali. Qualsiasi lettura che si fermi al numero singolo sta buttando via questa informazione."
   }
 }

@@ -1,0 +1,236 @@
+{
+  "_meta": {
+    "fixture": "AS Roma vs ACF Fiorentina",
+    "competition": "Serie A 2026/27 - Giornata 1",
+    "kickoff_local": "2026-08-24T20:45:00+02:00",
+    "venue": "Stadio Olimpico, Roma",
+    "compiled_on": "2026-08-15",
+    "data_channel": "WebSearch snippets only - direct HTTP egress blocked in this environment",
+    "confidence_scale": "high = stated explicitly by a source; med = derived/consistent across sources; low = estimated, MUST be overwritten with real data"
+  },
+  "league_baseline": {
+    "season_ref": "2025/26",
+    "matches": 380,
+    "total_goals": 922,
+    "goals_per_match": 2.4263,
+    "home_goal_share": 0.555,
+    "_home_share_confidence": "low",
+    "_confidence": "high",
+    "_source": "Serie A 2025-26 season summary (380 matches, 922 goals, 2.43/match)"
+  },
+  "teams": {
+    "Roma": {
+      "season_2526": {
+        "position": 3,
+        "played": 38,
+        "won": 22,
+        "drawn": 4,
+        "lost": 12,
+        "points": 70,
+        "goals_for": 54,
+        "goals_against": 33,
+        "_confidence": "med",
+        "_anchor": "CONFIRMED: 3rd place, CL qualification, 61 pts after 34 games (19W-4D-11L, 48 GF, 29 GA), 3 pts behind Napoli. Final-day 2-0 win vs Verona. Totals for the last 4 games are extrapolated."
+      },
+      "recent_split": {
+        "first_half": {
+          "played": 19,
+          "goals_for": 22,
+          "goals_against": 12,
+          "_confidence": "high"
+        },
+        "second_half": {
+          "played": 19,
+          "goals_for": 32,
+          "goals_against": 21,
+          "_confidence": "med"
+        },
+        "_anchor": "CONFIRMED: after 19 matchdays Roma had 22 GF / 12 GA and led the table. Italian coverage of the girone di ritorno is explicit that the defence fell apart ('la difesa balla, i punti non arrivano') and the title challenge collapsed. Second half derived by subtraction from the season totals.",
+        "_note": "1.16 GF and 0.63 GA per game in the first half vs 1.68 GF and 1.11 GA in the second. The season aggregate hides a real regime change - the most recent 19 games are a better guide to the current side than the full 38.",
+        "manager_continuity": true
+      },
+      "manager": {
+        "name": "Gian Piero Gasperini",
+        "since": "2025-07",
+        "season_number": 2,
+        "_confidence": "high"
+      },
+      "formation": "3-4-2-1",
+      "top_scorer_2526": {
+        "name": "Donyell Malen",
+        "league_goals": 14,
+        "_confidence": "high"
+      },
+      "transfers_in_2627": [
+        "Santiago Castro (Bologna)",
+        "Nahuel Molina (Atletico Madrid, ~18M)",
+        "Konstantinos Koulierakis"
+      ],
+      "transfers_out_2627": [
+        "Tommaso Baldanzi (Genoa, loan+obligation ~10M)",
+        "Evan Ferguson (back to Brighton)",
+        "Stephan El Shaarawy (retired/left)",
+        "Matias Soule (listed)"
+      ],
+      "renewals": [
+        "Paulo Dybala (to 2027)",
+        "Bryan Cristante (to 2028)",
+        "Lorenzo Pellegrini (close, to 2027)"
+      ],
+      "expected_xi": [
+        "Svilar",
+        "Mancini",
+        "Ndicka",
+        "Koulierakis",
+        "Molina",
+        "Cristante",
+        "Kone",
+        "Wesley",
+        "Soule",
+        "Dybala",
+        "Malen"
+      ],
+      "_xi_confidence": "med",
+      "squad_delta_2627": {
+        "attack": 0.03,
+        "defense": -0.02,
+        "_note": "attack: + = better. defense: - = fewer goals conceded. Castro adds a real No.9 profile behind Malen; Molina upgrades RWB; Koulierakis replaces churn. Gasperini year 2 = system already installed. Modest net positive.",
+        "_confidence": "low"
+      }
+    },
+    "Fiorentina": {
+      "season_2526": {
+        "position": 15,
+        "played": 38,
+        "won": 10,
+        "drawn": 12,
+        "lost": 16,
+        "points": 42,
+        "goals_for": 40,
+        "goals_against": 51,
+        "_confidence": "low",
+        "_anchor": "CONFIRMED: 15th place; 13 pts in the andata and 29 in the ritorno (=42). Top league scorer Moise Kean with only 8 goals (Gudmundsson 10 in all comps) => genuinely weak attack. Biggest win 5-1 vs Udinese (H). Biggest loss 0-4 at Roma. Conference League QF, Coppa Italia R16. Pioli sacked 04/11/2025, Vanoli in from 07/11/2025.",
+        "_tension": "15th place and 42 points do not sit comfortably together - 42 pts is normally around 12th. Either the table was unusually compressed or one of the two figures comes from a partial-season snapshot. Both are recorded here as found; the split below is what actually drives the model, and it is the better-sourced of the two."
+      },
+      "recent_split": {
+        "first_half": {
+          "played": 19,
+          "points": 13,
+          "goals_for": 15,
+          "goals_against": 30,
+          "_confidence": "med"
+        },
+        "second_half": {
+          "played": 19,
+          "points": 29,
+          "goals_for": 25,
+          "goals_against": 21,
+          "_confidence": "low"
+        },
+        "_anchor": "CONFIRMED: 29 points in the girone di ritorno, +16 on the andata, 7th in the return-round table ahead of Milan and Bologna. From 07/02/2026 onward: 18 points in 9 games, a Champions-League pace bettered only by Inter and Napoli. Goal splits are DERIVED from the points splits, not sourced.",
+        "manager_continuity": false,
+        "_note": "This is the single most important find of the run. Rating Fiorentina off the 38-game aggregate treats them as a relegation-scrap side; over the last 19 games they played like a European contender. But the coach who produced that form (Vanoli) is gone and Grosso is in, so the form is only partly transferable - hence manager_continuity=false, which discounts the recency weight in ratings.py."
+      },
+      "manager": {
+        "name": "Fabio Grosso",
+        "since": "2026-06",
+        "season_number": 1,
+        "_confidence": "high",
+        "_note": "Vanoli sacked at end of 2025/26. Fabio Paratici arrived as sporting director."
+      },
+      "formation": "4-3-3",
+      "top_scorer_2526": {
+        "name": "Moise Kean",
+        "league_goals": 8,
+        "_confidence": "high"
+      },
+      "transfers_in_2627": [
+        "Radu Dragusin",
+        "Viery",
+        "Alejandro Jimenez",
+        "Arthur Atta",
+        "Oulai",
+        "Valdepenas (Real Madrid)",
+        "Mastantuono (reported)"
+      ],
+      "transfers_out_2627": [],
+      "expected_xi": [
+        "De Gea",
+        "Dodo",
+        "Dragusin",
+        "Viery",
+        "Fortini",
+        "Oulai",
+        "Fagioli",
+        "Atta",
+        "Jimenez",
+        "Kean",
+        "Gudmundsson"
+      ],
+      "_xi_confidence": "med",
+      "squad_delta_2627": {
+        "attack": 0.06,
+        "defense": -0.05,
+        "_note": "Priced DOWN from +0.10/-0.10 once the ritorno form was found: that improvement is now carried by recent_split, and leaving it here as well would double-count it. What remains is the transfer window alone - Dragusin+Viery rebuild the centre-backs, Jimenez/Atta/Oulai add athleticism, Kean+Gudmundsson retained.",
+        "_confidence": "low"
+      }
+    }
+  },
+  "head_to_head": {
+    "all_time_at_olimpico": {
+      "roma_wins": 49,
+      "draws": 31,
+      "fiorentina_wins": 19,
+      "_confidence": "high"
+    },
+    "last_5_h2h": {
+      "roma_wins": 2,
+      "draws": 2,
+      "fiorentina_wins": 1,
+      "_confidence": "high"
+    },
+    "most_common_scoreline": "1-1",
+    "most_common_roma_win": "2-1",
+    "most_common_fiorentina_win": "1-0",
+    "last_meeting": {
+      "date": "2026-05-04",
+      "venue": "Olimpico",
+      "score": "Roma 4-0 Fiorentina",
+      "_confidence": "high"
+    },
+    "fiorentina_last_win_at_olimpico": {
+      "date": "2018-04-07",
+      "score": "0-2",
+      "_confidence": "high"
+    },
+    "_note": "H2H is used only as a weak prior nudge (see ratings.py H2H_WEIGHT). Long-run H2H mostly encodes team quality already captured elsewhere; double-counting it is a classic overfit."
+  },
+  "market": {
+    "source": "Betfair (via search snippet, 2026-08)",
+    "decimal_odds": {
+      "home": 1.55,
+      "draw": 4.1,
+      "away": 6.4
+    },
+    "_confidence": "high",
+    "_note": "Sharpest single input available. Overround ~4.5%. Used as a Bayesian anchor via log-opinion pooling, NOT as ground truth."
+  },
+  "context_flags": {
+    "matchday": 1,
+    "roma_european_competition_2627": "UEFA Champions League",
+    "fiorentina_european_competition_2627": null,
+    "roma_rest_advantage_days": 0,
+    "monday_night_slot": true,
+    "expected_temperature_c": 28,
+    "_temperature_confidence": "low",
+    "_note": "Late-August 20:45 kickoff in Rome: hot, humid. Historically depresses tempo and total goals slightly. Modelled as GOALS_HEAT_FACTOR."
+  },
+  "known_unknowns": [
+    "GF/GA finali esatti 2025/26 della Fiorentina: il 15° posto è confermato, i totali gol sono stimati.",
+    "Totali delle ultime 4 giornate 2025/26 della Roma (confermati 61 pt / 48 GF / 29 GA dopo 34).",
+    "Lista infortunati aggiornata al 24/08/2026: nessun dato di agosto 2026 era recuperabile da questo ambiente.",
+    "Se Soulé viene ceduto prima della chiusura del mercato (è sulla lista partenti ed è nell'XI proiettato).",
+    "Formazioni ufficiali: pubblicate circa un'ora prima del calcio d'inizio.",
+    "Tabella completa 2025/26 con GF/GA di tutte e 20 le squadre (serve per stimare attacco/difesa a livello di lega)."
+  ]
+}

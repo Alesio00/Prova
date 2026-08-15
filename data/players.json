@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "what": "Projected starting XIs with each player's expected share of their team's goals and assists, plus expected minutes.",
+    "how": "goal_share is a prior built from 2025/26 output, role in the projected formation, and penalty duty. Shares are normalised inside the model, so they do not need to sum to 1 exactly.",
+    "confidence": "MEDIUM for the XIs (projected, not confirmed), LOW for individual shares. This is the weakest layer of the model - treat scorer probabilities as indicative only.",
+    "penalty_conversion": 0.78
+  },
+
+  "Roma": {
+    "formation": "3-4-2-1",
+    "penalty_taker": "Dybala",
+    "xi": [
+      {"name": "Mile Svilar",          "pos": "GK",  "minutes": 90, "goal_share": 0.000, "assist_share": 0.00},
+      {"name": "Gianluca Mancini",     "pos": "CB",  "minutes": 90, "goal_share": 0.040, "assist_share": 0.02},
+      {"name": "Evan Ndicka",          "pos": "CB",  "minutes": 90, "goal_share": 0.025, "assist_share": 0.01},
+      {"name": "K. Koulierakis",       "pos": "CB",  "minutes": 90, "goal_share": 0.025, "assist_share": 0.01},
+      {"name": "Nahuel Molina",        "pos": "RWB", "minutes": 85, "goal_share": 0.045, "assist_share": 0.11},
+      {"name": "Bryan Cristante",      "pos": "CM",  "minutes": 80, "goal_share": 0.045, "assist_share": 0.06},
+      {"name": "Manu Kone",            "pos": "CM",  "minutes": 85, "goal_share": 0.045, "assist_share": 0.08},
+      {"name": "Wesley",               "pos": "LWB", "minutes": 85, "goal_share": 0.055, "assist_share": 0.13},
+      {"name": "Matias Soule",         "pos": "AM",  "minutes": 70, "goal_share": 0.120, "assist_share": 0.14},
+      {"name": "Paulo Dybala",         "pos": "AM",  "minutes": 65, "goal_share": 0.175, "assist_share": 0.20},
+      {"name": "Donyell Malen",        "pos": "ST",  "minutes": 75, "goal_share": 0.290, "assist_share": 0.09}
+    ],
+    "bench_contributors": [
+      {"name": "Santiago Castro",      "pos": "ST",  "minutes": 25, "goal_share": 0.090, "assist_share": 0.05},
+      {"name": "Lorenzo Pellegrini",   "pos": "AM",  "minutes": 20, "goal_share": 0.045, "assist_share": 0.06}
+    ]
+  },
+
+  "Fiorentina": {
+    "formation": "4-3-3",
+    "penalty_taker": "Kean",
+    "xi": [
+      {"name": "David De Gea",         "pos": "GK", "minutes": 90, "goal_share": 0.000, "assist_share": 0.00},
+      {"name": "Dodo",                 "pos": "RB", "minutes": 85, "goal_share": 0.035, "assist_share": 0.12},
+      {"name": "Radu Dragusin",        "pos": "CB", "minutes": 90, "goal_share": 0.045, "assist_share": 0.01},
+      {"name": "Viery",                "pos": "CB", "minutes": 90, "goal_share": 0.030, "assist_share": 0.01},
+      {"name": "Niccolo Fortini",      "pos": "LB", "minutes": 80, "goal_share": 0.025, "assist_share": 0.08},
+      {"name": "Oulai",                "pos": "CM", "minutes": 75, "goal_share": 0.035, "assist_share": 0.05},
+      {"name": "Nicolo Fagioli",       "pos": "CM", "minutes": 80, "goal_share": 0.045, "assist_share": 0.15},
+      {"name": "Arthur Atta",          "pos": "CM", "minutes": 75, "goal_share": 0.075, "assist_share": 0.12},
+      {"name": "Alejandro Jimenez",    "pos": "RW", "minutes": 70, "goal_share": 0.090, "assist_share": 0.13},
+      {"name": "Moise Kean",           "pos": "ST", "minutes": 85, "goal_share": 0.300, "assist_share": 0.07},
+      {"name": "Albert Gudmundsson",   "pos": "LW", "minutes": 75, "goal_share": 0.185, "assist_share": 0.16}
+    ],
+    "bench_contributors": [
+      {"name": "Valdepenas",           "pos": "LW", "minutes": 25, "goal_share": 0.070, "assist_share": 0.06},
+      {"name": "Roberto Piccoli",      "pos": "ST", "minutes": 20, "goal_share": 0.055, "assist_share": 0.03}
+    ]
+  }
+}

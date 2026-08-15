@@ -174,10 +174,10 @@ per la qualità è ciò che separa questo da una classifica di nomi.
 
 | Duello | Peso | Esito |
 |---|---|---|
-| Malen vs Pongracic | 0.65 | **79% Malen** — il punto debole viola |
-| Ndicka vs Kean | 0.85 | 70% Kean — il duello più frequente della partita |
-| Malen vs Dragusin | 0.65 | 73% Malen |
-| Hermoso vs Kean | 0.52 | 75% Kean |
+| Malen vs Ranieri | 0.65 | **80% Malen** — il punto debole viola |
+| Ndicka vs Kean | 0.85 | 73% Kean — il duello più frequente della partita |
+| Malen vs Dragusin | 0.65 | 77% Malen |
+| Hermoso vs Kean | 0.52 | 79% Kean |
 
 Per zona: Roma avanti a sinistra (53.5%) e al centro (52.7%), **Fiorentina avanti sulla fascia
 destra della Roma (54.5%)** — è il corridoio di Gudmundsson contro Mancini. Se c'è un piano
@@ -185,12 +185,12 @@ partita nei numeri, è quello.
 
 ### 🎲 "La combinazione più probabile" — la risposta e perché il numero conta più della risposta
 
-Enumerando **ogni** combinazione di risultato esatto e attribuzione dei gol: **45.600 esiti distinti**.
+Enumerando **ogni** combinazione di risultato esatto e attribuzione dei gol: **46.209 esiti distinti**.
 
-- Esito singolo più probabile in assoluto: **0-0, nessun marcatore — 7.4%**
+- Esito singolo più probabile in assoluto: **0-0, nessun marcatore — 7.3%**
 - Più probabile con almeno un gol: **1-0, gol di Malen — 4.1%**
-- Coppia di marcatori più probabile: **Malen + Kean segnano entrambi — 8.5%**
-- Servono **153 esiti diversi** per coprire metà della probabilità; i primi dieci arrivano al 21%
+- Coppia di marcatori più probabile: **Malen + Kean segnano entrambi — 9.1%**
+- Servono **155 esiti diversi** per coprire metà della probabilità; i primi dieci arrivano al 21%
 
 La risposta esiste. Vale il 4%. Chiunque dichiari una combinazione di marcatori con sicurezza sta
 vendendo un 4% come una certezza.

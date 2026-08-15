@@ -210,6 +210,32 @@ def pair_table(pairs: list[dict]) -> str:
             '</table></div>')
 
 
+def variance_bars(rows: list[dict]) -> str:
+    vmax = max(r["share_of_variance"] for r in rows) or 1.0
+    out = []
+    for r in rows:
+        w = r["share_of_variance"] / vmax * 100
+        cls = "s-fio" if r["input"] in ("MARKET_WEIGHT",) else "s-roma"
+        out.append(
+            f'<div class="hb"><div class="hb-l">{r["input"]}</div>'
+            f'<div class="hb-t"><div class="hb-f {cls}" style="width:{w:.1f}%"></div></div>'
+            f'<div class="hb-v">{r["share_of_variance"] * 100:.1f}%</div></div>')
+    return "".join(out)
+
+
+def mw_table(bands: list[dict]) -> str:
+    rows = "".join(
+        f'<tr><td>{b["market_weight"]}</td>'
+        f'<td class="{"pos" if b["mean_ev_draw"] > 0 else "neg"}">{b["mean_ev_draw"] * 100:+.1f}%</td>'
+        f'<td class="{"pos" if b["mean_ev_away"] > 0 else "neg"}">{b["mean_ev_away"] * 100:+.1f}%</td>'
+        f'</tr>' for b in bands)
+    return ('<div class="scroll"><table><thead><tr><th>Peso dato al mercato</th>'
+            '<th>EV medio sul pareggio</th><th>EV medio sulla Fiorentina</th></tr></thead>'
+            f'<tbody>{rows}</tbody><caption>L\'EV cambia segno lungo questa colonna. '
+            'Il "valore" non e una scoperta sulla partita: e la misura di quanto ho '
+            'scelto di non fidarmi del banco.</caption></table></div>')
+
+
 def kv_grid(pairs: list[tuple[str, str]]) -> str:
     return '<div class="kv">' + "".join(
         f'<div><span>{k}</span><strong>{v}</strong></div>' for k, v in pairs) + "</div>"
@@ -256,7 +282,7 @@ h1{font-size:30px;line-height:1.15;margin:0 0 8px;letter-spacing:-.02em;text-wra
 .stamp{font:11.5px/1.5 var(--mono);color:var(--muted);margin-top:10px}
 section{display:flex;flex-direction:column;gap:14px}
 h2{font-size:18px;margin:0;letter-spacing:-.01em;text-wrap:balance}
-h2+.note{margin-top:-8px}
+h2+.note{margin-top:-8px}\n.sub3{font-size:14px;margin:8px 0 0;color:var(--ink2);font-weight:600}
 .note{color:var(--ink2);font-size:13.5px;margin:0;max-width:68ch}
 .card{background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:20px}
 a:focus-visible,td:focus-visible{outline:2px solid var(--roma);outline-offset:2px}
@@ -288,7 +314,7 @@ a:focus-visible,td:focus-visible{outline:2px solid var(--roma);outline-offset:2p
   padding:0 2px;white-space:nowrap;overflow:hidden}
 .seg.s-draw span{color:var(--ink)}
 
-.hb{display:grid;grid-template-columns:150px 1fr 58px;gap:10px;align-items:center;
+.hb{display:grid;grid-template-columns:178px 1fr 58px;gap:10px;align-items:center;
   margin-bottom:7px;font-size:13px}
 .hb-t{height:12px;background:var(--grid);border-radius:4px;overflow:hidden}
 .hb-f{height:100%;border-radius:4px}
@@ -302,7 +328,7 @@ a:focus-visible,td:focus-visible{outline:2px solid var(--roma);outline-offset:2p
 .tb-v{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .vs{color:var(--muted)}
 .big{font-size:26px;letter-spacing:-.02em;margin:2px 0 4px;line-height:1.2}
-.callout{background:var(--surface);border:1px solid var(--ring);border-left:3px solid var(--roma);
+.callout.verdict{border-left-color:var(--fio)}\n.callout{background:var(--surface);border:1px solid var(--ring);border-left:3px solid var(--roma);
   border-radius:10px;padding:16px 18px}
 
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;
@@ -351,6 +377,7 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
         ("FUSIONE FINALE", fin, "log-pooling, peso mercato 60%"),
     ])
 
+    au = pred["selfaudit"]
     dl = pred["duels"]
     st = pred["stories"]
     msl = st["most_likely_scoring_story"]
@@ -420,6 +447,20 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
   <p class="note">Fusione di modello statistico e mercato. La quota equa e 1/probabilita:
   se il bookmaker offre di piu, c'e valore teorico.</p>
   {stat_tiles(fin)}
+</section>
+
+<section>
+  <h2>Decisione finale</h2>
+  <div class="callout verdict">
+    <div class="tile-label">Verdetto</div>
+    <div class="big">{au['verdict']['action']}</div>
+    <p class="note" style="margin-top:8px">{au['verdict']['reason'].capitalize()}.
+    Su {au['n_draws']:,} versioni del modello con parametri diversi, l'EV positivo sul
+    pareggio compare nel {pct(au['decision_stability']['p_ev_positive']['draw'], 0)} dei casi
+    e sulla Fiorentina nel {pct(au['decision_stability']['p_ev_positive']['away'], 0)}:
+    entrambi troppo vicini a una monetina per essere una decisione.
+    Sulla Roma l'EV e negativo nel 100% dei casi.</p>
+  </div>
 </section>
 
 <section>
@@ -523,6 +564,31 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
 </section>
 
 {ml_html}
+
+<section>
+  <h2>Il modello che verifica se stesso</h2>
+  <p class="note">Ogni costante scelta a giudizio e ogni dato stimato invece che
+  documentato viene sostituito da un intervallo plausibile, e il modello viene rifatto
+  {au['n_draws']:,} volte campionando quegli intervalli. Il risultato non e una previsione
+  ma una distribuzione di previsioni: dice quanto del numero in cima alla pagina e dato
+  e quanto sono io.</p>
+  <div class="callout">
+    <div class="tile-label">P(vittoria Roma), intervallo al 90%</div>
+    <div class="big">{pct(au['distributions']['p_home']['p05'])} &ndash;
+      {pct(au['distributions']['p_home']['p95'])}</div>
+    <div class="tile-sub">mediana {pct(au['distributions']['p_home']['median'])}.
+      Gol totali fra {au['distributions']['total_goals']['p05']:.2f} e
+      {au['distributions']['total_goals']['p95']:.2f}.</div>
+  </div>
+  <h3 class="sub3">Da dove viene l'incertezza</h3>
+  <p class="note">Quota della varianza di P(vittoria Roma) attribuibile a ogni input.
+  Il primo posto e la scoperta piu scomoda dell'analisi: la fonte principale di
+  incertezza non e un fatto sul calcio, e <strong>quanto peso decido di dare al
+  mercato</strong>.</p>
+  <div class="card">{variance_bars(au['variance_attribution'][:8])}</div>
+  <h3 class="sub3">E se l'edge fosse solo scetticismo?</h3>
+  <div class="card">{mw_table(au['market_weight_conditioning']['bands'])}</div>
+</section>
 
 <section>
   <h2>Valore rispetto alle quote</h2>

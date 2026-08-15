@@ -13,6 +13,7 @@ import duels
 import market as mk
 import ml
 import ratings
+import selfaudit
 import simulate as sim
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -122,6 +123,7 @@ def run(n_sims: int = 200_000, seed: int = 42, train_ml: bool = True) -> dict:
             "zones": duel_block["zones"],
         },
         "stories": duel_block["stories"],
+        "selfaudit": selfaudit.audit(n=4000, seed=seed + 57),
         "value_bets": mk.edge_table(p_fused, odds),
         "config": {
             "shrink": ratings.SHRINK,

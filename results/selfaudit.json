@@ -1,0 +1,211 @@
+{
+  "n_draws": 4000,
+  "distributions": {
+    "p_home": {
+      "p05": 0.5558290339856581,
+      "median": 0.5937509774980578,
+      "p95": 0.6171026967239892,
+      "mean": 0.5908758851582395,
+      "sd": 0.018727368412592798
+    },
+    "p_draw": {
+      "p05": 0.23605136377733604,
+      "median": 0.24677536984451193,
+      "p95": 0.2635587921010001,
+      "mean": 0.24796277042192458,
+      "sd": 0.008383183493522794
+    },
+    "p_away": {
+      "p05": 0.1452606669293756,
+      "median": 0.15941157750098983,
+      "p95": 0.182419618464774,
+      "mean": 0.16116134441983584,
+      "sd": 0.011304562615952553
+    },
+    "p_model_home": {
+      "p05": 0.47365178149275794,
+      "median": 0.5346056051266814,
+      "p95": 0.5986472316368069,
+      "mean": 0.5350377271946662,
+      "sd": 0.037726780395098955
+    },
+    "total_goals": {
+      "p05": 2.2539349576437235,
+      "median": 2.439805623252738,
+      "p95": 2.6389272332330176,
+      "mean": 2.442980937962326,
+      "sd": 0.11749584227450569
+    },
+    "ev_home": {
+      "p05": -0.13846499732223,
+      "median": -0.07968598487801026,
+      "p95": -0.04349082007781675,
+      "mean": -0.08414237800472862,
+      "sd": 0.029027421039518837
+    },
+    "ev_draw": {
+      "p05": -0.03218940851292238,
+      "median": 0.011779016362498895,
+      "p95": 0.0805910476141004,
+      "mean": 0.01664735872989072,
+      "sd": 0.03437105232344346
+    },
+    "ev_away": {
+      "p05": -0.07033173165199624,
+      "median": 0.020234096006334967,
+      "p95": 0.16748555817455363,
+      "mean": 0.0314326042869494,
+      "sd": 0.07234920074209635
+    }
+  },
+  "variance_attribution": [
+    {
+      "input": "MARKET_WEIGHT",
+      "share_of_variance": 0.3563425145789069,
+      "correlation": 0.5810302068408948
+    },
+    {
+      "input": "SHRINK",
+      "share_of_variance": 0.14856815281138389,
+      "correlation": 0.37516969735419786
+    },
+    {
+      "input": "home_goal_share",
+      "share_of_variance": 0.0986578130070718,
+      "correlation": 0.3057247743396531
+    },
+    {
+      "input": "fio_delta_att",
+      "share_of_variance": 0.0930540969560971,
+      "correlation": -0.29691534322726176
+    },
+    {
+      "input": "Fiorentina_goals_against",
+      "share_of_variance": 0.07350390862618632,
+      "correlation": 0.26388828332442504
+    },
+    {
+      "input": "roma_delta_att",
+      "share_of_variance": 0.05836545563001182,
+      "correlation": 0.23514883485586427
+    },
+    {
+      "input": "fio_ritorno_scale",
+      "share_of_variance": 0.05305484467400879,
+      "correlation": -0.22419577025247045
+    },
+    {
+      "input": "Fiorentina_goals_for",
+      "share_of_variance": 0.03085406011051829,
+      "correlation": -0.17097044880610993
+    },
+    {
+      "input": "Roma_goals_for",
+      "share_of_variance": 0.019042305322425256,
+      "correlation": 0.13431504231879943
+    },
+    {
+      "input": "NEW_MANAGER_DISCOUNT",
+      "share_of_variance": 0.017040422011752012,
+      "correlation": -0.12705889208557797
+    },
+    {
+      "input": "RECENCY_MANAGER_CHANGE_DISCOUNT",
+      "share_of_variance": 0.012893647219220953,
+      "correlation": -0.11052303003890251
+    },
+    {
+      "input": "MATCHDAY1_GOAL_FACTOR",
+      "share_of_variance": 0.012179518315411676,
+      "correlation": 0.10741871369061191
+    },
+    {
+      "input": "RECENCY_WEIGHT",
+      "share_of_variance": 0.011204739997464292,
+      "correlation": -0.10303049414557007
+    },
+    {
+      "input": "RHO",
+      "share_of_variance": 0.004671165053287272,
+      "correlation": 0.06652386869358926
+    },
+    {
+      "input": "Roma_goals_against",
+      "share_of_variance": 0.004600486723752767,
+      "correlation": -0.06601867168717154
+    },
+    {
+      "input": "GOALS_HEAT_FACTOR",
+      "share_of_variance": 0.0037299965640638444,
+      "correlation": 0.05944551679323674
+    },
+    {
+      "input": "H2H_WEIGHT",
+      "share_of_variance": 0.002236872398437061,
+      "correlation": 0.046034718988243545
+    }
+  ],
+  "decision_stability": {
+    "p_ev_positive": {
+      "home": 0.0,
+      "draw": 0.639,
+      "away": 0.63225
+    },
+    "p_ev_above_5pct": {
+      "home": 0.0,
+      "draw": 0.17425,
+      "away": 0.34425
+    },
+    "p_roma_remains_favourite": 1.0,
+    "p_model_disagrees_with_market_on_fiorentina": 0.969
+  },
+  "market_weight_conditioning": {
+    "bands": [
+      {
+        "market_weight": "0.40-0.50",
+        "n": 985,
+        "mean_ev_draw": 0.04593255486136556,
+        "mean_ev_away": 0.07838057341781432,
+        "p_ev_positive_draw": 0.8944162436548223,
+        "p_ev_positive_away": 0.8091370558375635
+      },
+      {
+        "market_weight": "0.50-0.60",
+        "n": 989,
+        "mean_ev_draw": 0.02669190242112953,
+        "mean_ev_away": 0.048588450840443526,
+        "p_ev_positive_draw": 0.8230535894843276,
+        "p_ev_positive_away": 0.7623862487360971
+      },
+      {
+        "market_weight": "0.60-0.70",
+        "n": 1026,
+        "mean_ev_draw": 0.005740618304544852,
+        "mean_ev_away": 0.012621601537243227,
+        "p_ev_positive_draw": 0.5994152046783626,
+        "p_ev_positive_away": 0.5925925925925926
+      },
+      {
+        "market_weight": "0.70-0.80",
+        "n": 1000,
+        "mean_ev_draw": -0.010942297493842335,
+        "mean_ev_away": -0.012478188727159726,
+        "p_ev_positive_draw": 0.246,
+        "p_ev_positive_away": 0.37
+      }
+    ],
+    "edge_is_an_artefact_of_market_weight": true,
+    "_note": "EV e misurato contro le quote del mercato, quindi tende a zero per costruzione quando il peso del mercato tende a 1. Se l'EV positivo sopravvive solo a peso basso, non e una scoperta sulla partita: e la misura di quanto ho scelto di non fidarmi del banco."
+  },
+  "verdict": {
+    "action": "NESSUNA SCOMMESSA",
+    "best_selection": "draw",
+    "stability": 0.639,
+    "reason": "la selezione migliore ('draw') resta in profitto solo nel 64% dello spazio dei parametri: e una monetina",
+    "p_home_range_90pct": [
+      0.5558290339856581,
+      0.6171026967239892
+    ],
+    "headline_vs_uncertainty": "La forchetta al 90% su P(vittoria Roma) e larga 6.1 punti percentuali. Qualsiasi lettura che si fermi al numero singolo sta buttando via questa informazione."
+  }
+}

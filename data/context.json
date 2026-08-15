@@ -230,7 +230,31 @@
     "Totali delle ultime 4 giornate 2025/26 della Roma (confermati 61 pt / 48 GF / 29 GA dopo 34).",
     "Lista infortunati aggiornata al 24/08/2026: nessun dato di agosto 2026 era recuperabile da questo ambiente.",
     "Se Soulé viene ceduto prima della chiusura del mercato (è sulla lista partenti ed è nell'XI proiettato).",
-    "Formazioni ufficiali: pubblicate circa un'ora prima del calcio d'inizio.",
-    "Tabella completa 2025/26 con GF/GA di tutte e 20 le squadre (serve per stimare attacco/difesa a livello di lega)."
-  ]
+    "Tabella completa 2025/26 con GF/GA di tutte e 20 le squadre (serve per stimare attacco/difesa a livello di lega).",
+    "XI ufficiale della Roma: nessuna partita ufficiale giocata prima del debutto, e il ballottaggio Hermoso/Koulierakis in difesa resta aperto.",
+    "Se Dodo, Pongracic e Mastantuono rientrano titolari in campionato dopo essere partiti dalla panchina in Coppa Italia."
+  ],
+  "preseason_2627": {
+    "Fiorentina": {
+      "competitive_match_played": true,
+      "result": "Fiorentina 4-1 Benevento (Coppa Italia 32esimi, 14/08/2026)",
+      "scorers": [
+        "Gudmundsson 1'",
+        "Kean",
+        "Ranieri",
+        "Ndour"
+      ],
+      "formation_used": "4-3-2-1",
+      "_note": "Prima ufficiale di Grosso, vinta con quattro gol e giudicata incoraggiante dalla stampa. Arriva alla prima di campionato con 90 minuti competitivi nelle gambe.",
+      "_confidence": "high"
+    },
+    "Roma": {
+      "competitive_match_played": false,
+      "result": "sconfitta in amichevole contro il Cardiff",
+      "manager_quote": "Gasperini: mercato in ritardo per il Mondiale, rosa 'assolutamente da completare'; con le coppe servono due giocatori per ruolo",
+      "_note": "Nessuna partita ufficiale prima del debutto in campionato. L'allenatore dichiara pubblicamente una rosa incompleta.",
+      "_confidence": "med"
+    },
+    "_model_note": "Asimmetria di preparazione reale e documentata, ma NON inserita come parametro nel modello: non ho una stima difendibile di quanto valga in gol una partita ufficiale di vantaggio contro una squadra di Serie B. E' registrata qui perche influenzi la lettura del risultato, non i numeri."
+  }
 }

@@ -259,3 +259,116 @@ di dashee87. Due cose che loro hanno e qui mancavano:
 | Ricerca su GitHub via MCP | ❌ Lo scope del session è limitato a `alesio00/prova`; `search_repositories` esce dallo scope, quindi non l'ho usato. Ricerca fatta via web, che ha funzionato bene. |
 | Agent browser per aggirare l'egress | ❌ Il blocco è a livello di proxy di rete, non di tool: qualsiasi agent gira nello stesso container e trova lo stesso 403. Non è un problema che si risolve cambiando strumento, va sbloccato il dominio. |
 | Prima scala `_threat` dei duelli | ❌ Bug: usavo `goal_share` grezza (una *quota* del totale squadra) contro `def_rating` (scala assoluta). Risultato: ogni duello dava Roma 0.89–0.98, chiaramente assurdo. Corretto normalizzando sulla media degli attaccanti dei due XI. |
+
+---
+
+## Run 003 — 2026-08-15 · XI reale, auto-audit, decisione finale
+
+Output 1X2 **invariato** (Roma 59.5% / X 24.7% / Fiorentina 15.8%). Cambia tutto il resto.
+
+### 🚨 L'XI della Fiorentina era sbagliato — e la fonte migliore era già disponibile
+
+Stavo usando le "formazioni tipo" dei siti di fantacalcio. Il **14 agosto, tre giorni fa**, la
+Fiorentina ha giocato la sua prima partita ufficiale: **4-1 al Benevento in Coppa Italia**.
+Formazione vera schierata da Grosso:
+
+> De Gea; João Mário, Drăgușin, Ranieri, Valdepeñas; Ndour, Fagioli, Brescianini; Gudmundsson, Atta; **Kean**
+
+Marcatori: Gudmundsson (1'), Kean, Ranieri, Ndour.
+
+Cosa avevo sbagliato:
+
+| Avevo | In realtà |
+|---|---|
+| modulo **4-3-3** | **4-3-2-1**, due trequartisti dietro Kean — ed era già il modulo delle amichevoli, quindi non è rotazione da coppa |
+| Dodô titolare | **João Mário** titolare, Dodô in panchina |
+| Pongracic titolare | **Ranieri** titolare (e in gol) |
+| Parisi/Fortini a sinistra | **Valdepeñas** |
+| Oulaï–Fagioli–Atta a centrocampo | **Ndour–Fagioli–Brescianini**, con Atta spostato da trequartista |
+| **Mastantuono titolare** | **in panchina**: Grosso gli ha preferito Atta. Ha esordito da subentrato |
+
+**Mastantuono c'è**, come dicevi — prestito secco dal Real Madrid, ufficiale il 7 agosto, nessun
+diritto di riscatto. Ma alla prima ufficiale non era titolare. Nel modello ora è in panchina con 28
+minuti attesi e la seconda quota-gol più alta fra i subentranti.
+
+**La lezione di metodo è più grande dell'errore.** Una partita ufficiale giocata batte qualsiasi
+"probabile formazione", e ce n'era una a tre giorni di distanza che non avevo cercato. Aggiunto al
+prompt: *cerca sempre l'ultima partita ufficiale giocata prima di fidarti di una formazione prevista*.
+
+### ⚖️ Asimmetria di preparazione — registrata, non modellata
+
+| | Fiorentina | Roma |
+|---|---|---|
+| Partite ufficiali | 1, vinta 4-1 | nessuna |
+| Ultimo test | 90' competitivi | **sconfitta col Cardiff** in amichevole |
+| L'allenatore dice | prima incoraggiante | Gasperini: mercato in ritardo per il Mondiale, rosa "**assolutamente da completare**" |
+
+È in `context.json` sotto `preseason_2627` ma **deliberatamente non è un parametro del modello**: non
+ho una stima difendibile di quanto valga in gol una partita ufficiale contro una squadra di Serie B.
+Metterci un numero inventato sarebbe stato peggio che lasciarlo fuori. Va nella lettura del
+risultato, non nei conti.
+
+### 🔍 Il modello che verifica se stesso (`src/selfaudit.py`)
+
+Ogni costante scelta a giudizio e ogni dato stimato viene sostituito da un intervallo plausibile; il
+modello viene rifatto **4.000 volte** campionando quegli intervalli.
+
+**P(vittoria Roma): 55.6% – 61.7% al 90%.** Il singolo numero 59.5% nasconde una forchetta di 6.1 pp.
+
+**Da dove viene l'incertezza:**
+
+| Input | Quota della varianza |
+|---|---|
+| **`MARKET_WEIGHT`** | **35.6%** |
+| `SHRINK` | 14.9% |
+| `home_goal_share` | 9.9% |
+| `fio_delta_att` | 9.3% |
+| GA Fiorentina 2025/26 | 7.4% |
+
+**Questa è la scoperta scomoda del run.** La fonte principale di incertezza non è un fatto sul
+calcio: è **quanto peso decido di dare al mercato**. Più di un terzo della varianza viene da una
+manopola che ho girato io. Tutti i dati che ho cercato per due giorni, messi insieme, contano meno
+di quella singola scelta.
+
+### 💣 L'edge era scetticismo travestito da analisi
+
+Condizionando l'EV sul peso dato al mercato:
+
+| Peso mercato | EV medio su X | EV medio su 2 |
+|---|---|---|
+| 0.40–0.50 | **+4.6%** | **+7.8%** |
+| 0.50–0.60 | +2.7% | +4.9% |
+| 0.60–0.70 | +0.6% | +1.3% |
+| 0.70–0.80 | **−1.1%** | **−1.2%** |
+
+**L'EV cambia segno lungo la colonna.** L'EV si misura contro le quote del mercato, quindi tende a
+zero per costruzione quando ci si fida del mercato. Il "+1.4% sul pareggio" del run precedente non
+era una scoperta sulla partita: era la misura di quanto avevo scelto di non fidarmi del banco.
+Il modello ora se ne accorge da solo (`edge_is_an_artefact_of_market_weight: true`) invece che
+aspettare che me ne accorga io.
+
+### ✅ Decisione finale: NESSUNA SCOMMESSA
+
+| Selezione | EV al peso base | Frazione dello spazio parametrico con EV > 0 |
+|---|---|---|
+| Roma 1.55 | −7.8% | **0%** |
+| Pareggio 4.10 | +1.4% | 64% |
+| Fiorentina 6.40 | +1.2% | 63% |
+
+Il 64% non è un edge, è una monetina con un decimale. Perché una selezione sia giocabile dovrebbe
+restare in profitto in ~85% dello spazio dei parametri plausibili, e nessuna ci arriva.
+
+**Il risultato utile resta un altro:** partendo da dati pubblici e ricostruendo la partita da zero,
+il modello arriva entro 3 pp dal mercato su tutti e tre gli esiti. Concordanza, non edge. E la sola
+divergenza degna di nota è che **il modello puro dà la Fiorentina al 18.2% contro il 14.3% del
+mercato** — chi guarda la classifica finale (3ª contro 15ª) vede una partita più squilibrata di
+quella che raccontano le ultime 19 giornate più il 4-1 di tre giorni fa.
+
+### 🐛 Quarto bug: la soglia di rilevamento dell'artefatto
+
+Il primo test per "l'edge è un artefatto?" usava due soglie di probabilità arbitrarie (>75% in basso,
+<25% in alto) e rispondeva **False** con dati che mostravano +7.8% → −1.2%. Il criterio giusto è il
+**cambio di segno** lungo l'intervallo, non due numeri scelti a mano. Corretto: ora risponde True.
+
+Quattro bug in tre run, tutti trovati da un test che avevo scritto prima di guardare il risultato,
+mai leggendo il codice.

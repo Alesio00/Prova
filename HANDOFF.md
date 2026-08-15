@@ -8,8 +8,9 @@ Tutto quello che serve per riprendere il lavoro senza rileggere il codice.
 
 Pipeline Python che stima Roma–Fiorentina (Serie A 2026/27, G1, 24/08/2026) combinando
 Dixon-Coles + Monte Carlo + mercato + un layer ML, e sputa un report HTML.
-**Output attuale: Roma 59.5% · X 24.7% · Fiorentina 15.8%.**
-Rose aggiornate al 15/08/2026. Include duelli individuali e diagnostica alla Karpathy.
+**Output attuale: Roma 59.5% · X 24.7% · Fiorentina 15.8%** — intervallo al 90% su P(Roma):
+**55.6%–61.7%**. Verdetto: **nessuna scommessa**.
+XI della Fiorentina basato sulla formazione reale di Coppa Italia del 14/08/2026.
 
 ## 2. Come si esegue
 
@@ -38,6 +39,7 @@ import pipeline; pipeline.run(n_sims=200_000, train_ml=False)
 | `src/ml.py` | Lega sintetica, training, CV. **`load_real_matches()` è il punto d'innesto per dati veri** | Quando arrivano dati reali |
 | `src/karpathy_checks.py` | 5 check diagnostici (input azzerati, etichette mescolate, overfit di un batch, scala di baseline, spread fra seed) | **Dopo ogni modifica al layer ML** |
 | `src/duels.py` | Matrice 11×11 dei duelli, coppie di marcatori, enumerazione completa delle storie di partita, rischio disponibilità | Quando cambiano le rose |
+| `src/selfaudit.py` | **Propagazione dell'incertezza**: rifà il modello 4.000 volte campionando gli intervalli di ogni costante a giudizio. Produce l'intervallo al 90%, l'attribuzione della varianza e il verdetto finale | Prima di prendere qualsiasi decisione |
 | `src/pipeline.py` | Orchestrazione + `sensitivity()` | Per aggiungere output |
 | `src/report.py` | Genera l'HTML | Per cambiare la presentazione |
 | `RESULTS.md` | **Log di cosa funziona e cosa no** | Dopo ogni run |
@@ -119,6 +121,9 @@ Da rifare a ogni modifica. Se uno fallisce, c'è un bug — non una nuova intuiz
    collassare esattamente sul prior. Se non lo fa, i rating non stanno entrando nel modello.
 6. **Nessun "miglioramento" sotto la soglia di rumore.** `check_seed_spread` la misura: 2σ = 0.016
    di log loss. Qualsiasi guadagno più piccolo non è un guadagno.
+7. **`python3 selfaudit.py` prima di ogni decisione.** Se `edge_is_an_artefact_of_market_weight`
+   è `true`, l'EV trovato non è una scoperta sulla partita ma una misura del proprio scetticismo:
+   la decisione corretta in quel caso è non giocare.
 
 ```bash
 cd src && python3 -c "
@@ -141,7 +146,15 @@ ufficiali non ancora pubblicate.
 
 **Prima cosa da fare al prossimo giro:** vedi RESULTS.md § "Prossimo run", punti 1 e 2.
 
-## 9. Sul rischio Kean
+## 9. La regola che è costata un errore
+
+**Cerca sempre l'ultima partita ufficiale giocata prima di fidarti di una formazione prevista.**
+Al run 002 avevo costruito l'XI della Fiorentina sulle "formazioni tipo" dei siti di fantacalcio.
+Il 14/08 la Fiorentina aveva già giocato una partita vera (4-1 al Benevento) con un modulo diverso
+(4-3-2-1, non 4-3-3) e cinque titolari diversi. L'evidenza migliore era pubblica e non l'avevo
+cercata.
+
+## 10. Sul rischio Kean
 
 `data/players.json` → `availability_risk` lo modella a `p_available = 0.80`. Non è una previsione
 sul mercato: è il modo di non fingere certezza in nessuna delle due direzioni. Se prima del 24

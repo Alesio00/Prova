@@ -4,6 +4,9 @@ Serie A 2026/27, Giornata 1 — Stadio Olimpico, lunedì 24 agosto 2026, 20:45 C
 
 **Roma 59.5% · Pareggio 24.7% · Fiorentina 15.8%** — xG 1.82 – 0.84 · Over 2.5 49.5% · BTTS 48.5%
 
+Intervallo al 90% su P(vittoria Roma), propagando l'incertezza di ogni parametro scelto a giudizio:
+**55.6% – 61.7%**. Verdetto finale: **nessuna scommessa**.
+
 Il modello **non trova valore** rispetto alle quote: concorda col mercato entro 3 punti
 percentuali su tutti e tre gli esiti. Quello è il risultato, non un pronostico.
 
@@ -32,6 +35,7 @@ open ../results/report.html
 | ML | `src/ml.py` | Logistica + GBM + random forest, cross-validated |
 | Diagnostica | `src/karpathy_checks.py` | 5 check dal *Recipe* di Karpathy: input azzerati, etichette mescolate, overfit di un batch, scala di baseline, spread fra seed |
 | Duelli | `src/duels.py` | Matrice 11×11, coppie di marcatori, 45.600 storie di partita, rischio disponibilità |
+| Auto-audit | `src/selfaudit.py` | Rifà il modello 4.000 volte campionando gli intervalli di ogni costante: intervallo al 90%, attribuzione della varianza, verdetto |
 | Report | `src/report.py` | HTML autonomo, light/dark |
 
 ## Documenti
@@ -50,6 +54,16 @@ Enumerando ogni combinazione di risultato e marcatori si ottengono **45.600 esit
 probabile con almeno un gol è **1-0 di Malen, al 4.1%**; la coppia più probabile è **Malen + Kean
 entrambi a segno, 8.5%**. Servono 153 esiti per coprire metà della probabilità: la domanda "qual è
 la combinazione più probabile" ha una risposta, e la risposta vale il 4%.
+
+## Il modello che verifica se stesso
+
+Il 35.6% della varianza di P(vittoria Roma) viene da `MARKET_WEIGHT` — cioè da **quanto peso decido
+di dare al mercato**, non da un fatto sul calcio. Condizionando l'EV su quel parametro, l'"edge" sul
+pareggio va da +4.6% a −1.1% e cambia segno: non era una scoperta sulla partita, era la misura del
+mio scetticismo verso il banco. Il modello adesso se ne accorge da solo.
+
+Nessuna selezione resta in profitto in più del 64% dello spazio dei parametri plausibili. Verdetto:
+**non si gioca**.
 
 ## Limite principale
 

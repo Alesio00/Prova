@@ -8,7 +8,8 @@ Tutto quello che serve per riprendere il lavoro senza rileggere il codice.
 
 Pipeline Python che stima Roma–Fiorentina (Serie A 2026/27, G1, 24/08/2026) combinando
 Dixon-Coles + Monte Carlo + mercato + un layer ML, e sputa un report HTML.
-**Output attuale: Roma 60.0% · X 24.9% · Fiorentina 15.2%.**
+**Output attuale: Roma 59.5% · X 24.7% · Fiorentina 15.8%.**
+Rose aggiornate al 15/08/2026. Include duelli individuali e diagnostica alla Karpathy.
 
 ## 2. Come si esegue
 
@@ -35,11 +36,13 @@ import pipeline; pipeline.run(n_sims=200_000, train_ml=False)
 | `src/market.py` | De-vig (proporzionale e Shin), log-pooling, retro-soluzione λ, tabella EV/Kelly | Per cambiare `MARKET_WEIGHT` |
 | `src/simulate.py` | Monte Carlo con incertezza sui parametri + marcatori | Raramente |
 | `src/ml.py` | Lega sintetica, training, CV. **`load_real_matches()` è il punto d'innesto per dati veri** | Quando arrivano dati reali |
+| `src/karpathy_checks.py` | 5 check diagnostici (input azzerati, etichette mescolate, overfit di un batch, scala di baseline, spread fra seed) | **Dopo ogni modifica al layer ML** |
+| `src/duels.py` | Matrice 11×11 dei duelli, coppie di marcatori, enumerazione completa delle storie di partita, rischio disponibilità | Quando cambiano le rose |
 | `src/pipeline.py` | Orchestrazione + `sensitivity()` | Per aggiungere output |
 | `src/report.py` | Genera l'HTML | Per cambiare la presentazione |
 | `RESULTS.md` | **Log di cosa funziona e cosa no** | Dopo ogni run |
 
-## 4. Le sette costanti che governano tutto
+## 4. Le costanti che governano tutto
 
 Tutte in `src/ratings.py` salvo dove indicato. L'impatto è su P(vittoria Roma).
 
@@ -47,6 +50,10 @@ Tutte in `src/ratings.py` salvo dove indicato. L'impatto è su P(vittoria Roma).
 |---|---|---|---|
 | `SHRINK` | 0.72 | Quanto i rating della scorsa stagione vengono tirati verso la media | ±4 pp |
 | `RECENCY_WEIGHT` | 0.40 | Peso del girone di ritorno rispetto alla stagione intera | ±1.5 pp su 1X2, **+0.26 gol totali** |
+| `RECENCY_MANAGER_CHANGE_DISCOUNT` | 0.50 | Dimezza la recency per chi ha cambiato allenatore | ~1 pp |
+| `XI_DECAY_PER_DAY` | 0.0065 | ξ di Dixon-Coles. Non usato di default: implica `RECENCY_WEIGHT` 0.73 invece di 0.40 | vedi `recency_weight_from_decay()` |
+| `DUEL_SLOPE` (`duels.py`) | 1.9 | Pendenza logistica dei duelli individuali | solo livello giocatore |
+| `LANE_SIGMA` (`duels.py`) | 0.22 | Tolleranza laterale: quanto lontano due giocatori si incontrano ancora | solo livello giocatore |
 | `MARKET_WEIGHT` (`market.py`) | 0.60 | Peso del mercato nella fusione | ±2 pp per 0.1 |
 | `NEW_MANAGER_DISCOUNT` | 0.55 | Quanto un allenatore al primo anno converte il rinforzo in punti | ±1.9 pp |
 | `MATCHDAY1_GOAL_FACTOR` | 0.97 | Soppressione gol alla prima giornata | ±0.9 pp |
@@ -55,7 +62,7 @@ Tutte in `src/ratings.py` salvo dove indicato. L'impatto è su P(vittoria Roma).
 | `H2H_WEIGHT` | 0.05 | Peso dei precedenti all'Olimpico | ±0.3 pp |
 
 **Il parametro più influente non è nessuno di questi**: è `squad_delta_2627` della Fiorentina in
-`data/context.json` (escursione 8.3 pp). È un giudizio a mano. Vedi RESULTS.md.
+`data/context.json` (escursione 8.7 pp). È un giudizio a mano. Vedi RESULTS.md.
 
 ## 5. Il vincolo che ha modellato tutto il lavoro
 
@@ -106,7 +113,12 @@ Da rifare a ogni modifica. Se uno fallisce, c'è un bug — non una nuova intuiz
 1. **Media MC == λ analitica** (entro ~0.5%). Ha già trovato un bug reale: vedi RESULTS.md, sampler v1.
 2. **|ML ensemble − Dixon-Coles| < 5 pp.** Partono dagli stessi rating: un divario grande è un errore.
 3. **Somma matrice risultati == 1.0** e 1X2 dalla matrice == 1X2 dalle λ fuse.
-4. **Log loss CV del ML < baseline di frequenza di classe** (1.063). Altrimenti non sta imparando niente.
+4. **Log loss CV del ML < baseline di frequenza di classe**. Altrimenti non sta imparando niente.
+5. **`python3 karpathy_checks.py` → tutti PASS.** Cinque check che devono passare dopo ogni
+   modifica al layer ML. Il più importante è il primo: azzerando gli input il modello deve
+   collassare esattamente sul prior. Se non lo fa, i rating non stanno entrando nel modello.
+6. **Nessun "miglioramento" sotto la soglia di rumore.** `check_seed_spread` la misura: 2σ = 0.016
+   di log loss. Qualsiasi guadagno più piccolo non è un guadagno.
 
 ```bash
 cd src && python3 -c "
@@ -128,3 +140,11 @@ campione su partite vere (stesso motivo) · infortuni di agosto 2026 non reperib
 ufficiali non ancora pubblicate.
 
 **Prima cosa da fare al prossimo giro:** vedi RESULTS.md § "Prossimo run", punti 1 e 2.
+
+## 9. Sul rischio Kean
+
+`data/players.json` → `availability_risk` lo modella a `p_available = 0.80`. Non è una previsione
+sul mercato: è il modo di non fingere certezza in nessuna delle due direzioni. Se prima del 24
+agosto la situazione si chiarisce, quello è **un numero da cambiare, non un modello da rifare** —
+metti 1.0 se resta, 0.0 se parte, e rilancia. Stesso meccanismo per Dybala (0.75, rischio di base
+per età e storico infortuni, nessun problema specifico segnalato).

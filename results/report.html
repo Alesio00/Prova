@@ -74,12 +74,16 @@ a:focus-visible,td:focus-visible{outline:2px solid var(--roma);outline-offset:2p
 .hb-f{height:100%;border-radius:4px}
 .hb-v{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums;font-size:12.5px}
 
-.tb{display:grid;grid-template-columns:210px 1fr 72px;gap:10px;align-items:center;
+.tb{display:grid;grid-template-columns:200px 1fr 96px;gap:10px;align-items:center;
   margin-bottom:7px;font:11.5px/1.4 var(--mono)}
 .tb-t{position:relative;height:14px;background:var(--grid);border-radius:4px}
 .tb-axis{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--rule)}
 .tb-f{position:absolute;top:0;height:100%;border-radius:3px}
 .tb-v{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.vs{color:var(--muted)}
+.big{font-size:26px;letter-spacing:-.02em;margin:2px 0 4px;line-height:1.2}
+.callout{background:var(--surface);border:1px solid var(--ring);border-left:3px solid var(--roma);
+  border-radius:10px;padding:16px 18px}
 
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;
   background:var(--grid);border:1px solid var(--grid);border-radius:10px;overflow:hidden}
@@ -102,7 +106,7 @@ table.heat th{color:var(--ink2);background:transparent;border-bottom:none;text-a
 .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:720px){.two{grid-template-columns:1fr}
   .bar-row{grid-template-columns:1fr}.hb{grid-template-columns:110px 1fr 52px}
-  .tb{grid-template-columns:140px 1fr 62px}}
+  .tb{grid-template-columns:128px 1fr 84px}}
 ul.caveats{margin:0;padding-left:20px;color:var(--ink2);font-size:13.5px}
 ul.caveats li{margin-bottom:7px}
 .pill{display:inline-block;font:10.5px/1.7 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:20px;
@@ -117,7 +121,7 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
   <h1>Roma &ndash; Fiorentina &middot; modello predittivo</h1>
   <p class="sub">Serie A 2026/27 - Giornata 1 &middot; Stadio Olimpico, Roma
      &middot; lunedi 24 agosto 2026, 20:45 CEST</p>
-  <p class="stamp">Generato il 2026-08-15 10:13 UTC &middot;
+  <p class="stamp">Generato il 2026-08-15 10:28 UTC &middot;
      200,000 simulazioni Monte Carlo &middot; peso mercato 60%</p>
 </header>
 
@@ -168,13 +172,41 @@ footer{padding-top:20px;border-top:1px solid var(--rule);
   <div class="two">
     <div class="card">
       <div class="legend"><span><i class="sw s-roma"></i>Roma</span></div>
-      <div class="hb"><div class="hb-l">Donyell Malen</div><div class="hb-t"><div class="hb-f s-roma" style="width:100.00%"></div></div><div class="hb-v">42.9%</div></div><div class="hb"><div class="hb-l">Paulo Dybala</div><div class="hb-t"><div class="hb-f s-roma" style="width:59.79%"></div></div><div class="hb-v">25.6%</div></div><div class="hb"><div class="hb-l">Matias Soule</div><div class="hb-t"><div class="hb-f s-roma" style="width:45.95%"></div></div><div class="hb-v">19.7%</div></div><div class="hb"><div class="hb-l">Wesley</div><div class="hb-t"><div class="hb-f s-roma" style="width:26.92%"></div></div><div class="hb-v">11.5%</div></div><div class="hb"><div class="hb-l">Nahuel Molina</div><div class="hb-t"><div class="hb-f s-roma" style="width:22.29%"></div></div><div class="hb-v">9.6%</div></div><div class="hb"><div class="hb-l">Manu Kone</div><div class="hb-t"><div class="hb-f s-roma" style="width:22.29%"></div></div><div class="hb-v">9.6%</div></div><div class="hb"><div class="hb-l">Gianluca Mancini</div><div class="hb-t"><div class="hb-f s-roma" style="width:21.04%"></div></div><div class="hb-v">9.0%</div></div><div class="hb"><div class="hb-l">Bryan Cristante</div><div class="hb-t"><div class="hb-f s-roma" style="width:21.04%"></div></div><div class="hb-v">9.0%</div></div>
+      <div class="hb"><div class="hb-l">Donyell Malen</div><div class="hb-t"><div class="hb-f s-roma" style="width:100.00%"></div></div><div class="hb-v">42.8%</div></div><div class="hb"><div class="hb-l">Paulo Dybala</div><div class="hb-t"><div class="hb-f s-roma" style="width:59.75%"></div></div><div class="hb-v">25.5%</div></div><div class="hb"><div class="hb-l">Matias Soule</div><div class="hb-t"><div class="hb-f s-roma" style="width:45.92%"></div></div><div class="hb-v">19.6%</div></div><div class="hb"><div class="hb-l">Wesley</div><div class="hb-t"><div class="hb-f s-roma" style="width:26.89%"></div></div><div class="hb-v">11.5%</div></div><div class="hb"><div class="hb-l">Nahuel Molina</div><div class="hb-t"><div class="hb-f s-roma" style="width:22.27%"></div></div><div class="hb-v">9.5%</div></div><div class="hb"><div class="hb-l">Manu Kone</div><div class="hb-t"><div class="hb-f s-roma" style="width:22.27%"></div></div><div class="hb-v">9.5%</div></div><div class="hb"><div class="hb-l">Gianluca Mancini</div><div class="hb-t"><div class="hb-f s-roma" style="width:21.02%"></div></div><div class="hb-v">9.0%</div></div><div class="hb"><div class="hb-l">Bryan Cristante</div><div class="hb-t"><div class="hb-f s-roma" style="width:21.02%"></div></div><div class="hb-v">9.0%</div></div>
     </div>
     <div class="card">
       <div class="legend"><span><i class="sw s-fio"></i>Fiorentina</span></div>
-      <div class="hb"><div class="hb-l">Moise Kean</div><div class="hb-t"><div class="hb-f s-fio" style="width:58.95%"></div></div><div class="hb-v">25.3%</div></div><div class="hb"><div class="hb-l">Albert Gudmundsson</div><div class="hb-t"><div class="hb-f s-fio" style="width:34.36%"></div></div><div class="hb-v">14.7%</div></div><div class="hb"><div class="hb-l">Alejandro Jimenez</div><div class="hb-t"><div class="hb-f s-fio" style="width:16.34%"></div></div><div class="hb-v">7.0%</div></div><div class="hb"><div class="hb-l">Arthur Atta</div><div class="hb-t"><div class="hb-f s-fio" style="width:14.65%"></div></div><div class="hb-v">6.3%</div></div><div class="hb"><div class="hb-l">Radu Dragusin</div><div class="hb-t"><div class="hb-f s-fio" style="width:10.65%"></div></div><div class="hb-v">4.6%</div></div><div class="hb"><div class="hb-l">Nicolo Fagioli</div><div class="hb-t"><div class="hb-f s-fio" style="width:9.49%"></div></div><div class="hb-v">4.1%</div></div><div class="hb"><div class="hb-l">Dodo</div><div class="hb-t"><div class="hb-f s-fio" style="width:7.88%"></div></div><div class="hb-v">3.4%</div></div><div class="hb"><div class="hb-l">Viery</div><div class="hb-t"><div class="hb-f s-fio" style="width:7.16%"></div></div><div class="hb-v">3.1%</div></div>
+      <div class="hb"><div class="hb-l">Moise Kean</div><div class="hb-t"><div class="hb-f s-fio" style="width:57.01%"></div></div><div class="hb-v">24.4%</div></div><div class="hb"><div class="hb-l">Albert Gudmundsson</div><div class="hb-t"><div class="hb-f s-fio" style="width:33.14%"></div></div><div class="hb-v">14.2%</div></div><div class="hb"><div class="hb-l">Franco Mastantuono</div><div class="hb-t"><div class="hb-f s-fio" style="width:21.24%"></div></div><div class="hb-v">9.1%</div></div><div class="hb"><div class="hb-l">Arthur Atta</div><div class="hb-t"><div class="hb-f s-fio" style="width:14.64%"></div></div><div class="hb-v">6.3%</div></div><div class="hb"><div class="hb-l">Radu Dragusin</div><div class="hb-t"><div class="hb-f s-fio" style="width:10.24%"></div></div><div class="hb-v">4.4%</div></div><div class="hb"><div class="hb-l">Nicolo Fagioli</div><div class="hb-t"><div class="hb-f s-fio" style="width:9.13%"></div></div><div class="hb-v">3.9%</div></div><div class="hb"><div class="hb-l">Dodo</div><div class="hb-t"><div class="hb-f s-fio" style="width:7.57%"></div></div><div class="hb-v">3.2%</div></div><div class="hb"><div class="hb-l">Marin Pongracic</div><div class="hb-t"><div class="hb-f s-fio" style="width:6.88%"></div></div><div class="hb-v">2.9%</div></div>
     </div>
   </div>
+</section>
+
+<section>
+  <h2>Duelli individuali: chi incontra chi</h2>
+  <p class="note">Le combinazioni possibili fra i due undici sono
+  121, ma solo <strong>101</strong> si verificano
+  davvero: un quinto delle coppie sta su lati opposti del campo e non si incontra mai. Il peso
+  di ogni duello viene dalla vicinanza di corsia e dalla fase di gioco; la barra mostra chi
+  esce avanti.</p>
+  <div class="card"><div class="legend"><span><i class="sw s-roma"></i>vantaggio Roma</span><span><i class="sw s-fio"></i>vantaggio Fiorentina</span></div><div class="tb"><div class="tb-l">Donyell Malen <span class="vs">vs</span> Marin Pongracic</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-roma" style="left:50.00%;width:28.59%"></div></div><div class="tb-v">79% Malen</div></div><div class="tb"><div class="tb-l">Evan Ndicka <span class="vs">vs</span> Moise Kean</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-fio" style="left:30.29%;width:19.71%"></div></div><div class="tb-v">70% Kean</div></div><div class="tb"><div class="tb-l">Donyell Malen <span class="vs">vs</span> Radu Dragusin</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-roma" style="left:50.00%;width:23.40%"></div></div><div class="tb-v">73% Malen</div></div><div class="tb"><div class="tb-l">Mario Hermoso <span class="vs">vs</span> Moise Kean</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-fio" style="left:24.62%;width:25.38%"></div></div><div class="tb-v">75% Kean</div></div><div class="tb"><div class="tb-l">Gianluca Mancini <span class="vs">vs</span> Moise Kean</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-fio" style="left:28.32%;width:21.68%"></div></div><div class="tb-v">72% Kean</div></div><div class="tb"><div class="tb-l">Donyell Malen <span class="vs">vs</span> Nicolo Fagioli</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-roma" style="left:50.00%;width:31.61%"></div></div><div class="tb-v">82% Malen</div></div><div class="tb"><div class="tb-l">Paulo Dybala <span class="vs">vs</span> Dodo</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-roma" style="left:50.00%;width:16.60%"></div></div><div class="tb-v">67% Dybala</div></div><div class="tb"><div class="tb-l">Bryan Cristante <span class="vs">vs</span> Moise Kean</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-fio" style="left:22.90%;width:27.10%"></div></div><div class="tb-v">77% Kean</div></div><div class="tb"><div class="tb-l">Paulo Dybala <span class="vs">vs</span> Radu Dragusin</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-roma" style="left:50.00%;width:10.00%"></div></div><div class="tb-v">60% Dybala</div></div><div class="tb"><div class="tb-l">Manu Kone <span class="vs">vs</span> Radu Dragusin</div><div class="tb-t"><div class="tb-axis"></div><div class="tb-f s-fio" style="left:20.97%;width:29.03%"></div></div><div class="tb-v">79% Dragusin</div></div></div>
+  <div class="card"><div class="scroll"><table><thead><tr><th>Zona di campo</th><th>Duelli</th><th>Roma</th><th>Fiorentina</th></tr></thead><tbody><tr><td>Fascia sinistra Roma</td><td>27</td><td>53.5%</td><td>46.5%</td></tr><tr><td>Centro</td><td>47</td><td>52.7%</td><td>47.3%</td></tr><tr><td>Fascia destra Roma</td><td>27</td><td>45.5%</td><td>54.5%</td></tr></tbody><caption>Media dei duelli di ogni zona, pesata per quanto spesso si verificano. Le zone si leggono dal punto di vista della Roma.</caption></table></div></div>
+</section>
+
+<section>
+  <h2>La partita piu probabile, giocatore per giocatore</h2>
+  <p class="note">Ogni combinazione di risultato esatto e attribuzione dei gol e un esito
+  distinto: ce ne sono <strong>45,605</strong>. La risposta alla domanda
+  "qual e la piu probabile" esiste, ma il numero che le sta accanto e la vera informazione.</p>
+  <div class="callout">
+    <div class="tile-label">Esito singolo piu probabile con almeno un gol</div>
+    <div class="big">1-0 &mdash; Donyell Malen</div>
+    <div class="tile-sub">4.09% di probabilita. Servono
+      152 esiti diversi per coprire meta della
+      probabilita totale, e i primi dieci messi insieme arrivano solo al
+      21%.</div>
+  </div>
+  <div class="card"><div class="scroll"><table><thead><tr><th>Risultato</th><th>Marcatori Roma</th><th>Marcatori Fiorentina</th><th>Probabilita</th></tr></thead><tbody><tr><td>0-0</td><td>nessuno</td><td>nessuno</td><td>7.36%</td></tr><tr><td>1-0</td><td>Donyell Malen</td><td>nessuno</td><td>4.09%</td></tr><tr><td>0-1</td><td>nessuno</td><td>Moise Kean</td><td>1.67%</td></tr><tr><td>1-0</td><td>Paulo Dybala</td><td>nessuno</td><td>1.64%</td></tr><tr><td>1-0</td><td>Matias Soule</td><td>nessuno</td><td>1.57%</td></tr><tr><td>2-0</td><td>Donyell Malen x2</td><td>nessuno</td><td>1.15%</td></tr><tr><td>0-1</td><td>nessuno</td><td>Albert Gudmundsson</td><td>1.11%</td></tr><tr><td>2-0</td><td>Paulo Dybala, Donyell Malen</td><td>nessuno</td><td>0.92%</td></tr><tr><td>1-1</td><td>Donyell Malen</td><td>Moise Kean</td><td>0.91%</td></tr><tr><td>2-0</td><td>Matias Soule, Donyell Malen</td><td>nessuno</td><td>0.90%</td></tr></tbody><caption>Ogni riga e una partita completa: risultato esatto piu chi ha segnato. Include il rischio cessione di Kean e quello di indisponibilita di Dybala.</caption></table></div></div>
+  <div class="card"><div class="scroll"><table><thead><tr><th>Marcatore Roma</th><th>Marcatore Fiorentina</th><th>Entrambi segnano</th></tr></thead><tbody><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Moise Kean</td><td>8.56%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>6.14%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Franco Mastantuono</td><td>3.90%</td></tr><tr><td><i class="sw s-roma"></i>Matias Soule</td><td><i class="sw s-fio"></i>Moise Kean</td><td>3.86%</td></tr><tr><td><i class="sw s-roma"></i>Paulo Dybala</td><td><i class="sw s-fio"></i>Moise Kean</td><td>3.83%</td></tr><tr><td><i class="sw s-roma"></i>Paulo Dybala</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>2.75%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Mateo Pellegrino</td><td>2.74%</td></tr><tr><td><i class="sw s-roma"></i>Matias Soule</td><td><i class="sw s-fio"></i>Albert Gudmundsson</td><td>2.72%</td></tr><tr><td><i class="sw s-roma"></i>Donyell Malen</td><td><i class="sw s-fio"></i>Arthur Atta</td><td>2.68%</td></tr><tr><td><i class="sw s-roma"></i>Wesley</td><td><i class="sw s-fio"></i>Moise Kean</td><td>2.28%</td></tr></tbody><caption>Probabilita congiunta presa dalla simulazione, non dal prodotto delle due marginali: l'incertezza condivisa sulle lambda li rende positivamente correlati.</caption></table></div></div>
 </section>
 
 <section>

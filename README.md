@@ -30,6 +30,8 @@ open ../results/report.html
 | Mercato | `src/market.py` | De-vig alla Shin, fusione log-lineare, EV e Kelly |
 | Monte Carlo | `src/simulate.py` | 200k simulazioni con incertezza sui parametri, marcatori |
 | ML | `src/ml.py` | Logistica + GBM + random forest, cross-validated |
+| Diagnostica | `src/karpathy_checks.py` | 5 check dal *Recipe* di Karpathy: input azzerati, etichette mescolate, overfit di un batch, scala di baseline, spread fra seed |
+| Duelli | `src/duels.py` | Matrice 11×11, coppie di marcatori, 45.600 storie di partita, rischio disponibilità |
 | Report | `src/report.py` | HTML autonomo, light/dark |
 
 ## Documenti
@@ -37,6 +39,17 @@ open ../results/report.html
 - **[RESULTS.md](RESULTS.md)** — cosa funziona, cosa è fragile, cosa è stato scartato, quale bug è stato trovato
 - **[HANDOFF.md](HANDOFF.md)** — come riprendere il lavoro: costanti, dipendenze, test di sanità
 - **[PROMPT.md](PROMPT.md)** — prompt riusabile migliorato e quando conviene farlo girare in loop
+
+## Livello giocatore
+
+121 combinazioni possibili fra i due undici, **101 si incontrano davvero**. Il duello più
+sbilanciato è Malen contro Pongracic (79% Malen); il più frequente è Ndicka contro Kean (70% Kean).
+Per zona la Fiorentina è avanti solo sulla fascia destra della Roma, il corridoio di Gudmundsson.
+
+Enumerando ogni combinazione di risultato e marcatori si ottengono **45.600 esiti distinti**. Il più
+probabile con almeno un gol è **1-0 di Malen, al 4.1%**; la coppia più probabile è **Malen + Kean
+entrambi a segno, 8.5%**. Servono 153 esiti per coprire metà della probabilità: la domanda "qual è
+la combinazione più probabile" ha una risposta, e la risposta vale il 4%.
 
 ## Limite principale
 

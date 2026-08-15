@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 
 import dixon_coles as dc
+import duels
 import market as mk
 import ml
 import ratings
@@ -66,6 +67,9 @@ def run(n_sims: int = 200_000, seed: int = 42, train_ml: bool = True) -> dict:
             },
         })
 
+    # ---- 5b. player-vs-player layer --------------------------------------
+    duel_block = duels.run(lam_f_h, lam_f_a, n=400_000, seed=seed + 1)
+
     # ---- 6. derived markets ---------------------------------------------
     derived = {
         "totals": {**dc.totals(m_fused, 1.5), **dc.totals(m_fused, 2.5),
@@ -111,10 +115,19 @@ def run(n_sims: int = 200_000, seed: int = 42, train_ml: bool = True) -> dict:
         "derived_markets": derived,
         "score_matrix_fused": m_fused[:7, :7].tolist(),
         "ml": ml_block,
+        "duels": {
+            "pairs_evaluated": duel_block["duel_matrix"]["pairs_evaluated"],
+            "pairs_that_meet": duel_block["duel_matrix"]["pairs_that_actually_meet"],
+            "top_duels": duel_block["duel_matrix"]["duels"][:14],
+            "zones": duel_block["zones"],
+        },
+        "stories": duel_block["stories"],
         "value_bets": mk.edge_table(p_fused, odds),
         "config": {
             "shrink": ratings.SHRINK,
             "recency_weight": ratings.RECENCY_WEIGHT,
+            "recency_weight_dixon_coles_decay_equivalent":
+                ratings.recency_weight_from_decay(),
             "market_weight": mk.MARKET_WEIGHT,
             "rho": dc.RHO,
             "lambda_sigma": sim.LAMBDA_SIGMA,

@@ -1,0 +1,37 @@
+[PASS] input-independent baseline
+        atteso: zeroed inputs must be clearly worse than real inputs, and land on the class prior
+        log_loss_real_inputs: 1.0166977382518123
+        log_loss_zeroed_inputs: 1.082601960072141
+        log_loss_class_prior: 1.0826019600438959
+        information_gain_from_features: 0.06590422182032873
+
+[PASS] shuffled labels
+        atteso: with destroyed labels the model must NOT beat the prior (no leakage)
+        log_loss_shuffled: 1.0839645713142978
+        log_loss_class_prior: 1.0826019600438959
+
+[PASS] overfit a single batch
+        atteso: a high-capacity model must memorise 60 examples: accuracy 1.0, loss ~0
+        n: 60
+        train_log_loss_high_capacity: 2.220446049250313e-16
+        train_accuracy_high_capacity: 1.0
+        train_accuracy_linear_for_contrast: 0.5833333333333334
+        note: the linear model cannot and should not reach 1.0 here - the classes genuinely overlap
+
+[PASS] baseline ladder
+        atteso: no rung may be WORSE than the one below by more than the noise floor; ties mean the added features are not earning their place
+        noise_floor_used: 0.0159
+        log_loss_by_rung: {'0_class_prior': 1.0826019600438959, '1_always_home': 2.7018053971452423, '2_expected_goals_only': 1.014507698182936, '3_raw_ratings': 1.0170999795496578, '4_full_features': 1.0166977382518123}
+        steps: [{'from': '0_class_prior', 'to': '2_expected_goals_only', 'delta_log_loss': 0.0680942618609599, 'verdict': 'migliora'}, {'from': '2_expected_goals_only', 'to': '3_raw_ratings', 'delta_log_loss': -0.002592281366721849, 'verdict': 'pari (dentro il rumore)'}, {'from': '3_raw_ratings', 'to': '4_full_features', 'delta_log_loss': 0.0004022412978454959, 'verdict': 'pari (dentro il rumore)'}]
+        regressions: []
+        verdict: nessuna feature aggiuntiva batte le sole lambda attese: il set completo si puo potare
+
+[PASS] seed spread
+        atteso: report the noise floor so smaller 'gains' are not believed
+        seeds: [1, 7, 13, 21, 42]
+        log_losses: [1.0141432152999734, 1.0167327218303843, 0.9979612884304541, 1.0176160822193758, 1.0030071544404988]
+        mean: 1.0098920924441372
+        std: 0.007928085893962723
+        noise_floor_2sigma: 0.015856171787925446
+
+TUTTI I CHECK PASSATI

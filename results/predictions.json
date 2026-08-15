@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T10:13:53.699967+00:00",
+  "generated_at": "2026-08-15T10:28:20.450502+00:00",
   "fixture": {
     "home": "Roma",
     "away": "Fiorentina",
@@ -187,64 +187,69 @@
         "first_scorer": 0.0
       },
       "Gianluca Mancini": {
-        "anytime": 0.09024710173505002,
-        "expected_goals": 0.09496873362445415,
-        "first_scorer": 0.032408498913750014
+        "anytime": 0.0898744203658659,
+        "expected_goals": 0.09455582608695652,
+        "first_scorer": 0.032267592396733706
       },
       "Evan Ndicka": {
-        "anytime": 0.05748556332601917,
-        "expected_goals": 0.05935545851528384,
-        "first_scorer": 0.020255311821093757
+        "anytime": 0.057243535409149615,
+        "expected_goals": 0.05909739130434784,
+        "first_scorer": 0.02016724524795857
       },
-      "K. Koulierakis": {
-        "anytime": 0.05748556332601917,
-        "expected_goals": 0.05935545851528384,
-        "first_scorer": 0.020255311821093757
+      "Mario Hermoso": {
+        "anytime": 0.057243535409149615,
+        "expected_goals": 0.05909739130434784,
+        "first_scorer": 0.02016724524795857
       },
       "Nahuel Molina": {
-        "anytime": 0.09558612613301487,
-        "expected_goals": 0.10090427947598253,
-        "first_scorer": 0.03443403009585939
+        "anytime": 0.0951926691630457,
+        "expected_goals": 0.10046556521739129,
+        "first_scorer": 0.03428431692152956
       },
       "Bryan Cristante": {
-        "anytime": 0.09024710173505002,
-        "expected_goals": 0.09496873362445413,
-        "first_scorer": 0.03240849891375001
+        "anytime": 0.0898744203658659,
+        "expected_goals": 0.09455582608695651,
+        "first_scorer": 0.032267592396733706
       },
       "Manu Kone": {
-        "anytime": 0.09558612613301487,
-        "expected_goals": 0.10090427947598253,
-        "first_scorer": 0.03443403009585939
+        "anytime": 0.0951926691630457,
+        "expected_goals": 0.10046556521739129,
+        "first_scorer": 0.03428431692152956
       },
       "Wesley": {
-        "anytime": 0.11545087941281296,
-        "expected_goals": 0.12332745269286753,
-        "first_scorer": 0.04208603678382814
+        "anytime": 0.11498141921077154,
+        "expected_goals": 0.1227912463768116,
+        "first_scorer": 0.0419030540152028
       },
       "Matias Soule": {
-        "anytime": 0.1970889719674931,
-        "expected_goals": 0.22159371179039303,
-        "first_scorer": 0.07561983079875002
+        "anytime": 0.19632942433988998,
+        "expected_goals": 0.22063026086956525,
+        "first_scorer": 0.07529104892571199
       },
       "Paulo Dybala": {
-        "anytime": 0.2564211765208314,
-        "expected_goals": 0.3000748180494905,
-        "first_scorer": 0.10240185420664065
+        "anytime": 0.25547463346161603,
+        "expected_goals": 0.29877014492753623,
+        "first_scorer": 0.10195662875356831
       },
       "Donyell Malen": {
-        "anytime": 0.42890191049944404,
-        "expected_goals": 0.5737694323144105,
-        "first_scorer": 0.19580134760390633
+        "anytime": 0.4275413808037797,
+        "expected_goals": 0.5712747826086957,
+        "first_scorer": 0.1949500373969328
       },
       "Santiago Castro": {
-        "anytime": 0.05748556332601917,
-        "expected_goals": 0.05935545851528384,
-        "first_scorer": 0.020255311821093757
+        "anytime": 0.057243535409149615,
+        "expected_goals": 0.05909739130434784,
+        "first_scorer": 0.02016724524795857
       },
       "Lorenzo Pellegrini": {
-        "anytime": 0.02343882597630631,
-        "expected_goals": 0.02374218340611353,
-        "first_scorer": 0.008102124728437502
+        "anytime": 0.023338219117333248,
+        "expected_goals": 0.023638956521739127,
+        "first_scorer": 0.008066898099183427
+      },
+      "K. Koulierakis": {
+        "anytime": 0.007846030089487033,
+        "expected_goals": 0.007879652173913043,
+        "first_scorer": 0.002688966033061142
       }
     },
     "Fiorentina": {
@@ -254,64 +259,74 @@
         "first_scorer": 0.0
       },
       "Dodo": {
-        "anytime": 0.03377808396463644,
-        "expected_goals": 0.03440973300970874,
-        "first_scorer": 0.011927349055172174
+        "anytime": 0.03238067508088982,
+        "expected_goals": 0.0329605652982596,
+        "first_scorer": 0.011425028123793196
       },
       "Radu Dragusin": {
-        "anytime": 0.045678495543718944,
-        "expected_goals": 0.046843502080443813,
-        "first_scorer": 0.01623723148687304
+        "anytime": 0.043800928260179894,
+        "expected_goals": 0.044870685532084495,
+        "first_scorer": 0.015553399630710065
       },
-      "Viery": {
-        "anytime": 0.030708090513597908,
-        "expected_goals": 0.03122900138696254,
-        "first_scorer": 0.010824820991248693
+      "Marin Pongracic": {
+        "anytime": 0.029435588739557317,
+        "expected_goals": 0.029913790354722997,
+        "first_scorer": 0.010368933087140042
       },
-      "Niccolo Fortini": {
-        "anytime": 0.022845874311972825,
-        "expected_goals": 0.023132593619972257,
-        "first_scorer": 0.008018385919443477
-      },
-      "Oulai": {
-        "anytime": 0.02986899059237169,
-        "expected_goals": 0.03036152912621359,
-        "first_scorer": 0.010524131519269564
-      },
-      "Nicolo Fagioli": {
-        "anytime": 0.040716320590769906,
-        "expected_goals": 0.04163866851595006,
-        "first_scorer": 0.014433094654998258
+      "Fabiano Parisi": {
+        "anytime": 0.021895186435475833,
+        "expected_goals": 0.022158363225720738,
+        "first_scorer": 0.007680691175659291
       },
       "Arthur Atta": {
-        "anytime": 0.0628287922930022,
-        "expected_goals": 0.06506041955617198,
-        "first_scorer": 0.02255171039843478
+        "anytime": 0.06259830172192471,
+        "expected_goals": 0.06481321243523316,
+        "first_scorer": 0.022466021688803427
       },
-      "Alejandro Jimenez": {
-        "anytime": 0.07007668106283371,
-        "expected_goals": 0.0728676699029126,
-        "first_scorer": 0.02525791564624695
+      "Nicolo Fagioli": {
+        "anytime": 0.039038186582098344,
+        "expected_goals": 0.039885053806297324,
+        "first_scorer": 0.013825244116186722
+      },
+      "Christ Inao Oulai": {
+        "anytime": 0.028630702566487032,
+        "expected_goals": 0.029082851733758474,
+        "first_scorer": 0.01008090716805282
+      },
+      "Franco Mastantuono": {
+        "anytime": 0.09079956948959667,
+        "expected_goals": 0.0955579414109207,
+        "first_scorer": 0.033122980695030696
       },
       "Moise Kean": {
-        "anytime": 0.2528511247906603,
-        "expected_goals": 0.2949405686546463,
-        "first_scorer": 0.10223442047290433
+        "anytime": 0.2437252359725458,
+        "expected_goals": 0.2825191311279394,
+        "first_scorer": 0.09792881248965596
       },
       "Albert Gudmundsson": {
-        "anytime": 0.14738689671039717,
-        "expected_goals": 0.16048236823855752,
-        "first_scorer": 0.055627552316139126
+        "anytime": 0.14167745220704775,
+        "expected_goals": 0.15372364487843762,
+        "first_scorer": 0.05328479503113633
       },
-      "Valdepenas": {
-        "anytime": 0.02002125379111841,
-        "expected_goals": 0.02024101941747573,
-        "first_scorer": 0.007016087679513045
+      "Mateo Pellegrino": {
+        "anytime": 0.018101255452878107,
+        "expected_goals": 0.01828064966121961,
+        "first_scorer": 0.006336570219918915
       },
-      "Roberto Piccoli": {
-        "anytime": 0.01263584295418596,
-        "expected_goals": 0.01272292649098474,
-        "first_scorer": 0.004410112255693912
+      "Marco Brescianini": {
+        "anytime": 0.008821019148278375,
+        "expected_goals": 0.008863345290288297,
+        "first_scorer": 0.0030722764702637165
+      },
+      "Giovanni Fabbian": {
+        "anytime": 0.007942714769929249,
+        "expected_goals": 0.007977010761259467,
+        "first_scorer": 0.002765048823237345
+      },
+      "Alejandro Jimenez": {
+        "anytime": 0.003317789529989734,
+        "expected_goals": 0.0033237544838581106,
+        "first_scorer": 0.0011521036763488936
       }
     }
   },
@@ -509,18 +524,404 @@
       "rf": {
         "home": 0.550787018611747,
         "draw": 0.24274038585000618,
-        "away": 0.2064725955382462
+        "away": 0.20647259553824626
       },
       "ensemble_mean": {
         "home": 0.554104105873075,
         "draw": 0.248390495396974,
-        "away": 0.19750539872995104
+        "away": 0.19750539872995107
       }
     },
     "disagreement_vs_analytical": {
       "home": 0.009134002285166365,
       "draw": -0.025117954397815223,
-      "away": 0.01598395211264897
+      "away": 0.015983952112648997
+    }
+  },
+  "duels": {
+    "pairs_evaluated": 121,
+    "pairs_that_meet": 101,
+    "top_duels": [
+      {
+        "home_player": "Donyell Malen",
+        "home_pos": "ST",
+        "away_player": "Marin Pongracic",
+        "away_pos": "LCB",
+        "contest_weight": 0.6463317235628673,
+        "home_edge": 0.7858708738702077,
+        "leverage": 0.36953482924990877,
+        "share_of_duels": 0.035747546592108326
+      },
+      {
+        "home_player": "Evan Ndicka",
+        "home_pos": "CB",
+        "away_player": "Moise Kean",
+        "away_pos": "ST",
+        "contest_weight": 0.85,
+        "home_edge": 0.30285398753270604,
+        "leverage": 0.33514822119439974,
+        "share_of_duels": 0.04701210461370237
+      },
+      {
+        "home_player": "Donyell Malen",
+        "home_pos": "ST",
+        "away_player": "Radu Dragusin",
+        "away_pos": "RCB",
+        "contest_weight": 0.6463317235628672,
+        "home_edge": 0.7340391544070017,
+        "leverage": 0.30253386009814687,
+        "share_of_duels": 0.03574754659210832
+      },
+      {
+        "home_player": "Mario Hermoso",
+        "home_pos": "LCB",
+        "away_player": "Moise Kean",
+        "away_pos": "ST",
+        "contest_weight": 0.5155510607557384,
+        "home_edge": 0.24624431889421225,
+        "leverage": 0.2616480211337675,
+        "share_of_duels": 0.028514282825828238
+      },
+      {
+        "home_player": "Gianluca Mancini",
+        "home_pos": "RCB",
+        "away_player": "Moise Kean",
+        "away_pos": "ST",
+        "contest_weight": 0.5155510607557384,
+        "home_edge": 0.28317958374487107,
+        "leverage": 0.22356399118766496,
+        "share_of_duels": 0.028514282825828238
+      },
+      {
+        "home_player": "Donyell Malen",
+        "home_pos": "ST",
+        "away_player": "Nicolo Fagioli",
+        "away_pos": "CM",
+        "contest_weight": 0.2222222222222222,
+        "home_edge": 0.8161102811034937,
+        "leverage": 0.1404934582682194,
+        "share_of_duels": 0.012290746304235912
+      },
+      {
+        "home_player": "Paulo Dybala",
+        "home_pos": "LAM",
+        "away_player": "Dodo",
+        "away_pos": "RB",
+        "contest_weight": 0.4060964969403106,
+        "home_edge": 0.666024910138101,
+        "leverage": 0.1348442688238253,
+        "share_of_duels": 0.022460530585195232
+      },
+      {
+        "home_player": "Bryan Cristante",
+        "home_pos": "CM",
+        "away_player": "Moise Kean",
+        "away_pos": "ST",
+        "contest_weight": 0.23573901458106736,
+        "home_edge": 0.22903925040242498,
+        "leverage": 0.12775204020055933,
+        "share_of_duels": 0.013038337900019114
+      },
+      {
+        "home_player": "Paulo Dybala",
+        "home_pos": "LAM",
+        "away_player": "Radu Dragusin",
+        "away_pos": "RCB",
+        "contest_weight": 0.6262704335218942,
+        "home_edge": 0.5999509322927548,
+        "leverage": 0.12519262739580203,
+        "share_of_duels": 0.0346379895731765
+      },
+      {
+        "home_player": "Manu Kone",
+        "home_pos": "CM",
+        "away_player": "Radu Dragusin",
+        "away_pos": "RCB",
+        "contest_weight": 0.20437166161090767,
+        "home_edge": 0.20974007389718677,
+        "leverage": 0.11864180679338243,
+        "share_of_duels": 0.011303461100856673
+      },
+      {
+        "home_player": "Manu Kone",
+        "home_pos": "CM",
+        "away_player": "Moise Kean",
+        "away_pos": "ST",
+        "contest_weight": 0.25047270299238406,
+        "home_edge": 0.26429874184197255,
+        "leverage": 0.1180734624590937,
+        "share_of_duels": 0.013853234018770309
+      },
+      {
+        "home_player": "Gianluca Mancini",
+        "home_pos": "RCB",
+        "away_player": "Christ Inao Oulai",
+        "away_pos": "LCM",
+        "contest_weight": 0.1742840003990446,
+        "home_edge": 0.8379826324744547,
+        "leverage": 0.11780993050609602,
+        "share_of_duels": 0.009639361952064036
+      },
+      {
+        "home_player": "Mario Hermoso",
+        "home_pos": "LCB",
+        "away_player": "Franco Mastantuono",
+        "away_pos": "RW",
+        "contest_weight": 0.6763883689839618,
+        "home_edge": 0.5790065908816421,
+        "leverage": 0.10687827829083407,
+        "share_of_duels": 0.03740993030843004
+      },
+      {
+        "home_player": "Evan Ndicka",
+        "home_pos": "CB",
+        "away_player": "Nicolo Fagioli",
+        "away_pos": "CM",
+        "contest_weight": 0.19555555555555554,
+        "home_edge": 0.7716963657596496,
+        "leverage": 0.1062634674971074,
+        "share_of_duels": 0.010815856747727604
+      }
+    ],
+    "zones": [
+      {
+        "zone": "Fascia sinistra Roma",
+        "weight": 4.486305736990325,
+        "roma_edge": 0.5349776980265191,
+        "n_duels": 27
+      },
+      {
+        "zone": "Centro",
+        "weight": 9.080859990118451,
+        "roma_edge": 0.5266506493041185,
+        "n_duels": 47
+      },
+      {
+        "zone": "Fascia destra Roma",
+        "weight": 4.513284126911476,
+        "roma_edge": 0.455338085202776,
+        "n_duels": 27
+      }
+    ]
+  },
+  "stories": {
+    "n": 400000,
+    "distinct_stories": 45605,
+    "top_stories": [
+      {
+        "score": "0-0",
+        "roma_scorers": "nessuno",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.073585
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Donyell Malen",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.040885
+      },
+      {
+        "score": "0-1",
+        "roma_scorers": "nessuno",
+        "fiorentina_scorers": "Moise Kean",
+        "prob": 0.0166725
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Paulo Dybala",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.01636
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Matias Soule",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.01565
+      },
+      {
+        "score": "2-0",
+        "roma_scorers": "Donyell Malen x2",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.0114875
+      },
+      {
+        "score": "0-1",
+        "roma_scorers": "nessuno",
+        "fiorentina_scorers": "Albert Gudmundsson",
+        "prob": 0.011115
+      },
+      {
+        "score": "2-0",
+        "roma_scorers": "Paulo Dybala, Donyell Malen",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.0091625
+      },
+      {
+        "score": "1-1",
+        "roma_scorers": "Donyell Malen",
+        "fiorentina_scorers": "Moise Kean",
+        "prob": 0.0090575
+      },
+      {
+        "score": "2-0",
+        "roma_scorers": "Matias Soule, Donyell Malen",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.0090325
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Wesley",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.0089175
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Lorenzo Pellegrini",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.0074275
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Nahuel Molina",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.0072325
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Manu Kone",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.00708
+      },
+      {
+        "score": "1-0",
+        "roma_scorers": "Gianluca Mancini",
+        "fiorentina_scorers": "nessuno",
+        "prob": 0.00691
+      }
+    ],
+    "most_likely_scoring_story": {
+      "score": "1-0",
+      "roma_scorers": "Donyell Malen",
+      "fiorentina_scorers": "nessuno",
+      "prob": 0.040885
+    },
+    "top_scorer_pairs": [
+      {
+        "roma": "Donyell Malen",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.0855825
+      },
+      {
+        "roma": "Donyell Malen",
+        "fiorentina": "Albert Gudmundsson",
+        "p_both_score": 0.0613625
+      },
+      {
+        "roma": "Donyell Malen",
+        "fiorentina": "Franco Mastantuono",
+        "p_both_score": 0.03904
+      },
+      {
+        "roma": "Matias Soule",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.0386125
+      },
+      {
+        "roma": "Paulo Dybala",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.0383225
+      },
+      {
+        "roma": "Paulo Dybala",
+        "fiorentina": "Albert Gudmundsson",
+        "p_both_score": 0.02752
+      },
+      {
+        "roma": "Donyell Malen",
+        "fiorentina": "Mateo Pellegrino",
+        "p_both_score": 0.0273625
+      },
+      {
+        "roma": "Matias Soule",
+        "fiorentina": "Albert Gudmundsson",
+        "p_both_score": 0.0271575
+      },
+      {
+        "roma": "Donyell Malen",
+        "fiorentina": "Arthur Atta",
+        "p_both_score": 0.0268225
+      },
+      {
+        "roma": "Wesley",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.022805
+      },
+      {
+        "roma": "Donyell Malen",
+        "fiorentina": "Radu Dragusin",
+        "p_both_score": 0.0187325
+      },
+      {
+        "roma": "Manu Kone",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.0186825
+      },
+      {
+        "roma": "Nahuel Molina",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.0186325
+      },
+      {
+        "roma": "Matias Soule",
+        "fiorentina": "Franco Mastantuono",
+        "p_both_score": 0.017825
+      },
+      {
+        "roma": "Gianluca Mancini",
+        "fiorentina": "Moise Kean",
+        "p_both_score": 0.0175525
+      }
+    ],
+    "anytime": {
+      "Roma": {
+        "Mile Svilar": 0.0,
+        "Gianluca Mancini": 0.08883,
+        "Evan Ndicka": 0.056665,
+        "Mario Hermoso": 0.057395,
+        "Nahuel Molina": 0.0947725,
+        "Bryan Cristante": 0.089115,
+        "Manu Kone": 0.0931425,
+        "Wesley": 0.114585,
+        "Matias Soule": 0.1943975,
+        "Paulo Dybala": 0.1939625,
+        "Donyell Malen": 0.43011,
+        "Santiago Castro": 0.0572175,
+        "Lorenzo Pellegrini": 0.083805,
+        "K. Koulierakis": 0.0078825
+      },
+      "Fiorentina": {
+        "David De Gea": 0.0,
+        "Dodo": 0.0321425,
+        "Radu Dragusin": 0.043455,
+        "Marin Pongracic": 0.02907,
+        "Fabiano Parisi": 0.0219425,
+        "Arthur Atta": 0.06247,
+        "Nicolo Fagioli": 0.0381575,
+        "Christ Inao Oulai": 0.0284575,
+        "Franco Mastantuono": 0.0902875,
+        "Moise Kean": 0.1985425,
+        "Albert Gudmundsson": 0.1416275,
+        "Mateo Pellegrino": 0.063995,
+        "Marco Brescianini": 0.00872,
+        "Giovanni Fabbian": 0.0079025,
+        "Alejandro Jimenez": 0.0031225
+      }
+    },
+    "p_no_scorer_at_all": 0.073585,
+    "concentration": {
+      "top1": 0.073585,
+      "top10_cumulative": 0.2130075,
+      "stories_to_cover_50pct": 152
     }
   },
   "value_bets": [
@@ -555,6 +956,7 @@
   "config": {
     "shrink": 0.72,
     "recency_weight": 0.4,
+    "recency_weight_dixon_coles_decay_equivalent": 0.7261149812607792,
     "market_weight": 0.6,
     "rho": -0.1,
     "lambda_sigma": 0.22,

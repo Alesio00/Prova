@@ -44,6 +44,30 @@ NEW_MANAGER_DISCOUNT = 0.55
 # RESULTS.md for the measured size of that bias.
 RECENCY_WEIGHT = 0.40
 
+# Dixon & Coles weight past matches by phi(t) = exp(-xi * t), t = days before
+# the fixture. Their fitted xi is around 0.0065/day (half-life ~107 days), and
+# that is what most open-source implementations use (see the goalmodel /
+# penaltyblog / world-cup-2026-prediction-model lineage). Applied to the two
+# half-season midpoints it implies a recency weight of ~0.73 - see
+# recency_weight_from_decay(). We deliberately use a LOWER 0.40 because a full
+# transfer window sits between then and now, which the decay curve knows
+# nothing about. The sensitivity grid brackets both values.
+XI_DECAY_PER_DAY = 0.0065
+DAYS_TO_ANDATA_MIDPOINT = 310
+DAYS_TO_RITORNO_MIDPOINT = 160
+
+
+def recency_weight_from_decay(xi: float = XI_DECAY_PER_DAY) -> float:
+    """The Dixon-Coles exponential-decay equivalent of RECENCY_WEIGHT.
+
+    Not used to set the constant automatically - it is here so the arbitrary
+    0.40 can be compared against the value the literature would pick.
+    """
+    import math
+    w_old = math.exp(-xi * DAYS_TO_ANDATA_MIDPOINT)
+    w_new = math.exp(-xi * DAYS_TO_RITORNO_MIDPOINT)
+    return w_new / (w_new + w_old)
+
 # Form is produced by a coach, not only by a squad. When the manager who
 # generated the recent form has left, that form is only partly transferable, so
 # the recency weight is scaled down for that team.

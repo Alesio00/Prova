@@ -1,52 +1,77 @@
 {
   "_meta": {
-    "what": "Projected starting XIs with each player's expected share of their team's goals and assists, plus expected minutes.",
-    "how": "goal_share is a prior built from 2025/26 output, role in the projected formation, and penalty duty. Shares are normalised inside the model, so they do not need to sum to 1 exactly.",
-    "confidence": "MEDIUM for the XIs (projected, not confirmed), LOW for individual shares. This is the weakest layer of the model - treat scorer probabilities as indicative only.",
-    "penalty_conversion": 0.78
+    "what": "Projected XIs with each player's expected share of team goals/assists, expected minutes, positional coordinates for the duel model, and a defensive rating.",
+    "updated": "2026-08-15",
+    "how": "goal_share/assist_share are priors from 2025/26 output, role in the projected formation, and penalty duty. Normalised inside the model. lane: 0.0 = own left touchline, 1.0 = own right touchline. line: 0 GK, 1 defence, 2 midfield, 3 attack. def_rating: 1.0 = league-average defender at that position.",
+    "confidence": "XIs MEDIUM (projected, not confirmed). Individual shares LOW. Duel ratings LOW. Read the scorer and duel outputs as orderings, not as calibrated numbers.",
+    "penalty_conversion": 0.78,
+    "changelog": [
+      "2026-08-15: Piccoli removed - transferred to Bologna. Replaced by Mateo Pellegrino (from Parma) as Kean's deputy.",
+      "2026-08-15: Mastantuono (loan from Real Madrid) added to the Fiorentina front three; Jimenez reclassified as a full-back, which is where the official shirt-number list puts him.",
+      "2026-08-15: Fiorentina midfield/defence depth corrected from the official 2026/27 shirt numbers: Pongracic, Ranieri, Parisi, Joao Mario, Mandragora, Brescianini, Fabbian, Ndour.",
+      "2026-08-15: Roma third centre-back switched to Hermoso (contract renewed, named in the Aug 2026 formazione tipo); Koulierakis kept as the alternative."
+    ]
   },
 
   "Roma": {
     "formation": "3-4-2-1",
-    "penalty_taker": "Dybala",
+    "penalty_taker": "Paulo Dybala",
     "xi": [
-      {"name": "Mile Svilar",          "pos": "GK",  "minutes": 90, "goal_share": 0.000, "assist_share": 0.00},
-      {"name": "Gianluca Mancini",     "pos": "CB",  "minutes": 90, "goal_share": 0.040, "assist_share": 0.02},
-      {"name": "Evan Ndicka",          "pos": "CB",  "minutes": 90, "goal_share": 0.025, "assist_share": 0.01},
-      {"name": "K. Koulierakis",       "pos": "CB",  "minutes": 90, "goal_share": 0.025, "assist_share": 0.01},
-      {"name": "Nahuel Molina",        "pos": "RWB", "minutes": 85, "goal_share": 0.045, "assist_share": 0.11},
-      {"name": "Bryan Cristante",      "pos": "CM",  "minutes": 80, "goal_share": 0.045, "assist_share": 0.06},
-      {"name": "Manu Kone",            "pos": "CM",  "minutes": 85, "goal_share": 0.045, "assist_share": 0.08},
-      {"name": "Wesley",               "pos": "LWB", "minutes": 85, "goal_share": 0.055, "assist_share": 0.13},
-      {"name": "Matias Soule",         "pos": "AM",  "minutes": 70, "goal_share": 0.120, "assist_share": 0.14},
-      {"name": "Paulo Dybala",         "pos": "AM",  "minutes": 65, "goal_share": 0.175, "assist_share": 0.20},
-      {"name": "Donyell Malen",        "pos": "ST",  "minutes": 75, "goal_share": 0.290, "assist_share": 0.09}
+      {"name": "Mile Svilar",        "pos": "GK",  "minutes": 90, "goal_share": 0.000, "assist_share": 0.00, "lane": 0.50, "line": 0, "def_rating": 1.25},
+      {"name": "Gianluca Mancini",   "pos": "RCB", "minutes": 90, "goal_share": 0.040, "assist_share": 0.02, "lane": 0.72, "line": 1, "def_rating": 1.15},
+      {"name": "Evan Ndicka",        "pos": "CB",  "minutes": 90, "goal_share": 0.025, "assist_share": 0.01, "lane": 0.50, "line": 1, "def_rating": 1.20},
+      {"name": "Mario Hermoso",      "pos": "LCB", "minutes": 90, "goal_share": 0.025, "assist_share": 0.01, "lane": 0.28, "line": 1, "def_rating": 1.05},
+      {"name": "Nahuel Molina",      "pos": "RWB", "minutes": 85, "goal_share": 0.045, "assist_share": 0.11, "lane": 0.90, "line": 2, "def_rating": 0.95},
+      {"name": "Bryan Cristante",    "pos": "CM",  "minutes": 80, "goal_share": 0.045, "assist_share": 0.06, "lane": 0.58, "line": 2, "def_rating": 1.00},
+      {"name": "Manu Kone",          "pos": "CM",  "minutes": 85, "goal_share": 0.045, "assist_share": 0.08, "lane": 0.42, "line": 2, "def_rating": 1.10},
+      {"name": "Wesley",             "pos": "LWB", "minutes": 85, "goal_share": 0.055, "assist_share": 0.13, "lane": 0.10, "line": 2, "def_rating": 0.90},
+      {"name": "Matias Soule",       "pos": "RAM", "minutes": 70, "goal_share": 0.120, "assist_share": 0.14, "lane": 0.70, "line": 3, "def_rating": 0.55},
+      {"name": "Paulo Dybala",       "pos": "LAM", "minutes": 65, "goal_share": 0.175, "assist_share": 0.20, "lane": 0.32, "line": 3, "def_rating": 0.45},
+      {"name": "Donyell Malen",      "pos": "ST",  "minutes": 75, "goal_share": 0.290, "assist_share": 0.09, "lane": 0.50, "line": 3, "def_rating": 0.50}
     ],
     "bench_contributors": [
-      {"name": "Santiago Castro",      "pos": "ST",  "minutes": 25, "goal_share": 0.090, "assist_share": 0.05},
-      {"name": "Lorenzo Pellegrini",   "pos": "AM",  "minutes": 20, "goal_share": 0.045, "assist_share": 0.06}
+      {"name": "Santiago Castro",    "pos": "ST",  "minutes": 25, "goal_share": 0.090, "assist_share": 0.05, "lane": 0.50, "line": 3, "def_rating": 0.50},
+      {"name": "Lorenzo Pellegrini", "pos": "AM",  "minutes": 20, "goal_share": 0.045, "assist_share": 0.06, "lane": 0.45, "line": 3, "def_rating": 0.60},
+      {"name": "K. Koulierakis",     "pos": "LCB", "minutes": 15, "goal_share": 0.020, "assist_share": 0.01, "lane": 0.28, "line": 1, "def_rating": 1.05}
     ]
   },
 
   "Fiorentina": {
     "formation": "4-3-3",
-    "penalty_taker": "Kean",
+    "penalty_taker": "Moise Kean",
     "xi": [
-      {"name": "David De Gea",         "pos": "GK", "minutes": 90, "goal_share": 0.000, "assist_share": 0.00},
-      {"name": "Dodo",                 "pos": "RB", "minutes": 85, "goal_share": 0.035, "assist_share": 0.12},
-      {"name": "Radu Dragusin",        "pos": "CB", "minutes": 90, "goal_share": 0.045, "assist_share": 0.01},
-      {"name": "Viery",                "pos": "CB", "minutes": 90, "goal_share": 0.030, "assist_share": 0.01},
-      {"name": "Niccolo Fortini",      "pos": "LB", "minutes": 80, "goal_share": 0.025, "assist_share": 0.08},
-      {"name": "Oulai",                "pos": "CM", "minutes": 75, "goal_share": 0.035, "assist_share": 0.05},
-      {"name": "Nicolo Fagioli",       "pos": "CM", "minutes": 80, "goal_share": 0.045, "assist_share": 0.15},
-      {"name": "Arthur Atta",          "pos": "CM", "minutes": 75, "goal_share": 0.075, "assist_share": 0.12},
-      {"name": "Alejandro Jimenez",    "pos": "RW", "minutes": 70, "goal_share": 0.090, "assist_share": 0.13},
-      {"name": "Moise Kean",           "pos": "ST", "minutes": 85, "goal_share": 0.300, "assist_share": 0.07},
-      {"name": "Albert Gudmundsson",   "pos": "LW", "minutes": 75, "goal_share": 0.185, "assist_share": 0.16}
+      {"name": "David De Gea",       "pos": "GK",  "minutes": 90, "goal_share": 0.000, "assist_share": 0.00, "lane": 0.50, "line": 0, "def_rating": 1.20},
+      {"name": "Dodo",               "pos": "RB",  "minutes": 85, "goal_share": 0.035, "assist_share": 0.12, "lane": 0.88, "line": 1, "def_rating": 0.95},
+      {"name": "Radu Dragusin",      "pos": "RCB", "minutes": 90, "goal_share": 0.045, "assist_share": 0.01, "lane": 0.62, "line": 1, "def_rating": 1.10},
+      {"name": "Marin Pongracic",    "pos": "LCB", "minutes": 90, "goal_share": 0.030, "assist_share": 0.01, "lane": 0.38, "line": 1, "def_rating": 0.95},
+      {"name": "Fabiano Parisi",     "pos": "LB",  "minutes": 80, "goal_share": 0.025, "assist_share": 0.08, "lane": 0.12, "line": 1, "def_rating": 0.90},
+      {"name": "Arthur Atta",        "pos": "RCM", "minutes": 78, "goal_share": 0.075, "assist_share": 0.12, "lane": 0.65, "line": 2, "def_rating": 0.95},
+      {"name": "Nicolo Fagioli",     "pos": "CM",  "minutes": 80, "goal_share": 0.045, "assist_share": 0.15, "lane": 0.50, "line": 2, "def_rating": 0.85},
+      {"name": "Christ Inao Oulai",  "pos": "LCM", "minutes": 75, "goal_share": 0.035, "assist_share": 0.05, "lane": 0.35, "line": 2, "def_rating": 1.05},
+      {"name": "Franco Mastantuono", "pos": "RW",  "minutes": 75, "goal_share": 0.115, "assist_share": 0.14, "lane": 0.82, "line": 3, "def_rating": 0.50},
+      {"name": "Moise Kean",         "pos": "ST",  "minutes": 85, "goal_share": 0.300, "assist_share": 0.07, "lane": 0.50, "line": 3, "def_rating": 0.45},
+      {"name": "Albert Gudmundsson", "pos": "LW",  "minutes": 75, "goal_share": 0.185, "assist_share": 0.16, "lane": 0.18, "line": 3, "def_rating": 0.50}
     ],
     "bench_contributors": [
-      {"name": "Valdepenas",           "pos": "LW", "minutes": 25, "goal_share": 0.070, "assist_share": 0.06},
-      {"name": "Roberto Piccoli",      "pos": "ST", "minutes": 20, "goal_share": 0.055, "assist_share": 0.03}
+      {"name": "Mateo Pellegrino",   "pos": "ST",  "minutes": 22, "goal_share": 0.075, "assist_share": 0.03, "lane": 0.50, "line": 3, "def_rating": 0.45},
+      {"name": "Marco Brescianini",  "pos": "CM",  "minutes": 20, "goal_share": 0.040, "assist_share": 0.05, "lane": 0.55, "line": 2, "def_rating": 0.95},
+      {"name": "Giovanni Fabbian",   "pos": "CM",  "minutes": 18, "goal_share": 0.040, "assist_share": 0.04, "lane": 0.48, "line": 2, "def_rating": 0.90},
+      {"name": "Alejandro Jimenez",  "pos": "RB",  "minutes": 15, "goal_share": 0.020, "assist_share": 0.05, "lane": 0.88, "line": 1, "def_rating": 0.90}
     ]
+  },
+
+  "availability_risk": {
+    "Moise Kean": {
+      "p_available": 0.80,
+      "_reason": "Como pushed a ~45M package in August 2026 against a Fiorentina asking price of 50M. Corriere dello Sport reported Como pulling out on 04/08; Sport Mediaset reported a fresh offer being prepared on 12/08. Unresolved as of 15/08 and the window shuts on 31/08, so he is more likely than not to play on the 24th - but this is a live risk, not a certainty.",
+      "replacement": "Mateo Pellegrino",
+      "_confidence": "med"
+    },
+    "Paulo Dybala": {
+      "p_available": 0.75,
+      "_reason": "31 years old with a long injury history; Italian previews for 2026/27 explicitly flag that he cannot be relied on for continuity of minutes. No specific August 2026 injury was reported - this is a base-rate risk, not a known problem.",
+      "replacement": "Lorenzo Pellegrini",
+      "_confidence": "low"
+    }
   }
 }

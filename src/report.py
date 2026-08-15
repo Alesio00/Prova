@@ -152,6 +152,64 @@ def form_split(ctx: dict) -> str:
         "I gol per girone della Fiorentina sono derivati dai punti.</caption></table></div>")
 
 
+def duel_bars(duels_: list[dict]) -> str:
+    """Diverging bars centred on an even duel. Right/blue = Roma ahead."""
+    out = []
+    for d in duels_:
+        e = d["home_edge"]
+        w = abs(e - 0.5) * 100
+        left = 50 - w if e < 0.5 else 50
+        cls = "s-fio" if e < 0.5 else "s-roma"
+        winner = d["home_player"] if e >= 0.5 else d["away_player"]
+        out.append(
+            f'<div class="tb"><div class="tb-l">{d["home_player"]} '
+            f'<span class="vs">vs</span> {d["away_player"]}</div>'
+            f'<div class="tb-t"><div class="tb-axis"></div>'
+            f'<div class="tb-f {cls}" style="left:{left:.2f}%;width:{w:.2f}%"></div></div>'
+            f'<div class="tb-v">{max(e, 1 - e) * 100:.0f}% {winner.split()[-1]}</div></div>')
+    legend = ('<div class="legend"><span><i class="sw s-roma"></i>vantaggio Roma</span>'
+              '<span><i class="sw s-fio"></i>vantaggio Fiorentina</span></div>')
+    return legend + "".join(out)
+
+
+def zone_table(zones: list[dict]) -> str:
+    rows = "".join(
+        f'<tr><td>{z["zone"]}</td><td>{z["n_duels"]}</td>'
+        f'<td>{z["roma_edge"] * 100:.1f}%</td>'
+        f'<td>{(1 - z["roma_edge"]) * 100:.1f}%</td></tr>' for z in zones)
+    return ('<div class="scroll"><table><thead><tr><th>Zona di campo</th>'
+            '<th>Duelli</th><th>Roma</th><th>Fiorentina</th></tr></thead>'
+            f'<tbody>{rows}</tbody><caption>Media dei duelli di ogni zona, pesata '
+            'per quanto spesso si verificano. Le zone si leggono dal punto di vista '
+            'della Roma.</caption></table></div>')
+
+
+def story_table(stories: list[dict]) -> str:
+    rows = "".join(
+        f'<tr><td>{s["score"]}</td><td>{s["roma_scorers"]}</td>'
+        f'<td>{s["fiorentina_scorers"]}</td><td>{s["prob"] * 100:.2f}%</td></tr>'
+        for s in stories)
+    return ('<div class="scroll"><table><thead><tr><th>Risultato</th>'
+            '<th>Marcatori Roma</th><th>Marcatori Fiorentina</th><th>Probabilita</th>'
+            f'</tr></thead><tbody>{rows}</tbody><caption>Ogni riga e una partita '
+            'completa: risultato esatto piu chi ha segnato. Include il rischio '
+            'cessione di Kean e quello di indisponibilita di Dybala.</caption>'
+            '</table></div>')
+
+
+def pair_table(pairs: list[dict]) -> str:
+    rows = "".join(
+        f'<tr><td><i class="sw s-roma"></i>{p["roma"]}</td>'
+        f'<td><i class="sw s-fio"></i>{p["fiorentina"]}</td>'
+        f'<td>{p["p_both_score"] * 100:.2f}%</td></tr>' for p in pairs)
+    return ('<div class="scroll"><table><thead><tr><th>Marcatore Roma</th>'
+            '<th>Marcatore Fiorentina</th><th>Entrambi segnano</th></tr></thead>'
+            f'<tbody>{rows}</tbody><caption>Probabilita congiunta presa dalla '
+            'simulazione, non dal prodotto delle due marginali: l\'incertezza '
+            'condivisa sulle lambda li rende positivamente correlati.</caption>'
+            '</table></div>')
+
+
 def kv_grid(pairs: list[tuple[str, str]]) -> str:
     return '<div class="kv">' + "".join(
         f'<div><span>{k}</span><strong>{v}</strong></div>' for k, v in pairs) + "</div>"
@@ -236,12 +294,16 @@ a:focus-visible,td:focus-visible{outline:2px solid var(--roma);outline-offset:2p
 .hb-f{height:100%;border-radius:4px}
 .hb-v{text-align:right;color:var(--ink2);font-variant-numeric:tabular-nums;font-size:12.5px}
 
-.tb{display:grid;grid-template-columns:210px 1fr 72px;gap:10px;align-items:center;
+.tb{display:grid;grid-template-columns:200px 1fr 96px;gap:10px;align-items:center;
   margin-bottom:7px;font:11.5px/1.4 var(--mono)}
 .tb-t{position:relative;height:14px;background:var(--grid);border-radius:4px}
 .tb-axis{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--rule)}
 .tb-f{position:absolute;top:0;height:100%;border-radius:3px}
 .tb-v{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.vs{color:var(--muted)}
+.big{font-size:26px;letter-spacing:-.02em;margin:2px 0 4px;line-height:1.2}
+.callout{background:var(--surface);border:1px solid var(--ring);border-left:3px solid var(--roma);
+  border-radius:10px;padding:16px 18px}
 
 .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;
   background:var(--grid);border:1px solid var(--grid);border-radius:10px;overflow:hidden}
@@ -264,7 +326,7 @@ table.heat th{color:var(--ink2);background:transparent;border-bottom:none;text-a
 .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:720px){.two{grid-template-columns:1fr}
   .bar-row{grid-template-columns:1fr}.hb{grid-template-columns:110px 1fr 52px}
-  .tb{grid-template-columns:140px 1fr 62px}}
+  .tb{grid-template-columns:128px 1fr 84px}}
 ul.caveats{margin:0;padding-left:20px;color:var(--ink2);font-size:13.5px}
 ul.caveats li{margin-bottom:7px}
 .pill{display:inline-block;font:10.5px/1.7 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:20px;
@@ -288,6 +350,10 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
         ("Monte Carlo", p["monte_carlo"], f"{mc['n']:,} simulazioni".replace(",", ".")),
         ("FUSIONE FINALE", fin, "log-pooling, peso mercato 60%"),
     ])
+
+    dl = pred["duels"]
+    st = pred["stories"]
+    msl = st["most_likely_scoring_story"]
 
     ml = pred.get("ml", {})
     ml_html = ""
@@ -417,6 +483,34 @@ def build(pred: dict, sens: list[dict], ctx: dict) -> str:
       {hbars([(k, v['anytime']) for k, v in scorers_fio], 's-fio', vmax)}
     </div>
   </div>
+</section>
+
+<section>
+  <h2>Duelli individuali: chi incontra chi</h2>
+  <p class="note">Le combinazioni possibili fra i due undici sono
+  {dl['pairs_evaluated']}, ma solo <strong>{dl['pairs_that_meet']}</strong> si verificano
+  davvero: un quinto delle coppie sta su lati opposti del campo e non si incontra mai. Il peso
+  di ogni duello viene dalla vicinanza di corsia e dalla fase di gioco; la barra mostra chi
+  esce avanti.</p>
+  <div class="card">{duel_bars(dl['top_duels'][:10])}</div>
+  <div class="card">{zone_table(dl['zones'])}</div>
+</section>
+
+<section>
+  <h2>La partita piu probabile, giocatore per giocatore</h2>
+  <p class="note">Ogni combinazione di risultato esatto e attribuzione dei gol e un esito
+  distinto: ce ne sono <strong>{st['distinct_stories']:,}</strong>. La risposta alla domanda
+  "qual e la piu probabile" esiste, ma il numero che le sta accanto e la vera informazione.</p>
+  <div class="callout">
+    <div class="tile-label">Esito singolo piu probabile con almeno un gol</div>
+    <div class="big">{msl['score']} &mdash; {msl['roma_scorers']}</div>
+    <div class="tile-sub">{pct(msl['prob'], 2)} di probabilita. Servono
+      {st['concentration']['stories_to_cover_50pct']} esiti diversi per coprire meta della
+      probabilita totale, e i primi dieci messi insieme arrivano solo al
+      {pct(st['concentration']['top10_cumulative'], 0)}.</div>
+  </div>
+  <div class="card">{story_table(st['top_stories'][:10])}</div>
+  <div class="card">{pair_table(st['top_scorer_pairs'][:10])}</div>
 </section>
 
 <section>

@@ -14,11 +14,51 @@ stesse assunzioni che l'hanno prodotto. Quello è esattamente il punto cieco che
 | Stadio | Cosa succede | Perché |
 |---|---|---|
 | **1. Risposte indipendenti** | La stessa domanda va a ogni membro. Nessuno vede le risposte degli altri. | Evita l'ancoraggio: il primo parere non contamina gli altri |
-| **2. Peer review anonimizzata** | Ogni membro riceve le risposte altrui **senza nomi** e le critica e classifica. Nessuno rivede sé stesso. | I modelli favoriscono il proprio output e lo stile della propria famiglia. Togliere le etichette rimuove quel bias |
+| **2. Peer review anonimizzata** | Ogni membro riceve **tutte** le risposte senza nomi — inclusa la propria — e le classifica in un formato vincolato | I modelli favoriscono il proprio output. È **l'anonimizzazione** a impedirlo, non l'esclusione |
 | **3. Sintesi del Chairman** | Un modello designato legge tutte le risposte e tutte le classifiche e scrive il verdetto. | Serve qualcuno che prenda posizione sui disaccordi invece di mediarli |
 
-Il punto che rende il protocollo utile non è la media delle opinioni: sono i **disaccordi**. Dove
+Il pezzo che rende il protocollo **misurabile** è il formato di output vincolato dello stadio 2:
+
+```
+FINAL RANKING:
+1. Response C
+2. Response A
+```
+
+parsato con regex e aggregato in una **posizione media per modello**. Senza quello il council
+produce quattro opinioni e nessun verdetto.
+
+Il punto che lo rende **utile** è un altro: non la media delle opinioni, ma i **disaccordi**. Dove
 due revisori si contraddicono, uno dei due sbaglia — ed è lì che si guarda.
+
+## Cosa avevo sbagliato ricostruendolo
+
+La prima versione di `src/council.py` era ricostruita da snippet di ricerca invece che dal sorgente.
+Aveva tre differenze dall'originale, due delle quali erano invenzioni mie:
+
+| # | La mia versione | L'originale | Verdetto |
+|---|---|---|---|
+| 1 | Un membro non rivedeva sé stesso | Rivede anche sé stesso, anonimizzato | **Sbagliavo io.** L'anonimizzazione è già la protezione; escludersi toglie un voto senza aggiungere niente |
+| 2 | Ordine delle risposte mescolato per revisore | Stesso ordine per tutti | **Deviazione mia.** Difende dal bias di posizione ma rompe l'aggregazione delle posizioni medie. Tolta |
+| 3 | — | Parsing di `FINAL RANKING` + posizione media aggregata | **Lacuna grave.** È il pezzo che trasforma il council da quattro opinioni a un ordinamento. Non c'era affatto |
+
+Il sorgente è `backend/council.py` in [karpathy/llm-council](https://github.com/karpathy/llm-council).
+Vale la pena leggerlo: sono ~250 righe.
+
+## Una differenza di disegno che resta
+
+Nell'originale **tutti i membri rispondono alla stessa domanda** — ed è per questo che classificarsi
+a vicenda ha senso.
+
+Il council sul **codice** eseguito qui era diverso: quattro specialisti con quattro domande diverse
+(correttezza statistica, scelte di modellazione, verifica dei fatti, analisi decisionale). Su un
+council così **lo stadio 2 dell'originale non si applica**: non si classificano risposte a domande
+diverse. Va sostituito da un *arbitrato incrociato* — un membro riceve tutte le conclusioni
+anonimizzate e deve trovare convergenze, contraddizioni e affermazioni non confermate.
+
+Il protocollo con classifica e aggregazione vale per la **domanda decisionale**, dove tutti
+rispondono alla stessa cosa. Sono due usi diversi dello stesso schema, e confonderli produce una
+classifica priva di significato.
 
 ## Come è stato eseguito qui
 

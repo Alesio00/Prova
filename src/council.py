@@ -1,183 +1,280 @@
-"""LLM Council for this project, after karpathy/llm-council.
+"""LLM Council — port fedele di karpathy/llm-council a questo progetto.
 
-Karpathy's protocol has three stages:
+Scritto leggendo il sorgente vero (backend/council.py, backend/config.py), non
+una ricostruzione da descrizioni di terzi. Una prima versione di questo file era
+ricostruita da snippet di ricerca e aveva tre differenze dall'originale, due
+delle quali erano invenzioni mie. Sono documentate in fondo, perche sapere dove
+si e deviato da una fonte vale piu che fingere di non averlo fatto.
 
-  1. INDEPENDENT ANSWERS. The same question goes to every council member.
-     Nobody sees anybody else's answer.
-  2. ANONYMISED PEER REVIEW. Each member receives the others' answers with the
-     identities stripped, then critiques and RANKS them. Anonymising is the
-     whole trick: models favour their own output and their own family's style,
-     and hiding the labels removes that.
-  3. CHAIRMAN SYNTHESIS. One designated model reads every answer and every
-     ranking and writes the final verdict.
+I TRE STADI (come nell'originale)
+---------------------------------
+1. Prime opinioni      - la stessa domanda a ogni membro, in parallelo
+2. Review              - ogni membro riceve TUTTE le risposte anonimizzate
+                         (inclusa la propria) e le classifica
+3. Risposta finale     - un Chairman sintetizza risposte + classifiche
 
-Why it is worth the cost on a project like this one: a single model reviewing
-its own work checks it against the same assumptions that produced it. Four of
-the bugs in RESULTS.md were found by tests written before looking at the
-result, not by re-reading code - which is exactly the blind spot a council is
-supposed to cover.
+Il pezzo che rende il protocollo misurabile, e che la mia prima versione non
+aveva affatto, e il formato di output vincolato:
 
-TWO WAYS TO RUN IT
-------------------
+    FINAL RANKING:
+    1. Response C
+    2. Response A
 
-A. Through Claude Code subagents (what was actually used - no network needed).
-   Spawn one agent per role with a different model, collect the transcripts,
-   then run stage 2 and 3 on the pooled text. See COUNCIL.md for the prompts.
-
-B. Through OpenRouter, like the original (needs egress, currently blocked).
-   That is what this module implements. Set OPENROUTER_API_KEY and run:
-
-       python3 council.py --question "..." --stage all
-
-   Cross-vendor membership is the version worth having: a council drawn from
-   one model family shares its family's blind spots, so its agreement is worth
-   less than it looks. That limitation is stated plainly in COUNCIL.md.
+parsato con regex e aggregato in una posizione media per modello. Senza quello
+il council produce quattro opinioni e nessun verdetto.
 """
 
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import os
-import random
-import string
+import re
 import urllib.error
 import urllib.request
+from collections import defaultdict
 from pathlib import Path
 
 RESULTS = Path(__file__).resolve().parent.parent / "results"
-ENDPOINT = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Cross-vendor by design. Swap freely - the protocol does not care which
-# models sit on the council, only that they are not all the same one.
-COUNCIL = [
-    "anthropic/claude-opus-4.5",
+# Cross-vendor per costruzione: e il punto del council. Membri tutti della
+# stessa famiglia condividono i punti ciechi della famiglia.
+COUNCIL_MODELS = [
     "openai/gpt-5.1",
-    "google/gemini-3-pro",
+    "google/gemini-3-pro-preview",
+    "anthropic/claude-sonnet-4.5",
     "x-ai/grok-4",
 ]
-CHAIRMAN = "anthropic/claude-opus-4.5"
+CHAIRMAN_MODEL = "google/gemini-3-pro-preview"
 
 
-def _call(model: str, prompt: str, timeout: int = 180) -> str:
+# --------------------------------------------------------------------------
+# trasporto
+# --------------------------------------------------------------------------
+
+def _query_sync(model: str, prompt: str, timeout: float = 180.0) -> str | None:
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         raise RuntimeError("OPENROUTER_API_KEY non impostata")
-    body = json.dumps({
-        "model": model,
-        "messages": [{"role": "user", "content": prompt}],
-    }).encode()
+    body = json.dumps({"model": model,
+                       "messages": [{"role": "user", "content": prompt}]}).encode()
     req = urllib.request.Request(
-        ENDPOINT, data=body,
+        OPENROUTER_API_URL, data=body,
         headers={"Authorization": f"Bearer {key}",
                  "Content-Type": "application/json"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
-            payload = json.load(r)
-        return payload["choices"][0]["message"]["content"]
-    except urllib.error.URLError as e:
-        return f"[ERRORE {model}: {e}]"
+            return json.load(r)["choices"][0]["message"]["content"]
+    except (urllib.error.URLError, KeyError, TimeoutError):
+        return None
 
 
-def _anon_labels(n: int) -> list[str]:
-    return [f"Risposta {string.ascii_uppercase[i]}" for i in range(n)]
+async def query_models_parallel(models: list[str], prompt: str) -> dict[str, str | None]:
+    """Tutti i membri in parallelo. Un membro che fallisce viene escluso, non
+    fa fallire il council."""
+    async def one(m):
+        return m, await asyncio.to_thread(_query_sync, m, prompt)
+    return dict(await asyncio.gather(*(one(m) for m in models)))
 
 
-def stage1(question: str, members: list[str] | None = None) -> dict[str, str]:
-    """Independent answers. No member sees any other."""
-    members = members or COUNCIL
-    return {m: _call(m, question) for m in members}
+# --------------------------------------------------------------------------
+# stadio 1
+# --------------------------------------------------------------------------
+
+async def stage1_collect_responses(user_query: str,
+                                   models: list[str] | None = None) -> list[dict]:
+    models = models or COUNCIL_MODELS
+    responses = await query_models_parallel(models, user_query)
+    return [{"model": m, "response": r} for m, r in responses.items() if r]
 
 
-def stage2(question: str, answers: dict[str, str],
-           members: list[str] | None = None, seed: int = 0) -> dict[str, str]:
-    """Anonymised peer review and ranking.
+# --------------------------------------------------------------------------
+# stadio 2
+# --------------------------------------------------------------------------
 
-    Each member sees the others' answers under neutral labels, in an order
-    shuffled per reviewer so position cannot stand in for identity. A member
-    never reviews its own answer.
-    """
-    members = members or list(answers)
-    rng = random.Random(seed)
-    reviews = {}
+RANKING_TEMPLATE = """Stai valutando risposte diverse alla seguente domanda:
 
-    for reviewer in members:
-        others = [(m, a) for m, a in answers.items() if m != reviewer]
-        rng.shuffle(others)
-        labels = _anon_labels(len(others))
-        blocks = "\n\n".join(f"### {lab}\n{txt}" for lab, (_, txt) in
-                             zip(labels, others))
-        prompt = f"""Hai risposto a questa domanda:
+Domanda: {query}
 
-{question}
+Qui sotto le risposte di modelli diversi, in forma anonima:
 
-Qui sotto ci sono le risposte di altri revisori, in forma anonima. Non sai chi
-le ha scritte e non c'e la tua.
-
-{blocks}
+{responses}
 
 Il tuo compito:
-1. Per ogni risposta, indica il punto piu forte e l'errore o la debolezza piu
-   grave. Se un'affermazione e semplicemente falsa, dillo.
-2. Segnala ogni punto su cui le risposte si CONTRADDICONO: sono i punti in cui
-   qualcuno sbaglia, e sono i piu preziosi.
-3. Classifica le risposte dalla migliore alla peggiore per accuratezza e
-   solidita del ragionamento, motivando in una riga ciascuna.
-4. Indica se qualcuna di queste risposte ti fa cambiare idea sulla tua, e su cosa.
+1. Valuta ogni risposta singolarmente. Per ognuna, spiega cosa fa bene e cosa fa male.
+2. Segnala ogni punto su cui le risposte si CONTRADDICONO: sono i punti in cui qualcuno sbaglia, e sono i piu preziosi.
+3. Alla fine, e solo alla fine, dai la classifica finale.
 
-Sii severo. L'accordo educato non serve a niente."""
-        reviews[reviewer] = _call(reviewer, prompt)
-        # the label map matters for auditing who said what afterwards
-        reviews[f"_{reviewer}_labelmap"] = json.dumps(
-            {lab: m for lab, (m, _) in zip(labels, others)})
-    return reviews
+IMPORTANTE: la classifica finale DEVE essere formattata ESATTAMENTE cosi:
+- Inizia con la riga "FINAL RANKING:" (maiuscolo, con i due punti)
+- Poi elenca le risposte dalla migliore alla peggiore, lista numerata
+- Ogni riga: numero, punto, spazio, e SOLO l'etichetta (es. "1. Response A")
+- Nessun altro testo dentro la sezione della classifica
+
+Esempio del formato corretto per la TUA INTERA risposta:
+
+Response A da buon dettaglio su X ma manca Y...
+Response B e accurata ma superficiale su Z...
+Response C offre la risposta piu completa...
+
+FINAL RANKING:
+1. Response C
+2. Response A
+3. Response B
+
+Ora valuta e classifica:"""
 
 
-def stage3(question: str, answers: dict[str, str], reviews: dict[str, str],
-           chairman: str = CHAIRMAN) -> str:
-    """Chairman synthesis over every answer and every ranking."""
-    a_blocks = "\n\n".join(f"### {m}\n{t}" for m, t in answers.items())
-    r_blocks = "\n\n".join(f"### Revisione di {m}\n{t}"
-                           for m, t in reviews.items()
-                           if not m.startswith("_"))
-    prompt = f"""Sei il Chairman di un council di revisione. Domanda originale:
+def build_labels(stage1_results: list[dict]) -> tuple[str, dict[str, str]]:
+    """Etichette anonime e mappa etichetta->modello per l'audit a valle."""
+    labels = [chr(65 + i) for i in range(len(stage1_results))]
+    text = "\n\n".join(f"Response {lab}:\n{r['response']}"
+                       for lab, r in zip(labels, stage1_results))
+    label_to_model = {f"Response {lab}": r["model"]
+                      for lab, r in zip(labels, stage1_results)}
+    return text, label_to_model
 
-{question}
 
-RISPOSTE INDIVIDUALI
-{a_blocks}
+async def stage2_collect_rankings(user_query: str, stage1_results: list[dict],
+                                  models: list[str] | None = None):
+    models = models or COUNCIL_MODELS
+    responses_text, label_to_model = build_labels(stage1_results)
+    prompt = RANKING_TEMPLATE.format(query=user_query, responses=responses_text)
+    responses = await query_models_parallel(models, prompt)
+    out = [{"model": m, "ranking": t, "parsed_ranking": parse_ranking_from_text(t)}
+           for m, t in responses.items() if t]
+    return out, label_to_model
 
-REVISIONI INCROCIATE
-{r_blocks}
 
-Scrivi il verdetto finale. Regole:
+def parse_ranking_from_text(ranking_text: str) -> list[str]:
+    """Estrae la sezione FINAL RANKING. Con fallback progressivi, perche un
+    modello che sbaglia il formato non deve far perdere il suo voto."""
+    if "FINAL RANKING:" in ranking_text:
+        section = ranking_text.split("FINAL RANKING:")[1]
+        numbered = re.findall(r"\d+\.\s*Response [A-Z]", section)
+        if numbered:
+            return [re.search(r"Response [A-Z]", m).group() for m in numbered]
+        return re.findall(r"Response [A-Z]", section)
+    return re.findall(r"Response [A-Z]", ranking_text)
+
+
+def calculate_aggregate_rankings(stage2_results: list[dict],
+                                 label_to_model: dict[str, str]) -> list[dict]:
+    """Posizione media di ogni modello attraverso tutte le classifiche.
+
+    E' l'unico output quantitativo del protocollo: trasforma quattro opinioni
+    in un ordinamento.
+    """
+    positions = defaultdict(list)
+    for r in stage2_results:
+        for pos, label in enumerate(r["parsed_ranking"], start=1):
+            if label in label_to_model:
+                positions[label_to_model[label]].append(pos)
+    agg = [{"model": m, "average_rank": round(sum(p) / len(p), 2),
+            "rankings_count": len(p)} for m, p in positions.items() if p]
+    agg.sort(key=lambda x: x["average_rank"])
+    return agg
+
+
+# --------------------------------------------------------------------------
+# stadio 3
+# --------------------------------------------------------------------------
+
+CHAIRMAN_TEMPLATE = """Sei il Chairman di un LLM Council. Piu modelli hanno risposto alla domanda di un utente, poi hanno classificato le risposte l'uno dell'altro.
+
+Domanda originale: {query}
+
+STADIO 1 - Risposte individuali:
+{stage1}
+
+STADIO 2 - Classifiche incrociate:
+{stage2}
+
+Il tuo compito e sintetizzare tutto questo in una risposta unica, completa e accurata. Considera:
+- Le risposte individuali e le loro intuizioni
+- Le classifiche e cosa rivelano sulla qualita delle risposte
+- Ogni schema di accordo o disaccordo
+
+Regole aggiuntive, che l'originale lascia implicite e che qui servono perche il
+council sta arbitrando decisioni e non opinioni:
 - Parti dai punti su cui il council CONCORDA: sono i piu affidabili.
-- Poi tratta i DISACCORDI uno per uno e prendi posizione, motivando. Non
-  mediare fra due affermazioni quando una delle due e semplicemente falsa.
-- Segnala esplicitamente ogni affermazione che un solo membro ha fatto e che
-  nessun altro ha confermato: va trattata come non verificata.
-- Chiudi con una raccomandazione operativa in tre righe al massimo.
-- Scrivi per qualcuno che deve decidere, non per qualcuno che deve essere
-  impressionato."""
-    return _call(chairman, prompt)
+- Sui DISACCORDI prendi posizione e motiva. Non mediare fra due affermazioni quando una e semplicemente falsa.
+- Segnala ogni affermazione fatta da un solo membro e non confermata da altri: e non verificata, e va detto.
+
+Scrivi per qualcuno che deve decidere, non per qualcuno che deve essere impressionato."""
 
 
-def run(question: str, out: Path | None = None) -> dict:
-    answers = stage1(question)
-    reviews = stage2(question, answers)
-    final = stage3(question, answers, reviews)
-    result = {"question": question, "answers": answers,
-              "reviews": reviews, "chairman_verdict": final}
-    out = out or (RESULTS / "council_run.json")
-    out.write_text(json.dumps(result, indent=2, ensure_ascii=False),
-                   encoding="utf-8")
-    return result
+async def stage3_synthesize_final(user_query: str, stage1_results: list[dict],
+                                  stage2_results: list[dict],
+                                  chairman: str = CHAIRMAN_MODEL) -> dict:
+    stage1_text = "\n\n".join(f"Model: {r['model']}\nResponse: {r['response']}"
+                              for r in stage1_results)
+    stage2_text = "\n\n".join(f"Model: {r['model']}\nRanking: {r['ranking']}"
+                              for r in stage2_results)
+    prompt = CHAIRMAN_TEMPLATE.format(query=user_query, stage1=stage1_text,
+                                      stage2=stage2_text)
+    text = await asyncio.to_thread(_query_sync, chairman, prompt)
+    return {"model": chairman,
+            "response": text or "Errore: sintesi finale non generata."}
+
+
+# --------------------------------------------------------------------------
+
+async def run_full_council(user_query: str) -> dict:
+    stage1 = await stage1_collect_responses(user_query)
+    if not stage1:
+        return {"error": "nessun modello ha risposto"}
+    stage2, label_to_model = await stage2_collect_rankings(user_query, stage1)
+    aggregate = calculate_aggregate_rankings(stage2, label_to_model)
+    stage3 = await stage3_synthesize_final(user_query, stage1, stage2)
+    return {"question": user_query, "stage1": stage1, "stage2": stage2,
+            "stage3": stage3,
+            "metadata": {"label_to_model": label_to_model,
+                         "aggregate_rankings": aggregate}}
+
+
+# --------------------------------------------------------------------------
+# DIFFERENZE DALL'ORIGINALE, dichiarate
+# --------------------------------------------------------------------------
+#
+# 1. Un membro classifica ANCHE la propria risposta. Nell'originale e cosi, ed
+#    e corretto: l'anonimizzazione e il meccanismo che impedisce di favorirsi,
+#    non l'esclusione. La mia prima versione escludeva il se stesso, il che
+#    toglie un voto a ogni classifica senza aggiungere protezione.
+#
+# 2. L'ordine delle etichette e lo stesso per tutti i revisori. La mia prima
+#    versione lo mescolava per revisore. E' una difesa in piu contro il bias di
+#    posizione, ma rompe l'aggregazione dell'originale (le posizioni medie non
+#    sarebbero piu confrontabili senza rimappare) e non e nel protocollo.
+#    Tolta: si segue la fonte.
+#
+# 3. Il parsing di FINAL RANKING e l'aggregazione in posizione media non
+#    esistevano affatto nella mia prima versione. Sono il pezzo che trasforma
+#    il council da "quattro opinioni" a "un ordinamento", e ometterli era la
+#    lacuna piu grave.
+#
+# UNA DIFFERENZA DI DISEGNO CHE RESTA, e che va capita prima di usare questo file
+# -----------------------------------------------------------------------------
+# Nell'originale tutti i membri rispondono ALLA STESSA domanda, ed e per questo
+# che classificarsi a vicenda ha senso. Il council sul CODICE eseguito in questo
+# progetto era diverso: quattro specialisti con quattro domande diverse
+# (correttezza statistica, scelte di modellazione, verifica dei fatti, analisi
+# decisionale). Su un council cosi lo stadio 2 dell'originale NON si applica -
+# non si classificano risposte a domande diverse - e va sostituito da un
+# arbitrato incrociato. Il protocollo con classifica e aggregazione vale per la
+# domanda decisionale, dove tutti rispondono alla stessa cosa.
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description=__doc__)
+    ap = argparse.ArgumentParser(description="LLM Council (karpathy/llm-council)")
     ap.add_argument("--question", required=True)
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
-    r = run(args.question, args.out)
-    print(r["chairman_verdict"])
+    result = asyncio.run(run_full_council(args.question))
+    (args.out or RESULTS / "council_run.json").write_text(
+        json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(json.dumps(result.get("metadata", {}).get("aggregate_rankings", []),
+                     indent=2))
+    print("\n" + result.get("stage3", {}).get("response", ""))

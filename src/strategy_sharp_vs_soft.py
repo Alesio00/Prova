@@ -244,6 +244,49 @@ def run(which: str = "discovery") -> dict:
         np.corrcoef(range(len(rois_dec)), rois_dec)[0, 1] > 0.8)
     out["edge_pnl_correlation"] = float(np.corrcoef(bets.edge, bets.pnl)[0, 1])
 
+    # ---- POTENZA: regressione e bootstrap --------------------------------
+    # Il test diretto usa solo le selezioni con edge>0 (3.665 su 47.754) e
+    # butta via il 92% dei dati. La regressione li usa tutti: se l'edge stimato
+    # e' informativo, la pendenza dev'essere positiva, e l'intercetta dev'essere
+    # ZERO (a edge nullo il rendimento atteso e' nullo, se la linea de-viggata
+    # di Pinnacle e' non distorta).
+    x = bets.edge.values
+    yv = bets.pnl.values
+    X = np.c_[np.ones(len(x)), x]
+    beta, *_ = np.linalg.lstsq(X, yv, rcond=None)
+    resid = yv - X @ beta
+    cov = (resid @ resid / (len(x) - 2)) * np.linalg.inv(X.T @ X)
+    me = float(bets[bets.edge > 0].edge.mean())
+    gvec = np.array([1.0, me])
+    pred = float(beta[0] + beta[1] * me)
+    se_pred = float(np.sqrt(gvec @ cov @ gvec))
+    out["regression"] = {
+        "intercept": float(beta[0]), "intercept_se": float(np.sqrt(cov[0, 0])),
+        "slope": float(beta[1]), "slope_se": float(np.sqrt(cov[1, 1])),
+        "slope_t": float(beta[1] / np.sqrt(cov[1, 1])),
+        "predicted_roi_at_mean_positive_edge": pred,
+        "predicted_roi_se": se_pred,
+        "_reading": ("pendenza positiva = l'edge stimato e' informativo; "
+                     "intercetta ~0 = la linea Pinnacle de-viggata e' non distorta"),
+    }
+
+    rng = np.random.default_rng(0)
+    boots = []
+    for _ in range(2000):
+        idx = rng.integers(0, len(bets), len(bets))
+        g = bets.iloc[idx]
+        g = g[g.edge > 0]
+        if len(g) > 50:
+            boots.append(g.pnl.mean())
+    if boots:
+        ba = np.array(boots)
+        out["bootstrap"] = {
+            "n_resamples": len(ba), "mean_roi": float(ba.mean()),
+            "ci95_low": float(np.percentile(ba, 2.5)),
+            "ci95_high": float(np.percentile(ba, 97.5)),
+            "prob_roi_positive": float((ba > 0).mean()),
+        }
+
     # ---- verdetto --------------------------------------------------------
     out["verdict"] = {
         "premise_holds": out["H0_premise_holds"],

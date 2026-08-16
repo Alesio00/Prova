@@ -257,6 +257,23 @@
     ],
     "decile_monotone": true,
     "edge_pnl_correlation": 0.03552352693038076,
+    "regression": {
+      "intercept": -0.0030121816076660105,
+      "intercept_se": 0.013802991001172814,
+      "slope": 0.9476534101531252,
+      "slope_se": 0.1613947185219507,
+      "slope_t": 5.871650688645294,
+      "predicted_roi_at_mean_positive_edge": 0.013103498715935163,
+      "predicted_roi_se": 0.015883066618909727,
+      "_reading": "pendenza positiva = l'edge stimato e' informativo; intercetta ~0 = la linea Pinnacle de-viggata e' non distorta"
+    },
+    "bootstrap": {
+      "n_resamples": 2000,
+      "mean_roi": 0.06298245852030744,
+      "ci95_low": -0.010390674475789173,
+      "ci95_high": 0.1406709279872628,
+      "prob_roi_positive": 0.95
+    },
     "verdict": {
       "premise_holds": true,
       "H1_roi": 0.0638800959232614,
@@ -524,6 +541,23 @@
     ],
     "decile_monotone": true,
     "edge_pnl_correlation": 0.055530496205964716,
+    "regression": {
+      "intercept": -0.001086707722672495,
+      "intercept_se": 0.015708444364906923,
+      "slope": 1.5875999844676139,
+      "slope_se": 0.19954627754251808,
+      "slope_t": 7.956049113115317,
+      "predicted_roi_at_mean_positive_edge": 0.04651686780309055,
+      "predicted_roi_se": 0.020354245986231326,
+      "_reading": "pendenza positiva = l'edge stimato e' informativo; intercetta ~0 = la linea Pinnacle de-viggata e' non distorta"
+    },
+    "bootstrap": {
+      "n_resamples": 2000,
+      "mean_roi": 0.05843939635957206,
+      "ci95_low": -0.050612156281184165,
+      "ci95_high": 0.16978843497057836,
+      "prob_roi_positive": 0.8605
+    },
     "verdict": {
       "premise_holds": true,
       "H1_roi": 0.057974683544303796,
@@ -791,6 +825,23 @@
     ],
     "decile_monotone": true,
     "edge_pnl_correlation": 0.04330867767060561,
+    "regression": {
+      "intercept": -0.003257991809701344,
+      "intercept_se": 0.010364506964347731,
+      "slope": 1.1875317753095254,
+      "slope_se": 0.12536227346180487,
+      "slope_t": 9.472800249361624,
+      "predicted_roi_at_mean_positive_edge": 0.023581507174467664,
+      "predicted_roi_se": 0.012533496990324699,
+      "_reading": "pendenza positiva = l'edge stimato e' informativo; intercetta ~0 = la linea Pinnacle de-viggata e' non distorta"
+    },
+    "bootstrap": {
+      "n_resamples": 2000,
+      "mean_roi": 0.06133304935050341,
+      "ci95_low": -0.0028808844274704096,
+      "ci95_high": 0.12442232842408577,
+      "prob_roi_positive": 0.97
+    },
     "verdict": {
       "premise_holds": true,
       "H1_roi": 0.06133424283765348,

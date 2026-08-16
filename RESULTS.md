@@ -752,3 +752,88 @@ linea di principio.
 
 Ma per la prima volta la direzione è quella giusta, e la barra scritta in HANDOFF è chiara: servono
 più dati per-bookmaker per decidere il livello. Non parametri diversi. Non modelli migliori.
+
+---
+
+## Run 007 — 2026-08-16 · il meccanismo isolato, e il limite logico dell'obiettivo
+
+### 🔬 L'esperimento di controllo che spiega tutto
+
+Avevo 900.988 selezioni su cui non avevo **mai** fatto il test di contrasto: la strategia della
+dispersione del run 005, dove il riferimento era la **media di mercato** invece di Pinnacle.
+Stessa formula, stesso test, unica variabile cambiata: quanto è affilato il riferimento.
+
+| Riferimento | Selezioni | Contrasto edge>0 vs edge≤0 | Correlazione edge/P&L |
+|---|---|---|---|
+| **Media di mercato** | **900.988** | −0.04 pp, t=−0.10, **p=0.92** | **−0.0005** |
+| **Pinnacle** | 47.754 | +14.54 pp, t=+4.39, **p<0.0001** | **+0.0433** |
+
+**Con 19 volte più dati e un riferimento non affilato: zero segnale.** Non poco — zero, con potenza
+enorme per rilevarlo.
+
+Questo è un esperimento di controllo vero, e chiude due questioni insieme:
+1. **Spiega perché il run 005 falliva.** La media di mercato è contaminata dagli stessi book molli
+   che si vorrebbe battere. Usarla come riferimento è come chiedere all'imputato di fare da giudice.
+2. **Esclude che il risultato Pinnacle sia un artefatto del campione piccolo.** Se lo fosse, il
+   campione da 900k avrebbe dovuto mostrare *qualcosa*. Non mostra niente.
+
+**Non è il modello che conta, né la quantità di dati: è l'affilatezza del riferimento.**
+
+### 📈 Più potenza dagli stessi dati
+
+Il test diretto usa solo le 3.665 selezioni con edge>0 e butta via il 92% dei dati. La regressione
+le usa tutte.
+
+| | Fuori campione | Combinato |
+|---|---|---|
+| **Pendenza** | **+1.59** (t=7.96) | **+1.19** (t=9.47) |
+| **Intercetta** | −0.0011 (se 0.0157) | −0.0033 (se 0.0104) |
+| Bootstrap ROI | +5.84% | +6.13% |
+| IC 95% | [−5.06%, +16.98%] | [−0.29%, +12.44%] |
+| **P(ROI > 0)** | 86.1% | **97.0%** |
+
+Due cose che valgono più del ROI stesso:
+
+- **La pendenza è +1.19 con t=9.47.** Per ogni punto di edge stimato si realizza ~1.19 punti di
+  rendimento. Il segnale non è solo reale: è se mai *sottostimato*.
+- **L'intercetta è indistinguibile da zero.** È esattamente quello che la teoria prevede se la linea
+  Pinnacle de-viggata è non distorta: a edge nullo, rendimento atteso nullo. Il fatto che venga
+  fuori dai dati invece di essere imposto è la conferma più forte che il meccanismo è quello giusto.
+
+### 🎯 Il criterio di uscita contiene una clausola logicamente insoddisfacibile
+
+L'obiettivo chiede tre cose insieme: **confidenza alta E vantaggio alto E garantito**. Dopo sette run:
+
+| Requisito | Stato | Evidenza |
+|---|---|---|
+| **Confidenza alta** | ✅ sul segnale · ⚠️ sul livello | pendenza t=9.47, contrasto p<0.0001, replicato fuori campione p=0.0048. **P(ROI>0) = 97.0%**, ma l'IC 95% sfiora lo zero [−0.29%, +12.44%] |
+| **Vantaggio alto** | ❌ | +6.13% è reale ma modesto. "Alto" nelle scommesse sportive significa 2-3%: +6% sarebbe eccellente, ma l'incertezza è ±6 pp |
+| **Garantito** | ❌ **impossibile in linea di principio** | con un margine del banco e un operatore che può limitare o chiudere i conti, nessun vantaggio è garantito. Non è una limitazione di questo progetto: è la struttura del mercato |
+
+**Il terzo requisito non è raggiungibile da nessun lavoro aggiuntivo.** Non serve più codice, più
+dati o più modelli: "garantito" descrive una cosa che non esiste nelle scommesse a quota fissa.
+Questo significa che il loop, come specificato, **non può terminare per successo** — può solo
+terminare quando chi lo ha scritto decide se P(ROI>0) = 97% con un vantaggio di +6% ± 6 supera la
+propria asticella.
+
+### 📊 Dove si è arrivati, in una riga per run
+
+| Run | Cosa è stato stabilito |
+|---|---|
+| 001-003 | Modello costruito, 4 bug trovati dai test, incertezza propagata |
+| 004 | **Il modello perde contro il mercato.** Peso ottimo nella fusione = 0 |
+| 005 | **Il soffitto del line shopping è −0.93%.** Nessun vantaggio possibile da lì |
+| 006 | **Sharp contro soft: primo segnale positivo**, replicato fuori campione p=0.0048 |
+| 007 | **Il meccanismo isolato**: conta l'affilatezza del riferimento, non i dati né il modello. P(ROI>0)=97% |
+
+### 🚧 Cosa servirebbe davvero, e non è a portata
+
+Per stringere l'IC 95% sopra lo zero servono **più partite con quote per singolo bookmaker**.
+Ne ho 2.653 (EPL 2012-2020 + Serie A). Servirebbero ~1,4× per la significatività al 95%.
+
+Cercate e non trovate: 20+ repository GitHub scandagliati, nessun altro mirror con colonne per-book.
+`football-data.co.uk` — la fonte naturale, che copre 22 campionati dal 1993 — è **bloccata dalla
+policy di egress dell'organizzazione** (403 al CONNECT, verificato, non aggirato).
+
+**Un singolo file da football-data.co.uk chiuderebbe la questione in un pomeriggio.** È l'unica cosa
+che manca, ed è fuori dal mio controllo.

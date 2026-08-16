@@ -1,0 +1,111 @@
+==================================================================
+CAMPIONE DI SCOPERTA (EPL 2012-2016)
+==================================================================
+partite 1,516  (18/08/12 -> 17/05/16)
+selezioni 27,288
+
+H0 - chi e' il piu affilato? (log loss, piu basso = meglio)
+  PS     0.97436   overround  2.02%  <== sharp
+  BW     0.97495   overround  6.23%
+  B365   0.97500   overround  3.04%
+  IW     0.97559   overround  8.13%
+  LB     0.97570   overround  5.59%
+  VC     0.97579   overround  2.68%
+  WH     0.97762   overround  6.27%
+  premessa regge: True   margine sul miglior soft: +0.00059
+
+H1/H2 - la strategia, per soglia di edge
+  soglia    n      ROI       t      p
+     0%   2,085    +6.39%   +1.66  0.096
+     1%   1,037    +5.29%   +0.83  0.405
+     2%     580    +3.06%   +0.33  0.743
+     3%     352    +7.53%   +0.55  0.581
+     5%     148   +31.16%   +1.16  0.248
+
+  ROI crescente con la soglia (H2): False
+  sequenza: [6.39, 5.29, 3.06, 7.53, 31.16]
+
+per bookmaker (soglia 0)
+  VC     n=  496  ROI +17.69%  t=+1.95
+  WH     n=  399  ROI  +5.86%  t=+0.65
+  B365   n=  462  ROI  +2.76%  t=+0.30
+  LB     n=  240  ROI  +2.74%  t=+0.31
+  BW     n=  165  ROI  +2.15%  t=+0.19
+  IW     n=  323  ROI  -0.24%  t=-0.04
+
+VERDETTO: edge positivo ma non significativo
+
+==================================================================
+TEST FUORI CAMPIONE (dati trovati dopo)
+==================================================================
+partite 1,137  (20/09/14 -> 28/05/17)
+selezioni 20,466
+
+H0 - chi e' il piu affilato? (log loss, piu basso = meglio)
+  PS     0.91712   overround  2.05%  <== sharp
+  VC     0.91773   overround  3.25%
+  B365   0.91858   overround  3.71%
+  LB     0.91876   overround  5.82%
+  BW     0.91968   overround  5.16%
+  WH     0.92130   overround  4.82%
+  IW     0.92427   overround  6.50%
+  premessa regge: True   margine sul miglior soft: +0.00060
+
+H1/H2 - la strategia, per soglia di edge
+  soglia    n      ROI       t      p
+     0%   1,580    +5.80%   +1.05  0.293
+     1%     989    +8.07%   +1.06  0.290
+     2%     690    +5.06%   +0.52  0.604
+     3%     523   +10.64%   +0.88  0.379
+     5%     302   -26.56%   -2.31  0.021
+
+  ROI crescente con la soglia (H2): False
+  sequenza: [5.8, 8.07, 5.06, 10.64, -26.56]
+
+per bookmaker (soglia 0)
+  BW     n=  115  ROI +26.99%  t=+1.08
+  IW     n=  442  ROI +12.57%  t=+1.73
+  WH     n=  238  ROI +12.52%  t=+0.83
+  VC     n=  345  ROI  +4.39%  t=+0.33
+  LB     n=   96  ROI  -4.81%  t=-0.19
+  B365   n=  344  ROI -10.26%  t=-0.83
+
+VERDETTO: edge positivo ma non significativo
+
+==================================================================
+TUTTO INSIEME
+==================================================================
+partite 2,653  (18/08/12 -> 28/05/17)
+selezioni 47,754
+
+H0 - chi e' il piu affilato? (log loss, piu basso = meglio)
+  PS     0.94983   overround  2.03%  <== sharp
+  B365   0.95082   overround  3.33%
+  VC     0.95090   overround  2.93%
+  BW     0.95126   overround  5.77%
+  LB     0.95130   overround  5.69%
+  WH     0.95348   overround  5.65%
+  IW     0.95360   overround  7.43%
+  premessa regge: True   margine sul miglior soft: +0.00099
+
+H1/H2 - la strategia, per soglia di edge
+  soglia    n      ROI       t      p
+     0%   3,665    +6.13%   +1.90  0.058
+     1%   2,026    +6.65%   +1.35  0.179
+     2%   1,270    +4.14%   +0.61  0.542
+     3%     875    +9.39%   +1.04  0.301
+     5%     450    -7.58%   -0.64  0.521
+
+  ROI crescente con la soglia (H2): False
+  sequenza: [6.13, 6.65, 4.14, 9.39, -7.58]
+
+per bookmaker (soglia 0)
+  BW     n=  280  ROI +12.35%  t=+1.00
+  VC     n=  841  ROI +12.23%  t=+1.61
+  WH     n=  637  ROI  +8.35%  t=+1.05
+  IW     n=  765  ROI  +7.16%  t=+1.42
+  LB     n=  336  ROI  +0.58%  t=+0.06
+  B365   n=  806  ROI  -2.80%  t=-0.37
+
+VERDETTO: edge positivo ma non significativo
+

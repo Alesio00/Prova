@@ -72,26 +72,55 @@ SOFT = ["B365", "BW", "IW", "LB", "WH", "VC"]
 LEGS = ["H", "D", "A"]
 
 
+MIN_SOFT = 3   # con meno di tre book soft il confronto non ha abbastanza bersagli
+
+
 def _read_dirs(dirs) -> pd.DataFrame:
-    need = [SHARP + l for l in LEGS] + [b + l for b in SOFT for l in LEGS]
+    """Ogni file porta i bookmaker che ha.
+
+    La prima versione pretendeva tutti e sette i book in ogni file e scartava
+    silenziosamente le stagioni a cui ne mancava uno solo - buttando via 509
+    partite che AVEVANO Pinnacle e a cui mancava soltanto Ladbrokes. Serve
+    Pinnacle (senza riferimento affilato non si fa niente) e almeno MIN_SOFT
+    book soft; quali siano, cambia da file a file e non importa.
+    """
+    sharp_cols = [SHARP + l for l in LEGS]
     frames = []
     for dd in dirs:
         for f in sorted(glob.glob(str(dd / "*.csv"))):
             # gli aggregati "joined"/"all_seasons" duplicano le stagioni singole
-            if re.search(r"joined|all_seasons|fixtures|Standings|^test",
+            if re.search(r"joined|all_seasons|fixtures|Standings|league|EMA|^test",
                          Path(f).name, re.I):
                 continue
             try:
                 x = pd.read_csv(f, encoding="latin-1", on_bad_lines="skip")
             except Exception:
                 continue
-            if not set(need + ["FTR"]).issubset(x.columns):
+            if not set(sharp_cols + ["FTR"]).issubset(x.columns):
                 continue
-            x = x.dropna(subset=need + ["FTR"])
-            x = x[(x[need].apply(pd.to_numeric, errors="coerce") > 1.0).all(axis=1)]
-            if len(x):
-                x["src"] = Path(f).name
-                frames.append(x)
+            books = [b for b in SOFT
+                     if set(b + l for l in LEGS).issubset(x.columns)]
+            if len(books) < MIN_SOFT:
+                continue
+            cols = sharp_cols + [b + l for b in books for l in LEGS]
+            x = x.dropna(subset=cols + ["FTR"])
+            num = x[cols].apply(pd.to_numeric, errors="coerce")
+            x = x[(num > 1.0).all(axis=1)]
+            if not len(x):
+                continue
+            x = x.copy()
+            x["src"] = Path(f).name
+            x["books_available"] = ",".join(books)
+            # i book assenti restano NaN e vengono saltati a valle
+            for b in SOFT:
+                for l in LEGS:
+                    if b + l not in x.columns:
+                        x[b + l] = np.nan
+            frames.append(x[["FTR", "Date", "HomeTeam", "AwayTeam", "src",
+                             "books_available"] +
+                            [c for c in sharp_cols +
+                             [b + l for b in SOFT for l in LEGS]]
+                            + (["Div"] if "Div" in x.columns else [])])
     if not frames:
         return pd.DataFrame()
     d = pd.concat(frames, ignore_index=True)
@@ -154,7 +183,10 @@ def run(which: str = "discovery") -> dict:
     # ---- H0: Pinnacle e' davvero il piu affilato? -----------------------
     ll = {SHARP: _ll(p_sharp, y)}
     for b in SOFT:
-        ll[b] = _ll(devig(d[[b + l for l in LEGS]].values.astype(float)), y)
+        Ob = d[[b + l for l in LEGS]].apply(pd.to_numeric, errors="coerce").values
+        m = np.isfinite(Ob).all(axis=1) & (Ob > 1.0).all(axis=1)
+        if m.sum() > 200:
+            ll[b] = _ll(devig(Ob[m]), y[m])
     best = min(ll, key=ll.get)
     out["H0_log_loss_by_book"] = ll
     out["H0_sharpest_book"] = best
@@ -163,20 +195,27 @@ def run(which: str = "discovery") -> dict:
         min(v for k, v in ll.items() if k != SHARP) - ll[SHARP])
 
     # overround medio per book: misura diretta di quanto e' "soft"
-    out["overround_by_book"] = {
-        b: float((1.0 / d[[b + l for l in LEGS]].values.astype(float)).sum(axis=1).mean() - 1)
-        for b in [SHARP] + SOFT}
+    ovr = {}
+    for b in [SHARP] + SOFT:
+        Ob = d[[b + l for l in LEGS]].apply(pd.to_numeric, errors="coerce").values
+        m = np.isfinite(Ob).all(axis=1) & (Ob > 1.0).all(axis=1)
+        if m.sum() > 200:
+            ovr[b] = float((1.0 / Ob[m]).sum(axis=1).mean() - 1)
+    out["overround_by_book"] = ovr
 
     # ---- H1/H2: la strategia --------------------------------------------
     recs = []
     for b in SOFT:
-        Ob = d[[b + l for l in LEGS]].values.astype(float)
+        Ob = d[[b + l for l in LEGS]].apply(pd.to_numeric, errors="coerce").values
         for k in range(3):
+            m = np.isfinite(Ob[:, k]) & (Ob[:, k] > 1.0)
+            if not m.any():
+                continue
             recs.append(pd.DataFrame({
-                "book": b, "leg": LEGS[k], "odds": Ob[:, k],
-                "p_sharp": p_sharp[:, k], "won": (y == k).astype(int),
-                "edge": Ob[:, k] * p_sharp[:, k] - 1.0,
-                "date": d.Date.values,
+                "book": b, "leg": LEGS[k], "odds": Ob[m, k],
+                "p_sharp": p_sharp[m, k], "won": (y[m] == k).astype(int),
+                "edge": Ob[m, k] * p_sharp[m, k] - 1.0,
+                "date": d.Date.values[m],
             }))
     bets = pd.concat(recs, ignore_index=True)
     bets["pnl"] = np.where(bets.won == 1, bets.odds - 1.0, -1.0)
@@ -310,7 +349,7 @@ def _print(r):
     print("H0 - chi e' il piu affilato? (log loss, piu basso = meglio)")
     for b, v in sorted(r["H0_log_loss_by_book"].items(), key=lambda kv: kv[1]):
         mark = "  <== sharp" if b == r["sharp"] else ""
-        print(f"  {b:<6} {v:.5f}   overround {r['overround_by_book'][b]*100:5.2f}%{mark}")
+        print(f"  {b:<6} {v:.5f}   overround {r['overround_by_book'].get(b, float('nan'))*100:5.2f}%{mark}")
     print(f"  premessa regge: {r['H0_premise_holds']}"
           f"   margine sul miglior soft: {r['H0_margin_vs_best_soft']:+.5f}\n")
 

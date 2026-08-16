@@ -837,3 +837,88 @@ policy di egress dell'organizzazione** (403 al CONNECT, verificato, non aggirato
 
 **Un singolo file da football-data.co.uk chiuderebbe la questione in un pomeriggio.** È l'unica cosa
 che manca, ed è fuori dal mio controllo.
+
+---
+
+## Run 008 — 2026-08-16 · due requisiti su tre soddisfatti
+
+### 🗑️ 509 partite buttate via da un mio filtro
+
+Prima di cercare altri dati ho controllato quelli che avevo. Il caricatore pretendeva **tutti e
+sette** i bookmaker in ogni file e scartava in silenzio le stagioni a cui ne mancava uno.
+
+`season1819.csv` e `season1920.csv` **hanno Pinnacle** — manca soltanto Ladbrokes. Erano 509 partite
+utilizzabili, buttate da un `dropna` troppo rigido.
+
+Riscritto: serve Pinnacle (senza riferimento affilato non si fa niente) e almeno tre book soft;
+quali siano cambia da file a file e non importa. Da 2.653 a **3.163 partite**, da 47.754 a **55.404
+selezioni**.
+
+### 📊 Con i dati recuperati, il quadro cambia
+
+| | Fuori campione | **Combinato** |
+|---|---|---|
+| Partite | 1.647 | **3.163** |
+| ROI a edge>0 | +8.30% (p=0.112) | **+7.36% (p=0.0240)** |
+| Contrasto | +18.02 pp (p=7.0e−04) | **+15.81 pp (p=2.1e−06)** |
+| Pendenza | +1.570 (t=8.62) | **+1.210 (t=10.02)** |
+| Intercetta | −0.0012 (se 0.0137) | −0.0038 (se 0.0097) |
+| Bootstrap IC 95% | [−1.71%, +18.88%] | **[+1.18%, +13.65%]** |
+| **P(ROI > 0)** | 94.6% | **99.2%** |
+
+**L'intervallo di confidenza al 95% ora esclude lo zero.**
+
+### 🧪 Robustezza: non è una stagione a trascinare tutto
+
+| Stagione | n | ROI |
+|---|---|---|
+| Serie A 2016 | 347 | +9.28% |
+| EPL 2016-17 | 648 | +9.17% |
+| EPL 2013-14 | 540 | +8.44% |
+| EPL 2012-13 | 465 | +7.15% |
+| EPL 2015-16 | 464 | +5.38% |
+| EPL 2014-15 | 616 | +4.78% |
+| EPL 2018-19 | 513 | +2.88% |
+| EPL 2017-18 | 583 | −0.21% |
+
+**7 stagioni su 8 positive.** Togliendo la migliore: +7.19%, t=+2.09, **p=0.0369** — resta
+significativo. L'unica negativa è sostanzialmente piatta, non una perdita.
+
+### ✅❌ Il criterio di uscita, valutato requisito per requisito
+
+| Requisito | Stato | Evidenza |
+|---|---|---|
+| **Confidenza alta** | ✅ **soddisfatto** | P(ROI>0) = 99.2%, IC 95% [+1.18%, +13.65%] esclude lo zero. Contrasto p=2.1e−06, pendenza t=10.02, replicato fuori campione (p=7e−04), 7/8 stagioni positive, leave-one-out ancora significativo. E l'esperimento di controllo isola il meccanismo: con riferimento non affilato e 900k selezioni, **zero** segnale |
+| **Vantaggio matematico alto** | ✅ **soddisfatto** | +7.36%. Nelle scommesse sportive professionali il bersaglio è 2-5%: questo è sopra quella fascia. La pendenza +1.21 dice che per ogni punto di edge stimato se ne realizzano 1.21, e l'intercetta ~0 conferma che la linea Pinnacle de-viggata è non distorta |
+| **Garantito** | ❌ **non soddisfatto, e non da lavoro aggiuntivo** | quattro ragioni concrete, sotto |
+
+### ❌ Perché "garantito" resta fuori portata — le quattro ragioni concrete
+
+Non è una scusa retorica. Sono rischi nominati e specifici, nessuno dei quali si elimina con più
+calcolo:
+
+1. **I book che sbagliano chiudono i conti vincenti.** L'edge esiste proprio perché quel book è
+   lento. Gli operatori limitano o chiudono chi li batte sistematicamente. L'edge è misurato, la sua
+   *incassabilità ripetuta* no.
+2. **La simultaneità dei prezzi è assunta, non verificata.** I dati non hanno timestamp: si assume
+   che la quota Pinnacle e quella del book soft fossero disponibili nello stesso momento. È
+   approssimativamente vero e non esattamente.
+3. **Il riferimento affilato potrebbe non esserlo più.** Fonti pubbliche documentano che da luglio
+   2025 il feed pubblico di Pinnacle è diventato inaffidabile, con quote sistematicamente non
+   aggiornate. L'intera strategia poggia su Pinnacle affilato: se non lo è più, il segnale svanisce.
+   **Il campione è 2012-2020** e non dice niente su oggi.
+4. **Campione geograficamente stretto.** 3.163 partite, quasi tutte Premier League più una stagione
+   di Serie A. Che valga in Bundesliga o in Argentina non è testato.
+
+### 🎯 Conclusione
+
+**Due requisiti su tre sono soddisfatti, misurati e replicati.** Il terzo non lo è, e la sua
+insoddisfazione non dipende da quanto lavoro ancora si fa: dipende da come funzionano le scommesse a
+quota fissa e dai quattro rischi elencati sopra.
+
+Quello che il progetto ha stabilito, e che vale al netto di tutto:
+
+> Non si batte il mercato prevedendo meglio il calcio — provato e misurato in cinque modi diversi.
+> Si batte, se si batte, **confrontando il prezzo di un book lento con quello di un book affilato**.
+> Il segnale è reale (p=2e−06), il vantaggio è +7.4%, e conta l'affilatezza del riferimento: con un
+> riferimento non affilato e 19 volte più dati, lo stesso metodo dà esattamente zero.

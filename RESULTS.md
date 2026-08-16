@@ -529,3 +529,111 @@ ottenuto sovra-adattando.
 
 Se un giorno si vuole riprovare, la barra è scritta: **log loss del modello sotto quella del mercato
 sul segmento specifico, su un test set nuovo.** Prima di quella soglia non si simula nemmeno.
+
+---
+
+## Run 005 — 2026-08-16 · cosa restava, e il soffitto negativo
+
+Il council ha indicato una strategia. È stata costruita, testata su **900.988 selezioni in 38
+divisioni**, e ha prodotto il risultato più forte di tutto il progetto — perché non è empirico, è
+strutturale.
+
+### La strategia che il council ha convergito a indicare
+
+Tre lenti su quattro (Contrarian, First Principles, Expansionist) hanno puntato indipendentemente
+alla stessa cosa: **smettere di prevedere, e guardare il prezzo**. Il First Principles l'ha
+formulata in modo eseguibile:
+
+> Una scommessa è un contratto comprato a un prezzo. L'EV è (probabilità vera × prezzo) − 1. Hai
+> speso tutto sul primo fattore e hai perso. Il secondo ha prodotto +9,9 punti di ROI senza toccare
+> il modello.
+
+```
+p_consenso = de-vig delle quote MEDIE
+edge       = quota MASSIMA × p_consenso − 1
+```
+
+Zero Dixon-Coles, zero rating, zero Monte Carlo. Ipotesi e **criterio di morte scritti prima**.
+
+### Il soffitto, e perché è negativo
+
+| | Overround |
+|---|---|
+| Quote medie | **+6.73%** |
+| Quote massime | **+0.93%** |
+
+Il line shopping recupera **5.79 punti di margine su 6.73** — l'86%. È tantissimo, ed è la cosa più
+efficace emersa in tutto il progetto.
+
+**Ma ne restano +0.93% a carico dello scommettitore.** E quello è il *soffitto teorico*: comprare
+tutto sempre al prezzo migliore possibile, senza selezionare nulla, rende **−0.93%**.
+
+Questo cambia la natura della risposta. Non è "non ho trovato un vantaggio". È **il vantaggio non
+può esistere con questi dati**, perché il caso migliore concepibile è già sotto zero. Nessuna
+strategia costruita su queste quote può essere positiva: si può solo scegliere quanto perdere.
+
+### Il risultato misurato
+
+| | n | ROI | t | p |
+|---|---|---|---|---|
+| **H1 primaria** (tutto, soglia 0) | 900.988 | **−1.74%** | −11.51 | 1.2e−30 |
+| Solo 1X2 | 604.236 | −1.66% | −8.02 | 1.0e−15 |
+
+**73 strati testati, ZERO significativi dopo controllo del False Discovery Rate.** Il migliore
+(Austria 1X2, +2.92%) ha t = +1.35 — non significativo nemmeno *prima* della correzione. Con 73
+test, un t di 1.35 come massimo è esattamente quello che ci si aspetta dal caso puro.
+
+Il Contrarian aveva previsto l'esito parola per parola: *"Prevedi l'esito: no ovunque."*
+
+### La maledizione del vincitore, di nuovo
+
+Il ROI realizzato (−1.66%) è **peggiore** del soffitto (−0.93%). La differenza è la selezione:
+
+| Edge dichiarato | n | ROI realizzato | Scarto |
+|---|---|---|---|
+| 0-2% | 104.905 | −1.35% | −2.2 pp |
+| 5-10% | 38.906 | −0.85% | −7.9 pp |
+| 10-30% | 21.305 | −3.02% | −18.4 pp |
+| **30-100%** | **2.244** | **−16.86%** | **−65.2 pp** |
+
+Più alto è l'edge dichiarato, più grande è il divario fra quello che si crede e quello che succede.
+Nella fascia estrema: si dichiara +30/+100%, si realizza **−16.9%**.
+
+**È la stessa firma del modello Dixon-Coles**, e ora si capisce che non era un difetto del modello.
+La quota massima è il massimo di N estrazioni rumorose: è alta *soprattutto quando c'è rumore*, non
+quando un book sbaglia. Selezionare sull'edge apparente seleziona il rumore. Vale per un modello
+statistico e vale per un confronto fra prezzi: **qualunque filtro su "sembra conveniente" è
+anti-selettivo**.
+
+### Il numero che avrebbe ingannato chiunque
+
+Nel **23,57%** delle partite le quote massime danno un overround **negativo** — cioè arbitraggio
+puro sulla carta, su quasi una partita su quattro.
+
+È un artefatto. Il dataset registra il massimo che ogni bookmaker ha offerto *a un certo punto*, non
+prezzi simultanei. Quei massimi non coesistono mai. Se avessi pubblicato "arbitraggio nel 23,6% delle
+partite" senza controllare, sarebbe stata la scoperta più entusiasmante e più falsa del progetto.
+
+### Strade valutate e scartate, con la ragione
+
+| Strada | Perché no |
+|---|---|
+| **Altri campionati** | Il Contrarian: non sono dati vergini, sono la stessa ipotesi con più occasioni di ingannarsi. 15 divisioni × 3 mercati × 5 soglie = ~200 test, ~10 falsi positivi garantiti. **Testato comunque con controllo FDR: zero su 73** |
+| **Elo come rating indipendente** | Stessa classe informativa (gol e risultati) del Dixon-Coles, già dentro il prezzo |
+| **Tiri, corner, cartellini** | Sono dati *post*-partita. Per usarli bisogna prevederli — un problema difficile quanto quello già perso |
+| **CLV (closing line value)** | Il test giusto, ma **non misurabile**: il dataset ha media e massima fra book, non apertura e chiusura. Nessun timestamp |
+| **Live / handicap in-play** | Non testabile: nessuna quota in-play nei dati |
+| **Handicap asiatico** | Solo Bet365 a una linea, senza storico di movimento |
+
+### Verdetto finale
+
+**Non resta niente da provare con questi dati, e non è una resa: è un teorema.**
+
+Il soffitto è −0.93%. Tutto quello che sta sotto è una scelta su quanto perdere. Il modello perdeva
+il 16,7%; comprare al prezzo migliore senza selezionare perde lo 0,93%. La differenza fra i due —
+**quasi 16 punti** — è il valore reale prodotto da questi cinque run, e non è un modello predittivo:
+è aver misurato dove sta il soffitto e aver smesso di dare retta a un filtro anti-selettivo.
+
+L'unica cosa che potrebbe cambiare la risposta è **un tipo di dato che qui non c'è**: prezzi
+simultanei per bookmaker con timestamp, o quote in-play. Non parametri diversi, non modelli migliori,
+non altri campionati. Un dato diverso.

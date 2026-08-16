@@ -13,41 +13,46 @@
     "matches": 380,
     "total_goals": 922,
     "goals_per_match": 2.4263,
-    "home_goal_share": 0.555,
-    "_home_share_confidence": "low",
+    "home_goal_share": 0.526,
     "_confidence": "high",
-    "_source": "Serie A 2025-26 season summary (380 matches, 922 goals, 2.43/match)"
+    "_source": "openfootball/italy, 380 partite 2025/26 parsate una per una",
+    "home_win_rate": 0.3895,
+    "_correction": "home_goal_share era 0.555, valore storico di Serie A preso a occhio. Il vero 2025/26 e' 0.5260 - e il vantaggio casa in Serie A si e' ridotto molto: le vittorie casalinghe sono state il 38.9%, non il ~44% assunto. L'errore (0.029) era PIU GRANDE dell'intervallo che il selfaudit campionava (0.535-0.575), che quindi non conteneva nemmeno il valore vero."
   },
   "teams": {
     "Roma": {
       "season_2526": {
         "position": 3,
         "played": 38,
-        "won": 22,
+        "won": 23,
         "drawn": 4,
-        "lost": 12,
-        "points": 70,
-        "goals_for": 54,
-        "goals_against": 33,
-        "_confidence": "med",
-        "_anchor": "CONFIRMED: 3rd place, CL qualification, 61 pts after 34 games (19W-4D-11L, 48 GF, 29 GA), 3 pts behind Napoli. Final-day 2-0 win vs Verona. Totals for the last 4 games are extrapolated."
+        "lost": 11,
+        "points": 73,
+        "goals_for": 59,
+        "goals_against": 31,
+        "_confidence": "high",
+        "_anchor": "CONFIRMED: 3rd place, CL qualification, 61 pts after 34 games (19W-4D-11L, 48 GF, 29 GA), 3 pts behind Napoli. Final-day 2-0 win vs Verona. Totals for the last 4 games are extrapolated.",
+        "_source": "openfootball/italy, classifica ricostruita dalle 380 partite"
       },
       "recent_split": {
         "first_half": {
           "played": 19,
+          "points": 36,
           "goals_for": 22,
           "goals_against": 12,
           "_confidence": "high"
         },
         "second_half": {
           "played": 19,
-          "goals_for": 32,
-          "goals_against": 21,
-          "_confidence": "med"
+          "points": 37,
+          "goals_for": 37,
+          "goals_against": 19,
+          "_confidence": "high"
         },
         "_anchor": "CONFIRMED: after 19 matchdays Roma had 22 GF / 12 GA and led the table. Italian coverage of the girone di ritorno is explicit that the defence fell apart ('la difesa balla, i punti non arrivano') and the title challenge collapsed. Second half derived by subtraction from the season totals.",
-        "_note": "1.16 GF and 0.63 GA per game in the first half vs 1.68 GF and 1.11 GA in the second. The season aggregate hides a real regime change - the most recent 19 games are a better guide to the current side than the full 38.",
-        "manager_continuity": true
+        "_note": "REALE: andata 1.16 GF e 0.63 GA a partita, ritorno 1.95 GF e 1.00 GA. L'attacco e' esploso nel ritorno (+68%) mentre la difesa peggiorava (+59% subiti). Avevo stimato 1.68 GF: sottostimavo l'attacco del ritorno.",
+        "manager_continuity": true,
+        "_source": "openfootball/italy, split calcolato dalle partite in ordine di data"
       },
       "manager": {
         "name": "Gian Piero Gasperini",
@@ -102,34 +107,35 @@
       "season_2526": {
         "position": 15,
         "played": 38,
-        "won": 10,
-        "drawn": 12,
-        "lost": 16,
+        "won": 9,
+        "drawn": 15,
+        "lost": 14,
         "points": 42,
-        "goals_for": 40,
-        "goals_against": 51,
-        "_confidence": "low",
+        "goals_for": 41,
+        "goals_against": 50,
+        "_confidence": "high",
         "_anchor": "CONFIRMED: 15th place; 13 pts in the andata and 29 in the ritorno (=42). Top league scorer Moise Kean with only 8 goals (Gudmundsson 10 in all comps) => genuinely weak attack. Biggest win 5-1 vs Udinese (H). Biggest loss 0-4 at Roma. Conference League QF, Coppa Italia R16. Pioli sacked 04/11/2025, Vanoli in from 07/11/2025.",
-        "_tension": "15th place and 42 points do not sit comfortably together - 42 pts is normally around 12th. Either the table was unusually compressed or one of the two figures comes from a partial-season snapshot. Both are recorded here as found; the split below is what actually drives the model, and it is the better-sourced of the two."
+        "_source": "openfootball/italy, classifica ricostruita dalle 380 partite"
       },
       "recent_split": {
         "first_half": {
           "played": 19,
           "points": 13,
-          "goals_for": 15,
+          "goals_for": 20,
           "goals_against": 30,
-          "_confidence": "med"
+          "_confidence": "high"
         },
         "second_half": {
           "played": 19,
           "points": 29,
-          "goals_for": 25,
-          "goals_against": 21,
-          "_confidence": "low"
+          "goals_for": 21,
+          "goals_against": 20,
+          "_confidence": "high"
         },
         "_anchor": "CONFIRMED: 29 points in the girone di ritorno, +16 on the andata, 7th in the return-round table ahead of Milan and Bologna. From 07/02/2026 onward: 18 points in 9 games, a Champions-League pace bettered only by Inter and Napoli. Goal splits are DERIVED from the points splits, not sourced.",
         "manager_continuity": false,
-        "_note": "This is the single most important find of the run. Rating Fiorentina off the 38-game aggregate treats them as a relegation-scrap side; over the last 19 games they played like a European contender. But the coach who produced that form (Vanoli) is gone and Grosso is in, so the form is only partly transferable - hence manager_continuity=false, which discounts the recency weight in ratings.py."
+        "_note": "REALE, E RIBALTA LA TESI PRECEDENTE: andata 1.05 GF e 1.58 GA, ritorno 1.11 GF e 1.05 GA. L'attacco e' PIATTO fra i due gironi (+6%). Tutto il salto da 13 a 29 punti e' DIFENSIVO: -34% di gol subiti. Avevo derivato dai punti un attacco in crescita da 0.79 a 1.32 GF/g, che e' semplicemente falso. I punti erano giusti, i gol dedotti dai punti no.",
+        "_source": "openfootball/italy, split calcolato dalle partite in ordine di data"
       },
       "manager": {
         "name": "Fabio Grosso",
@@ -169,9 +175,9 @@
       ],
       "_xi_confidence": "med",
       "squad_delta_2627": {
-        "attack": 0.06,
-        "defense": -0.05,
-        "_note": "Priced DOWN from +0.10/-0.10 once the ritorno form was found: that improvement is now carried by recent_split, and leaving it here as well would double-count it. What remains is the transfer window alone - Dragusin+Viery rebuild the centre-backs, Jimenez/Atta/Oulai add athleticism, Kean+Gudmundsson retained.",
+        "attack": 0.03,
+        "defense": -0.06,
+        "_note": "Ripesato di nuovo sui dati veri: il mercato viola ha rinforzato soprattutto la difesa (Dragusin, Viery, Pongracic) ed e' li che la squadra era gia migliorata. L'attacco resta il punto debole - Kean 8 gol in campionato e un attacco piatto fra andata e ritorno.",
         "_confidence": "low"
       }
     }

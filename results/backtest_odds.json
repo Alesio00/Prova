@@ -1,0 +1,161 @@
+{
+  "split": {
+    "train_end": "2017-07-01",
+    "n_train": 5854,
+    "n_test": 3039,
+    "n_test_predicted": 3031
+  },
+  "tuned_params": {
+    "xi": 0.002,
+    "shrink": 0.85,
+    "rho": -0.14,
+    "log_loss": 0.995772869845791
+  },
+  "test_metrics": {
+    "n": 3031,
+    "model_log_loss": 0.9724883262147553,
+    "market_log_loss": 0.9511181300866249,
+    "prior_log_loss": 1.0806297094258424,
+    "model_brier": 0.5778767053554458,
+    "market_brier": 0.5636712243374787,
+    "model_minus_market": 0.021370196128130403,
+    "model_accuracy": 0.5450346420323325,
+    "market_accuracy": 0.5503134279115803
+  },
+  "test_ece": 0.018574677714366356,
+  "calibration": [
+    {
+      "bin": "0.0-0.1",
+      "n": 209,
+      "predetta": 0.0718736448479686,
+      "osservata": 0.06698564593301436,
+      "scarto_pp": -0.4887998914954242
+    },
+    {
+      "bin": "0.1-0.2",
+      "n": 1209,
+      "predetta": 0.15848622563952322,
+      "osservata": 0.13978494623655913,
+      "scarto_pp": -1.8701279402964093
+    },
+    {
+      "bin": "0.2-0.3",
+      "n": 3575,
+      "predetta": 0.2561321903950527,
+      "osservata": 0.2467132867132867,
+      "scarto_pp": -0.9418903681765983
+    },
+    {
+      "bin": "0.3-0.4",
+      "n": 1616,
+      "predetta": 0.3413581024831047,
+      "osservata": 0.32673267326732675,
+      "scarto_pp": -1.4625429215777974
+    },
+    {
+      "bin": "0.4-0.5",
+      "n": 1007,
+      "predetta": 0.44931900864959057,
+      "osservata": 0.4826216484607746,
+      "scarto_pp": 3.330263981118403
+    },
+    {
+      "bin": "0.5-0.6",
+      "n": 763,
+      "predetta": 0.5470427333171887,
+      "osservata": 0.5714285714285714,
+      "scarto_pp": 2.438583811138273
+    },
+    {
+      "bin": "0.6-0.7",
+      "n": 481,
+      "predetta": 0.6445765174458494,
+      "osservata": 0.6985446985446986,
+      "scarto_pp": 5.396818109884915
+    },
+    {
+      "bin": "0.7-0.8",
+      "n": 184,
+      "predetta": 0.7395802532902648,
+      "osservata": 0.7228260869565217,
+      "scarto_pp": -1.6754166333743048
+    },
+    {
+      "bin": "0.8-0.9",
+      "n": 46,
+      "predetta": 0.8321414544702609,
+      "osservata": 0.9782608695652174,
+      "scarto_pp": 14.61194150949565
+    }
+  ],
+  "betting": {
+    "edge_5pct_avg_odds": {
+      "n_bets": 2484,
+      "edge_threshold": 0.05,
+      "odds_used": "media bookmaker",
+      "profit_units": -415.69000000000005,
+      "roi": -0.16734702093397746,
+      "roi_stderr": 0.038143107069845986,
+      "t_stat": -4.387346333048824,
+      "hit_rate": 0.20772946859903382,
+      "mean_odds": 5.193808373590982,
+      "significant_at_95pct": true
+    },
+    "edge_10pct_avg_odds": {
+      "n_bets": 1741,
+      "edge_threshold": 0.1,
+      "odds_used": "media bookmaker",
+      "profit_units": -313.09000000000003,
+      "roi": -0.1798334290637565,
+      "roi_stderr": 0.04813988544039938,
+      "t_stat": -3.735643062267008,
+      "hit_rate": 0.18897185525560023,
+      "mean_odds": 5.669735784032166,
+      "significant_at_95pct": true
+    },
+    "edge_5pct_best_odds": {
+      "n_bets": 3639,
+      "edge_threshold": 0.05,
+      "odds_used": "massima disponibile",
+      "profit_units": -248.17000000000002,
+      "roi": -0.06819730695245947,
+      "roi_stderr": 0.03404519458878198,
+      "t_stat": -2.003140465965518,
+      "hit_rate": 0.22698543555921957,
+      "mean_odds": 5.4472190162132454,
+      "significant_at_95pct": true
+    }
+  },
+  "grid_top5": [
+    {
+      "xi": 0.002,
+      "shrink": 0.85,
+      "rho": -0.14,
+      "log_loss": 0.995772869845791
+    },
+    {
+      "xi": 0.002,
+      "shrink": 0.85,
+      "rho": -0.1,
+      "log_loss": 0.9960793611883713
+    },
+    {
+      "xi": 0.002,
+      "shrink": 0.85,
+      "rho": -0.06,
+      "log_loss": 0.9968415634299367
+    },
+    {
+      "xi": 0.004,
+      "shrink": 0.85,
+      "rho": -0.14,
+      "log_loss": 0.997942504456426
+    },
+    {
+      "xi": 0.004,
+      "shrink": 0.85,
+      "rho": -0.1,
+      "log_loss": 0.9981081106524782
+    }
+  ]
+}

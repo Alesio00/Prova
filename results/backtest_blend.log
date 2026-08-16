@@ -1,0 +1,25 @@
+=== IL MODELLO AGGIUNGE INFORMAZIONE AL MERCATO? ===
+peso ottimo del modello : 0.0
+log loss solo mercato   : 0.95112
+log loss fusione ottima : 0.95112
+miglioramento           : +0.00000
+=> NO, peso ottimo zero
+
+=== OVER/UNDER 2.5 ===
+{
+  "n": 3030,
+  "model_log_loss": 0.6914273434021846,
+  "market_log_loss": 0.6786556779894998,
+  "model_minus_market": 0.012771665412684818,
+  "base_rate_over25": 0.5273927392739274,
+  "model_mean_p_over": 0.5535690625821302,
+  "n_bets": 1287,
+  "roi": -0.06439782439782439,
+  "roi_stderr": 0.02719068708271502,
+  "t_stat": -2.3683779744853064
+}
+
+=== DOVE SBAGLIA DI PIU ===
+  favorito 1.0-1.5  n= 679  modello 0.7226  mercato 0.7054  gap +0.0172
+  favorito 1.5-2.0  n=1103  modello 0.9813  mercato 0.9506  gap +0.0306
+  favorito 2.0-2.8  n=1244  modello 1.1008  mercato 1.0851  gap +0.0157

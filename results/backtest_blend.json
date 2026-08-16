@@ -1,0 +1,131 @@
+{
+  "n_test": 3031,
+  "blend": {
+    "curve": [
+      {
+        "model_weight": 0.0,
+        "log_loss": 0.9511181300867203
+      },
+      {
+        "model_weight": 0.05,
+        "log_loss": 0.9515940473706129
+      },
+      {
+        "model_weight": 0.1,
+        "log_loss": 0.9521325900838957
+      },
+      {
+        "model_weight": 0.15,
+        "log_loss": 0.9527338095178228
+      },
+      {
+        "model_weight": 0.2,
+        "log_loss": 0.9533977306017007
+      },
+      {
+        "model_weight": 0.25,
+        "log_loss": 0.9541243535928676
+      },
+      {
+        "model_weight": 0.3,
+        "log_loss": 0.9549136556619582
+      },
+      {
+        "model_weight": 0.35,
+        "log_loss": 0.9557655923609365
+      },
+      {
+        "model_weight": 0.4,
+        "log_loss": 0.9566800989762914
+      },
+      {
+        "model_weight": 0.45,
+        "log_loss": 0.9576570917794333
+      },
+      {
+        "model_weight": 0.5,
+        "log_loss": 0.958696469190759
+      },
+      {
+        "model_weight": 0.55,
+        "log_loss": 0.9597981128739353
+      },
+      {
+        "model_weight": 0.6,
+        "log_loss": 0.9609618887740139
+      },
+      {
+        "model_weight": 0.65,
+        "log_loss": 0.9621876481084526
+      },
+      {
+        "model_weight": 0.7,
+        "log_loss": 0.9634752283152831
+      },
+      {
+        "model_weight": 0.75,
+        "log_loss": 0.9648244539584715
+      },
+      {
+        "model_weight": 0.8,
+        "log_loss": 0.966235137587554
+      },
+      {
+        "model_weight": 0.85,
+        "log_loss": 0.9677070805471019
+      },
+      {
+        "model_weight": 0.9,
+        "log_loss": 0.9692400737313619
+      },
+      {
+        "model_weight": 0.95,
+        "log_loss": 0.9708338982802976
+      },
+      {
+        "model_weight": 1.0,
+        "log_loss": 0.9724883262148087
+      }
+    ],
+    "best_weight": 0.0,
+    "best_log_loss": 0.9511181300867203,
+    "market_only_log_loss": 0.9511181300867203,
+    "improvement_over_market": 0.0,
+    "model_adds_information": false
+  },
+  "over_under": {
+    "n": 3030,
+    "model_log_loss": 0.6914273434021846,
+    "market_log_loss": 0.6786556779894998,
+    "model_minus_market": 0.012771665412684818,
+    "base_rate_over25": 0.5273927392739274,
+    "model_mean_p_over": 0.5535690625821302,
+    "n_bets": 1287,
+    "roi": -0.06439782439782439,
+    "roi_stderr": 0.02719068708271502,
+    "t_stat": -2.3683779744853064
+  },
+  "by_favourite_band": [
+    {
+      "fascia_quota_favorito": "1.0-1.5",
+      "n": 679,
+      "model_log_loss": 0.7225904224776182,
+      "market_log_loss": 0.7054138781429978,
+      "gap": 0.017176544334620347
+    },
+    {
+      "fascia_quota_favorito": "1.5-2.0",
+      "n": 1103,
+      "model_log_loss": 0.9812643478262763,
+      "market_log_loss": 0.9506397238759328,
+      "gap": 0.030624623950343488
+    },
+    {
+      "fascia_quota_favorito": "2.0-2.8",
+      "n": 1244,
+      "model_log_loss": 1.1007722987608322,
+      "market_log_loss": 1.0850900893648858,
+      "gap": 0.015682209395946334
+    }
+  ]
+}

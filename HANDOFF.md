@@ -8,9 +8,10 @@ Tutto quello che serve per riprendere il lavoro senza rileggere il codice.
 
 Pipeline Python che stima Roma–Fiorentina (Serie A 2026/27, G1, 24/08/2026) combinando
 Dixon-Coles + Monte Carlo + mercato + un layer ML, e sputa un report HTML.
-**Output attuale: Roma 59.5% · X 24.7% · Fiorentina 15.8%** — intervallo al 90% su P(Roma):
-**55.6%–61.7%**. Verdetto: **nessuna scommessa**.
-XI della Fiorentina basato sulla formazione reale di Coppa Italia del 14/08/2026.
+**Output pubblicato: Roma 62.7% · X 23.0% · Fiorentina 14.3%** — che è il mercato de-viggato,
+perché il backtest dice che il modello non aggiunge niente (peso ottimo 0.0).
+Il modello da solo direbbe 55.3% / 27.1% / 17.5%.
+Verdetto: **nessuna scommessa**, e il backtest spiega perché non ci sarà mai su questo mercato.
 
 ## 2. Come si esegue
 
@@ -39,6 +40,10 @@ import pipeline; pipeline.run(n_sims=200_000, train_ml=False)
 | `src/ml.py` | Lega sintetica, training, CV. **`load_real_matches()` è il punto d'innesto per dati veri** | Quando arrivano dati reali |
 | `src/karpathy_checks.py` | 5 check diagnostici (input azzerati, etichette mescolate, overfit di un batch, scala di baseline, spread fra seed) | **Dopo ogni modifica al layer ML** |
 | `src/duels.py` | Matrice 11×11 dei duelli, coppie di marcatori, enumerazione completa delle storie di partita, rischio disponibilità | Quando cambiano le rose |
+| `src/loaddata.py` | **Parser openfootball**: 13 stagioni di Serie A, classifiche e split reali | Per aggiornare i dati storici |
+| `src/backtest.py` | Backtest walk-forward, calibrazione, ECE | Prima di credere a qualsiasi modello |
+| `src/backtest_odds.py` | **Il test decisivo**: train/test temporale con quote reali, simulazione scommesse con errori standard | Per rivalutare dopo ogni modifica al modello |
+| `src/backtest_blend.py` | Il modello aggiunge informazione al mercato? Over/under, e dove sbaglia di più | Idem |
 | `src/selfaudit.py` | **Propagazione dell'incertezza**: rifà il modello 4.000 volte campionando gli intervalli di ogni costante a giudizio. Produce l'intervallo al 90%, l'attribuzione della varianza e il verdetto finale | Prima di prendere qualsiasi decisione |
 | `src/pipeline.py` | Orchestrazione + `sensitivity()` | Per aggiungere output |
 | `src/report.py` | Genera l'HTML | Per cambiare la presentazione |
@@ -56,7 +61,7 @@ Tutte in `src/ratings.py` salvo dove indicato. L'impatto è su P(vittoria Roma).
 | `XI_DECAY_PER_DAY` | 0.0065 | ξ di Dixon-Coles. Non usato di default: implica `RECENCY_WEIGHT` 0.73 invece di 0.40 | vedi `recency_weight_from_decay()` |
 | `DUEL_SLOPE` (`duels.py`) | 1.9 | Pendenza logistica dei duelli individuali | solo livello giocatore |
 | `LANE_SIGMA` (`duels.py`) | 0.22 | Tolleranza laterale: quanto lontano due giocatori si incontrano ancora | solo livello giocatore |
-| `MARKET_WEIGHT` (`market.py`) | 0.60 | Peso del mercato nella fusione | ±2 pp per 0.1 |
+| `MARKET_WEIGHT` (`market.py`) | **1.0** | Peso del mercato nella fusione. Era 0.60 a giudizio; **misurato** su 3.031 partite fuori campione, l'ottimo è 1.0 | il valore 0.60 peggiorava attivamente la previsione |
 | `NEW_MANAGER_DISCOUNT` | 0.55 | Quanto un allenatore al primo anno converte il rinforzo in punti | ±1.9 pp |
 | `MATCHDAY1_GOAL_FACTOR` | 0.97 | Soppressione gol alla prima giornata | ±0.9 pp |
 | `MATCHDAY1_EXTRA_DISPERSION` | 0.18 | Varianza extra alla prima giornata | code, non media |
@@ -66,26 +71,27 @@ Tutte in `src/ratings.py` salvo dove indicato. L'impatto è su P(vittoria Roma).
 **Il parametro più influente non è nessuno di questi**: è `squad_delta_2627` della Fiorentina in
 `data/context.json` (escursione 8.7 pp). È un giudizio a mano. Vedi RESULTS.md.
 
-## 5. Il vincolo che ha modellato tutto il lavoro
+## 5. Il vincolo che credevo di avere, e che non c'era
 
-L'egress HTTP di questo ambiente è bloccato su tutto tranne i registri pacchetti.
-Verificato: `football-data.co.uk` → 403 al CONNECT; Wikipedia, ESPN, FBref, football-italia →
-`EGRESS_BLOCKED`. **L'unico canale dati è WebSearch**, che restituisce snippet, non tabelle.
+Per tre run ho scritto che l'egress era bloccato e che l'unico canale dati era WebSearch. Vero per
+`football-data.co.uk`, Wikipedia, ESPN, FBref — **falso per GitHub**, che è sempre stato
+raggiungibile. L'avevo perfino usato per clonare un repo senza collegare le due cose.
 
-Di conseguenza: niente dataset a livello di partita, quindi niente training su dati reali, quindi il
-layer ML è scaffolding calibrato e non una fonte di informazione. È scritto esplicitamente sia nel
-docstring di `ml.py` sia nel report.
+I dati che servivano si prendono con un `git clone`:
 
-### Sblocco rete — cosa chiedere
+```bash
+git clone --depth 1 https://github.com/openfootball/italy
+git clone --depth 1 https://github.com/xgabora/Club-Football-Match-Data-2000-2025
+```
 
-Aggiungere all'allowlist dell'ambiente, in ordine di utilità:
+- **openfootball/italy** — 13 stagioni di Serie A partita per partita (4.940 partite)
+- **Club-Football-Match-Data** — 9.012 partite di Serie A 2000-2025 con **quote 1X2, over/under,
+  handicap asiatico, tiri, corner, cartellini, Elo**
 
-1. `football-data.co.uk` — CSV storici Serie A con risultati e quote, gratis, formato già supportato da `ml.load_real_matches()`
-2. `fbref.com` / `understat.com` — xG a livello di partita e di giocatore
-3. `api-football.com` o `api.football-data.org` — formazioni, infortuni, live (serve una chiave)
-4. `en.wikipedia.org` — tabelle finali di campionato
+`src/loaddata.py` parsa il primo, `src/backtest_odds.py` usa il secondo.
 
-Con la #1 sola: il layer ML diventa reale e RESULTS.md può iniziare a misurare la calibrazione fuori campione.
+**Lezione:** "la rete è bloccata" era una conclusione tratta da quattro tentativi falliti e mai
+rimessa in discussione. Prima di dichiarare un vincolo, provare il canale che ha già funzionato.
 
 ## 6. Diramazione delle informazioni — chi dipende da cosa
 
@@ -143,6 +149,18 @@ con CV · analisi di sensibilità · report HTML light/dark · log RESULTS.md ·
 **Non fatto, e perché:** nessun training su dati reali (rete bloccata) · nessuna validazione fuori
 campione su partite vere (stesso motivo) · infortuni di agosto 2026 non reperibili · formazioni
 ufficiali non ancora pubblicate.
+
+## LA BARRA, scritta prima di riprovare
+
+Il backtest del run 004 dice che il modello perde contro il mercato (0.9725 contro 0.9511) e che
+ogni filtro EV perde soldi in modo significativo. Prima di rimettere mano a soglie o parametri:
+
+**Criterio di stop dichiarato in anticipo:** un modello si considera utilizzabile solo se il suo log
+loss scende **sotto quello del mercato**, sul segmento specifico che si vuole giocare, su un test set
+**nuovo**. Non su questo: 3.031 partite sono state usate una volta e riutilizzarle per ritoccare
+parametri le brucia.
+
+Non si simula nemmeno prima di aver superato quella soglia.
 
 **Prima cosa da fare al prossimo giro:** vedi RESULTS.md § "Prossimo run", punti 1 e 2.
 

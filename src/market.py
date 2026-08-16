@@ -10,10 +10,29 @@ from __future__ import annotations
 
 import numpy as np
 
-# How much weight the de-vigged market gets in the fused forecast.
-# 0.0 = pure model, 1.0 = pure market. 0.60 reflects that our model is built
-# on partial data while the market has full injury/lineup information.
-MARKET_WEIGHT = 0.60
+# Peso del mercato de-viggato nella previsione fusa. 0.0 = solo modello,
+# 1.0 = solo mercato.
+#
+# ERA 0.60, SCELTO A GIUDIZIO. ORA E' 1.0, E LO DICE UN BACKTEST.
+#
+# Su 3.031 partite di Serie A fuori campione (2017-2025, quote reali) la curva
+# del log loss al variare del peso ha il minimo esattamente a peso-modello 0.0:
+#
+#     solo mercato      0.95112
+#     fusione ottima    0.95112   (a peso modello 0.00)
+#     miglioramento     0.00000
+#
+# Il modello non aggiunge NIENTE al mercato. Non poco: zero. Da solo fa 0.9725
+# contro 0.9511 del mercato, e ogni peso positivo peggiora la fusione.
+#
+# Tenere 0.60 significherebbe pubblicare consapevolmente un prezzo peggiore di
+# quello del banco. Il valore di questo progetto e' descrittivo - gli split, i
+# duelli, la propagazione dell'incertezza - non nel prezzare.
+MARKET_WEIGHT = 1.0
+
+# Il vecchio valore, tenuto per poter riprodurre i run 001-004 e per mostrare
+# nel report quanto il modello si discosterebbe se lo si lasciasse parlare.
+MARKET_WEIGHT_LEGACY_JUDGEMENT = 0.60
 
 
 def implied_raw(odds: dict) -> dict:

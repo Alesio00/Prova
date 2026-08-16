@@ -2,10 +2,20 @@
 
 Serie A 2026/27, Giornata 1 — Stadio Olimpico, lunedì 24 agosto 2026, 20:45 CEST.
 
-**Roma 59.5% · Pareggio 24.7% · Fiorentina 15.8%** — gol attesi 1.60 – 0.83 · Over 2.5 43.7% · BTTS 46.0%
+> ## ⚠️ Risultato del backtest: il modello NON batte il mercato
+>
+> Su **3.031 partite fuori campione** (2017-2025, quote reali): log loss modello **0.9725**,
+> mercato **0.9511**. Simulando le scommesse che il modello consiglierebbe: **ROI −16.7%**,
+> statisticamente significativo. Il peso ottimo del modello nella fusione col mercato è
+> **zero**: non aggiunge informazione.
+>
+> Il progetto resta utile in modo **descrittivo**. Non prezza. Vedi [RESULTS.md](RESULTS.md) run 004.
 
-Intervallo al 90% su P(vittoria Roma), propagando l'incertezza di ogni parametro scelto a giudizio:
-**55.6% – 61.7%**. Verdetto finale: **nessuna scommessa**.
+**Previsione pubblicata: Roma 62.7% · Pareggio 23.0% · Fiorentina 14.3%** — che è il mercato
+de-viggato, perché è quello che il backtest dice di pubblicare.
+
+Il modello da solo direbbe 55.3% / 27.1% / 17.5%. La differenza è la misura di quanto si
+sbaglierebbe a dargli retta.
 
 Il modello **non trova valore** rispetto alle quote: concorda col mercato entro 3 punti
 percentuali su tutti e tre gli esiti. Quello è il risultato, non un pronostico.

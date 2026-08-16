@@ -372,3 +372,160 @@ Il primo test per "l'edge è un artefatto?" usava due soglie di probabilità arb
 
 Quattro bug in tre run, tutti trovati da un test che avevo scritto prima di guardare il risultato,
 mai leggendo il codice.
+
+---
+
+## Run 004 — 2026-08-15 · il backtest, e la risposta definitiva
+
+**Il verdetto è negativo, misurato, e chiude la domanda.**
+
+### 🔓 Lo sblocco: la rete non era il muro che credevo
+
+Per tre run ho scritto che l'egress era bloccato e che l'unico canale dati era WebSearch. Era vero
+per `football-data.co.uk`, Wikipedia, FBref, ESPN. **Non era vero per GitHub** — l'avevo perfino
+usato per clonare `llm-council` senza collegare le due cose.
+
+Due repository hanno cambiato tutto:
+
+| Fonte | Cosa contiene |
+|---|---|
+| `openfootball/italy` | Serie A partita per partita, **13 stagioni** (2013-14 → 2026-27), 4.940 partite |
+| `Club-Football-Match-Data-2000-2025` | **9.012 partite di Serie A** 2000-2025 con quote 1X2, over/under, handicap, tiri, corner, cartellini, Elo |
+
+Lezione: "la rete è bloccata" era una conclusione tratta da quattro tentativi falliti e mai
+rimessa in discussione, nemmeno dopo che un clone GitHub era riuscito.
+
+### ✅ Le mie stime contro i dati veri
+
+| | Stimato | Reale | Errore |
+|---|---|---|---|
+| Roma posizione | 3 | **3** | ✓ |
+| Roma punti | 70 | 73 | −3 |
+| Roma GF | 54 | 59 | −5 |
+| Fiorentina posizione | 15 | **15** | ✓ |
+| Fiorentina punti | 42 | **42** | ✓ |
+| Fiorentina GF | 40 | 41 | −1 |
+
+La "tensione" che avevo segnalato — 15° posto con 42 punti — era **reale**. Avevo fatto bene a
+registrarla invece di scartare uno dei due numeri.
+
+**Ma due cose erano sbagliate, e una ribalta una tesi:**
+
+`home_goal_share = 0.555` → reale **0.5260**. L'errore (0.029) era **più grande dell'intervallo che
+il selfaudit campionava** (0.535–0.575), che quindi non conteneva nemmeno il valore vero. Il
+vantaggio casa in Serie A si è ridotto: 38.9% di vittorie interne, non il ~44% che assumevo.
+
+E lo split della Fiorentina, la scoperta centrale del run 002:
+
+| | Il mio (dedotto dai punti) | Reale |
+|---|---|---|
+| Andata GF/g | 0.79 | **1.05** |
+| Ritorno GF/g | 1.32 | **1.11** |
+| Ritorno GA/g | 1.11 | **1.05** |
+
+**L'attacco della Fiorentina è piatto fra andata e ritorno.** Tutto il salto da 13 a 29 punti è
+**difensivo** (−34% di gol subiti). Avevo dedotto i gol dai punti e la deduzione era falsa: i punti
+erano giusti, i gol no. Per due run ho raccontato una Fiorentina "in crescita in attacco" che non
+esiste.
+
+### 🎯 Il backtest walk-forward
+
+Regola: per predire la partita del giorno D si usano solo le partite prima di D. Split **temporale**,
+mai casuale.
+
+- **train** 5.854 partite (2000-2017) → taratura di ξ, shrink, ρ su griglia
+- **test** 3.031 partite (2017-2025) → mai toccate durante la taratura
+
+| | Log loss |
+|---|---|
+| Prior di classe | 1.0806 |
+| **Modello** | **0.9725** |
+| **Mercato (de-viggato)** | **0.9511** |
+
+Il modello **batte il prior di 0.108** — è un modello vero, ha skill reale. E **perde contro il
+mercato di 0.021**.
+
+### 💸 La simulazione scommesse: perdite significative su tutta la linea
+
+| Soglia EV | Bet | ROI | t |
+|---|---|---|---|
+| 5%, quote medie | 2.484 | **−16.7%** | −4.39 |
+| 10%, quote medie | 1.741 | **−17.98%** | −3.74 |
+| 5%, quote migliori | 3.639 | **−6.82%** | −2.00 |
+
+Tutte statisticamente significative. **Alzando la soglia il ROI peggiora** — è la firma di un filtro
+che seleziona l'errore, non il vantaggio.
+
+### 🔬 I tre test che chiudono la questione
+
+**1. Il modello aggiunge informazione al mercato?** Curva del log loss al variare del peso:
+
+```
+peso ottimo del modello : 0.0
+solo mercato            : 0.95112
+fusione ottima          : 0.95112
+miglioramento           : 0.00000
+```
+
+**Zero.** Non poco: esattamente zero. Ogni peso positivo peggiora.
+
+**Conseguenza diretta:** `MARKET_WEIGHT` era 0.60, scelto a giudizio. Il valore empiricamente ottimo
+è **1.0** — cioè pubblicare il mercato. È stato cambiato. Tenere 0.60 significava pubblicare
+consapevolmente un prezzo peggiore di quello del banco.
+
+**2. Over/under, l'ipotesi del council precedente.** Era la speranza: nessuna quota O/U è mai entrata
+nel modello, quindi lì l'opinione sarebbe indipendente. **Refutata**: modello 0.6914 contro mercato
+0.6787, ROI −6.44%, t = −2.37.
+
+**3. La calibrazione condizionata, che il Contrarian ha preteso.** L'ECE globale è 1.86% e sembra
+ottimo. Ma si scommette solo nella coda:
+
+| Fascia EV | n | Modello dice | Realtà | Scarto |
+|---|---|---|---|---|
+| 5-10% | 743 | 30.8% | 25.2% | −5.7 pp |
+| 10-20% | 878 | 29.1% | 21.1% | −8.1 pp |
+| 20-40% | 608 | 26.7% | 18.9% | −7.8 pp |
+| **40-100%** | 255 | **24.4%** | **11.4%** | **−13.0 pp** |
+
+Globalmente calibrato, **catastroficamente sovra-sicuro esattamente dove punta**. Nella fascia più
+estrema la realtà è meno della metà di quanto dichiara.
+
+**Decili di EV: nessuno regge.** Zero decili su dieci hanno ROI positivo significativo, e i decili
+9 e 10 — quelli con l'EV dichiarato più alto — sono i peggiori (−22.3% e −14.9%).
+
+### 🏛️ Council (skill `llm-council`, cinque lenti di pensiero)
+
+Convergenze indipendenti fra Contrarian, First Principles, Outsider ed Executor:
+
+- **Il filtro EV è anti-selettivo.** Se il segnale fosse vero, alzare la soglia migliorerebbe il ROI. Fa il contrario.
+- **Il confronto col prior è uno strawman.** Il benchmark è sempre stato il mercato.
+- **"Vantaggio garantito" non è una condizione soddisfacibile.** Con il vig e un banco che può limitare, non esiste. Il loop era progettato per non finire mai o per finire in autoillusione.
+- **Il −6.82% con le quote migliori non è modellistica, è line shopping**, ed è circa il vig.
+
+Il Contrarian ha chiesto in anticipo l'ablazione mercato-puro-contro-fusione e ha scommesso che il
+lavoro sarebbe risultato "un distruttore netto di informazione". **Ha vinto la scommessa: peso ottimo 0.0.**
+
+Il First Principles ha dato la ragione strutturale, e regge: *il prezzo di mercato è l'aggregato di
+tutta l'informazione disponibile meno il vig; Dixon-Coles sui gol è un sottoinsieme stretto di quella
+informazione. Con un set informativo più povero non puoi batterlo — non per un bug, per costruzione.*
+
+### 🛑 Perché il loop si chiude qui
+
+L'obiettivo era terminare "quando la confidenza è alta e porta a un vantaggio matematico alto e
+garantito". **La confidenza ora è alta e il vantaggio non c'è**, misurato su 3.031 partite fuori
+campione con tre test indipendenti che concordano.
+
+Continuare significherebbe ritoccare soglie e feature finché il ROI diventa positivo — cioè
+**bruciare l'unico test set pulito che esiste**. Il Contrarian l'ha segnalato come il pericolo
+imminente, e aveva ragione. Un risultato negativo ottenuto onestamente vale più di uno positivo
+ottenuto sovra-adattando.
+
+### 📌 Cosa resta, e vale
+
+- Un **parser** per 13 stagioni di Serie A e un dataset da 9.012 partite con quote e statistiche
+- Un **backtest walk-forward** con split temporale, taratura su griglia, calibrazione ed errori standard: l'infrastruttura per valutare qualsiasi modello futuro **prima** di crederci
+- La prova misurata che `MARKET_WEIGHT = 0.60` era dannoso
+- Il modello resta utile in modo **descrittivo** — gli split, i duelli, la propagazione dell'incertezza raccontano la partita. Non prezza.
+
+Se un giorno si vuole riprovare, la barra è scritta: **log loss del modello sotto quella del mercato
+sul segmento specifico, su un test set nuovo.** Prima di quella soglia non si simula nemmeno.

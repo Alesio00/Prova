@@ -1030,3 +1030,237 @@ completa con BFEC come riferimento.
 Il rischio 1 — «i book che sbagliano limitano o chiudono i conti vincenti» — resta fuori portata con
 qualsiasi dato storico. Serve un conto vero, aperto, che scommette. Non è un buco di questo run:
 è il confine fra misurare un edge e incassarlo.
+
+---
+
+## Run 009 — 2026-09-03 · il segnale non regge fuori dal suo campione
+
+Il disegno è quello pre-registrato qui sopra, senza modifiche. `src/validate_oos.py`,
+`results/validate_oos.json`.
+
+### 🐛 Due bug nel mio codice, trovati prima dei risultati
+
+Il primo giro produceva due numeri assurdi, e sono serviti da campanello.
+
+**Bug 1 — log loss confrontati su insiemi di partite diversi.** `H0` calcolava il log loss di ogni
+book sulle righe in cui *quel* book aveva una quota. Ma la copertura cambia enormemente:
+`BFE` (Betfair Exchange) esiste solo dal 2024/25 — 3.397 partite su 10.734 — e così confrontato
+risultava **il più affilato di tutti**, battendo Pinnacle. Stava giocando su un terzo dei dati, e sul
+terzo più recente. Nello strato D lo stesso difetto dava a Pinnacle un margine di **+0.041** di log
+loss sui book soft, cinquanta volte qualunque valore plausibile: i file 2018/19 non hanno colonne di
+chiusura per i book soft, quindi Pinnacle veniva misurato su 760 partite e i soft su 380 diverse.
+Corretto: il confronto è sull'intersezione, e la copertura di ciascun book viene stampata accanto.
+Dopo la correzione quel margine diventa **+0.00068**.
+
+**Bug 2 — selezioni della stessa partita trattate come indipendenti.** Sei scommesse sulla stessa
+partita condividono l'esito: non sono sei osservazioni. Il run 008 le contava come tali. Misurato
+qui, sugli stessi dati, il bootstrap raggruppato per partita produce intervalli **1,3-1,6× più
+larghi** di quello non raggruppato. Le conseguenze sul run 008 sono nella sezione apposita.
+
+### ✅ Controllo di continuità: il codice nuovo riproduce il vecchio risultato
+
+Prima di credere a un nullo, bisogna escludere che sia un bug. Lo strato D — EPL 2018/19 e 2019/20,
+**dentro** il campione del run 008 — è il controllo.
+
+| | run 008 (2012-2020) | strato D, codice nuovo |
+|---|---|---|
+| ROI a edge>0 | +7,36% | **+14,37%** (apertura) · **+31,81%** (chiusura) |
+| Contrasto | +15,81 pp | **+21,44 pp** · **+35,75 pp** |
+| Premessa H0 | regge | **regge**, margine +0,00066 |
+
+Su 760 partite la varianza è alta e i numeri sono più grandi, ma vanno nella stessa direzione con la
+stessa forma. **Il codice nuovo, sui dati vecchi, dà la risposta vecchia.** Quindi quello che segue
+non è un artefatto del codice.
+
+### ❌ Il test primario fallisce
+
+Strato A: 5 campionati europei, stagioni 2020/21-2025/26, **10.734 partite mai usate** — 3,4× il
+campione del run 008. Accoppiamento chiusura-chiusura, come pre-registrato.
+
+| | strato A apertura | **strato A chiusura** *(test primario)* |
+|---|---|---|
+| Selezioni | 126.168 | 126.138 |
+| ROI a edge>0 | **−3,47%** | **−2,79%** |
+| ROI a edge≤0 | −7,11% | −7,16% |
+| Contrasto | +3,64 pp | **+4,37 pp** |
+| t / p | +0,97 / **0,332** | +1,48 / **0,138** |
+| IC 95% (a grappolo) | [−14,08%, +7,01%] | [−10,38%, +5,36%] |
+| P(ROI > 0) | 24,0% | **24,0%** |
+
+**La barra era p < 0,01. Il risultato è p = 0,138.** Il ROI a edge positivo è **negativo**.
+
+Con 10.734 partite la potenza è molto superiore a quella del run 008, quindi — come scritto nella
+pre-registrazione — questo non è «non lo vedo». È **«non c'è»**.
+
+### 📉 La predizione scritta prima, valutata
+
+Avevo scritto: contrasto atteso **+4 e +12 pp**, ROI **+1% e +5%**.
+
+| | predetto | misurato | esito |
+|---|---|---|---|
+| Contrasto | +4 … +12 pp | **+4,37 pp** | dentro l'intervallo, al limite inferiore |
+| ROI a edge>0 | +1% … +5% | **−2,79%** | **fuori, e di segno opposto** |
+
+Metà giusta. Avevo previsto l'attenuazione e non il collasso del livello sotto zero.
+
+### 🔍 Il segnale ordina ancora, ma non paga più
+
+Questa è la parte non ovvia, e va detta con precisione perché è facile leggerla male.
+
+| Misura | Strato A chiusura | Cosa dice |
+|---|---|---|
+| Pendenza della regressione | **+0,920** (t a grappolo **+4,09**) | per ogni punto di edge stimato se ne realizza ~0,92: l'edge **ordina ancora correttamente**, e in modo molto significativo |
+| Correlazione sui decili | **+0,89** | monotonia su tutta la distribuzione |
+| Intercetta | **−0,0159** (se 0,0123) | a edge nullo si perde l'1,6% |
+
+Il **ranking** sopravvive: le scommesse con edge stimato più alto rendono più di quelle con edge più
+basso, su 126.000 selezioni, con t = +4,09. Il **livello** no: l'intera retta si è abbassata sotto lo
+zero. Ordinare correttamente le scommesse e guadagnarci sono due cose diverse, e questo è il caso in
+cui la prima c'è e la seconda no.
+
+### 🎯 Il meccanismo: il riferimento ha smesso di essere affilato
+
+Il run 007 aveva isolato il meccanismo con un esperimento di controllo: **conta l'affilatezza del
+riferimento**, non il modello né la quantità di dati. Con un riferimento non affilato e 900.988
+selezioni, zero segnale.
+
+Il run 009 trova che il riferimento si è smussato da solo.
+
+| Stagione | overround Pinnacle | overround soft (medio) | margine di log loss sui soft |
+|---|---|---|---|
+| 2020/21 | **2,45%** | 5,37% | +0,0000 |
+| 2021/22 | **2,42%** | 5,46% | +0,0000 |
+| 2022/23 | **2,43%** | 5,89% | +0,0011 |
+| 2023/24 | 2,76% | 6,04% | +0,0018 |
+| 2024/25 | **3,00%** | 5,60% | +0,0011 |
+| 2025/26 | **3,03%** | 5,96% | **−0,0004** |
+
+Nel run 006 l'overround di Pinnacle era **2,02-2,05%**, replicato su due campioni indipendenti alla
+seconda cifra. Oggi è **3,03%**: **il margine del riferimento è cresciuto di metà**. Un riferimento
+che si allarga smette di essere il metro con cui misurare gli altri.
+
+Il confronto di log loss è contro la *media* dei soft, non contro il migliore: confrontarsi col
+migliore di sei è una selezione, e gonfia la sconfitta di chi sta da solo.
+
+E la tabella del contrasto per stagione mostra quando è successo:
+
+| Stagione | 2020/21 | 2021/22 | 2022/23 | 2023/24 | 2024/25 | 2025/26 |
+|---|---|---|---|---|---|---|
+| ROI a edge>0 | +2,64% | −2,00% | +9,63% | −18,47% | −5,70% | **−32,30%** |
+| Contrasto | +8,20 | +3,64 | +17,43 | −9,39 | +2,09 | **−23,53 pp** |
+
+Il taglio 2022/23 → 2023/24 è stato scelto **dopo** aver visto questi numeri, quindi il confronto fra
+le due ere (+8,88 pp con t=+2,49 contro −10,88 pp con t=−2,24) è **descrittivo, non un test**.
+È l'ipotesi che un run futuro potrà pre-registrare su stagioni che ancora non esistono.
+
+### 💀 E dal 2026/27 il riferimento non c'è proprio più
+
+Verificato scaricando i dati, prima di ogni analisi: nei file della stagione in corso **le colonne
+Pinnacle sono sparite**. Il feed pubblico riporta B365, BW, BV, Betfair Exchange, SkyBet, Paddy
+Power — non Pinnacle. Lo stesso vale per Argentina e Brasile, dove `B365` compare nelle stagioni
+2025 e 2026 proprio mentre Pinnacle se ne va.
+
+Il rischio 3 del run 008 — «il riferimento affilato potrebbe non esserlo più» — non era teorico.
+Si è materializzato due volte: prima smussandosi, poi sparendo.
+
+### 🔄 Q4 — Betfair Exchange non lo sostituisce
+
+Sull'overlap 2024/25-2025/26, dove Pinnacle e Betfair Exchange coesistono:
+
+| Riferimento | n | ROI a edge>0 | Contrasto | p |
+|---|---|---|---|---|
+| Pinnacle, apertura | 2.654 | −11,26% | −2,96 pp | 0,76 |
+| Pinnacle, chiusura | 2.650 | **−20,96%** | −12,79 pp | 0,073 |
+| **Betfair Exchange, apertura** | 3.397 | **+5,68%** | +13,56 pp | 0,19 |
+| **Betfair Exchange, chiusura** | 3.393 | −1,29% | +6,92 pp | 0,38 |
+
+Due letture, entrambe vere:
+
+- **Betfair Exchange è un riferimento migliore di Pinnacle, oggi.** Sulle stesse partite, Pinnacle
+  come riferimento fa perdere il 21%, l'exchange no. Coerente con la teoria: un exchange non ha
+  margine dentro il prezzo.
+- **Non basta.** Nessuno dei due arriva alla significatività, nemmeno alla soglia non corretta di
+  0,05, figurarsi alla Bonferroni 0,002. Con 3.400 partite l'exchange è **compatibile con zero**.
+
+Non è «l'exchange funziona»: è «l'exchange è il posto giusto dove guardare, e qui non c'è abbastanza
+per dirlo».
+
+### 🌍 Gli altri due strati: uno cade, uno non è testabile
+
+**Strato B — fuori lega** (Italia, Spagna, Germania, Francia 2018-2020, 2.791 partite). La
+**premessa H0 cade**: sull'intersezione, William Hill ha log loss più basso di Pinnacle
+(0,9784 contro 0,9788 in apertura; 0,9725 contro 0,9725 in chiusura). Contrasto +9,14 pp (p=0,090) e
++8,06 pp (p=0,147): non significativo, e la soglia Bonferroni era 0,002. **L'estensione ad altri
+campionati non è stabilita.**
+
+**Strato C — fuori continente** (Argentina + Brasile, 11.768 partite): **non testabile**, e la
+ragione è istruttiva. Pinnacle copre il 95% di quelle partite, ma l'unico book soft con colonne
+proprie è B365, presente solo nelle stagioni 2025 e 2026 — cioè **proprio quando Pinnacle se ne va**.
+L'intersezione è di 308 partite e 108 selezioni con edge positivo. Il +21,65% che ne esce ha un IC 95%
+di [−11,47%, +60,18%]: non è un risultato, è rumore. Il rischio 4 del run 008 resta aperto **e non
+richiudibile con questi dati**.
+
+`MaxC` — il miglior prezzo disponibile — copre il 100% delle partite e sarebbe stato la via d'uscita,
+ma è ≥ della quota Pinnacle nel **98,9%** dei casi: quasi certamente Pinnacle è dentro
+l'aggregato. Usarlo significherebbe cercare l'edge contro un riferimento che contiene il riferimento.
+Scartato.
+
+### ⚠️ Cosa questo run dice del run 008
+
+Il run 008 concludeva: «l'intervallo di confidenza al 95% ora esclude lo zero», [+1,18%, +13,65%].
+Quell'intervallo era calcolato ricampionando **55.404 selezioni come se fossero indipendenti**,
+mentre venivano da 3.163 partite.
+
+Il fattore di allargamento misurato qui, sugli strati confrontabili, è **1,3-1,6×**. Applicato a
+quell'intervallo — larghezza 12,47 pp, centro +7,4% — un fattore 1,4 lo porta a circa
+**[−1,3%, +16,1%]**: **lo zero torna dentro.**
+
+È una stima per estrapolazione, non un ricalcolo: i dati esatti del run 008 non sono più
+raggiungibili nella stessa forma. Ma la direzione non è in dubbio, e la conclusione «due requisiti su
+tre soddisfatti» va corretta in **uno e mezzo**.
+
+Il run 008 non era sbagliato nel metodo: era sbagliato nella precisione dichiarata, e per due volte —
+una per la correlazione fra selezioni, una perché quel campione era **2012-2020**, cioè esattamente
+l'epoca in cui il riferimento era ancora affilato.
+
+### 📊 Il criterio di uscita, rivalutato
+
+| Requisito | Run 008 | **Run 009** |
+|---|---|---|
+| Confidenza alta | ✅ | ❌ **cade**: il test primario fuori campione dà p=0,138 con 3,4× i dati |
+| Vantaggio matematico alto | ✅ +7,36% | ❌ **cade**: −2,79% fuori campione |
+| Garantito | ❌ | ❌ (invariato, e invariabile) |
+
+### 🎯 Conclusione
+
+Il run 008 aveva misurato una cosa vera. Il run 009 misura che era vera **allora**.
+
+> Il vantaggio non veniva dal prevedere il calcio — cinque run l'avevano già escluso. Veniva
+> dall'esistenza di **un riferimento più affilato del mercato**: Pinnacle, con un margine del 2% e
+> una linea non distorta. Quel riferimento si è allargato al 3% fra il 2023 e il 2026, ha perso il
+> vantaggio di log loss sui book soft, e nella stagione 2026/27 è uscito del tutto dai dati pubblici.
+> Il segnale è uscito con lui: l'edge stimato **ordina** ancora le scommesse (pendenza +0,92,
+> t=+4,09) ma il livello è sotto lo zero.
+
+Questo è il risultato più forte del progetto, e non perché sia positivo:
+
+**Una strategia che dipende da un riferimento privilegiato ha la vita di quel riferimento.** Il run
+007 aveva dimostrato che conta l'affilatezza del riferimento tenendo fisso tutto il resto; il run 009
+mostra la stessa cosa lasciando scorrere il tempo. Il meccanismo è confermato due volte, in due modi
+indipendenti — e la seconda conferma arriva sotto forma della sua estinzione.
+
+### 🚧 Cosa avrebbe senso fare adesso, e cosa no
+
+**Non ha senso** ritarare soglie, cambiare de-vig, aggiungere book o modelli. Il run 007 ha già
+mostrato che non è lì che si vince, e il run 009 mostra che quello che serviva non c'è più.
+
+**Ha senso**, in ordine di valore:
+
+1. **Betfair Exchange, con abbastanza partite.** È l'unico riferimento a margine ≈ 0 ancora nei dati,
+   e sull'overlap va nella direzione giusta. Servono ~3× le 3.400 partite attuali per decidere. Sono
+   dati che si accumulano da soli: la stagione 2026/27 in corso li produce.
+2. **Pre-registrare adesso il test sul 2026/27**, prima che quelle partite si giochino. È
+   l'occasione, rara, di un test genuinamente fuori campione su dati che ancora non esistono. La
+   scommessa dichiarata: riferimento `BFEC`, bersagli `B365C`/`BWC`/`BVC`, contrasto > 0 con p < 0,01.
+3. **Ricontrollare gli altri risultati del progetto con il bootstrap a grappolo.** Il fattore 1,3-1,6
+   si applica a ogni intervallo calcolato sulle selezioni invece che sulle partite.

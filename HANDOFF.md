@@ -22,6 +22,12 @@ python3 pipeline.py            # → results/predictions.json   (~3 min con ML)
 python3 report.py              # → results/report.html
 ```
 
+Per la parte quantitativa sulle scommesse (run 004-009), che richiede dati storici:
+```bash
+python3 src/fetchdata.py       # scarica e verifica le sorgenti → data/cache/  (~2 min)
+cd src && python3 validate_oos.py   # → results/validate_oos.json  (~4 min)
+```
+
 Run veloce senza ML (~5 s):
 ```python
 import pipeline; pipeline.run(n_sims=200_000, train_ml=False)
@@ -40,6 +46,8 @@ import pipeline; pipeline.run(n_sims=200_000, train_ml=False)
 | `src/ml.py` | Lega sintetica, training, CV. **`load_real_matches()` è il punto d'innesto per dati veri** | Quando arrivano dati reali |
 | `src/karpathy_checks.py` | 5 check diagnostici (input azzerati, etichette mescolate, overfit di un batch, scala di baseline, spread fra seed) | **Dopo ogni modifica al layer ML** |
 | `src/duels.py` | Matrice 11×11 dei duelli, coppie di marcatori, enumerazione completa delle storie di partita, rischio disponibilità | Quando cambiano le rose |
+| `src/fetchdata.py` | **Acquisizione dati riproducibile.** Dichiara le sorgenti (nome, URL, contenuto atteso), le clona in `data/cache/`, verifica l'inventario | Prima di qualsiasi analisi su dati storici |
+| `src/validate_oos.py` | **La validazione del run 009**: fuori tempo, fuori lega, fuori continente, sostituzione del riferimento. Bootstrap raggruppato per partita | Per rivalutare la strategia su dati nuovi |
 | `src/loaddata.py` | **Parser openfootball**: 13 stagioni di Serie A, classifiche e split reali | Per aggiornare i dati storici |
 | `src/backtest.py` | Backtest walk-forward, calibrazione, ECE | Prima di credere a qualsiasi modello |
 | `src/backtest_odds.py` | **Il test decisivo**: train/test temporale con quote reali, simulazione scommesse con errori standard | Per rivalutare dopo ogni modifica al modello |
@@ -77,12 +85,9 @@ Per tre run ho scritto che l'egress era bloccato e che l'unico canale dati era W
 `football-data.co.uk`, Wikipedia, ESPN, FBref — **falso per GitHub**, che è sempre stato
 raggiungibile. L'avevo perfino usato per clonare un repo senza collegare le due cose.
 
-I dati che servivano si prendono con un `git clone`:
-
-```bash
-git clone --depth 1 https://github.com/openfootball/italy
-git clone --depth 1 https://github.com/xgabora/Club-Football-Match-Data-2000-2025
-```
+I dati che servivano si prendono con un `git clone`. **Dal run 009 non farlo a mano**: le sorgenti
+sono dichiarate in `src/fetchdata.py`, che le clona e ne verifica il contenuto. Il run 008 le aveva
+prese a mano in uno scratchpad temporaneo, e per questo non è riproducibile.
 
 - **openfootball/italy** — 13 stagioni di Serie A partita per partita (4.940 partite)
 - **Club-Football-Match-Data** — 9.012 partite di Serie A 2000-2025 con **quote 1X2, over/under,
@@ -131,6 +136,18 @@ Da rifare a ogni modifica. Se uno fallisce, c'è un bug — non una nuova intuiz
    è `true`, l'EV trovato non è una scoperta sulla partita ma una misura del proprio scetticismo:
    la decisione corretta in quel caso è non giocare.
 
+8. **Bootstrap raggruppato per partita, mai per selezione.** Sei quote sulla stessa partita
+   condividono l'esito: non sono sei osservazioni. Misurato al run 009, raggruppare allarga gli
+   intervalli di **1,3-1,6×**. Ogni intervallo calcolato sulle selezioni è troppo stretto, e il
+   run 008 ne era affetto.
+9. **Confronti di log loss solo sull'intersezione.** Confrontare due book sulle partite in cui
+   ciascuno ha una quota non misura niente: le coperture differiscono di 4× fra book. Al run 009
+   questo faceva risultare Betfair Exchange «più affilato di Pinnacle» giocando su un terzo dei
+   dati. `validate_oos.h0()` fa il confronto giusto e stampa la copertura accanto.
+10. **Mai apertura contro chiusura.** Confrontare la quota di apertura di un book con quella di
+    chiusura del riferimento è lookahead e produce un edge inesistente. `validate_oos` lo vieta
+    con un assert.
+
 ```bash
 cd src && python3 -c "
 import json,pipeline
@@ -141,28 +158,49 @@ p=r['probabilities']['fused_FINAL']; assert abs(sum(p.values())-1)<1e-9
 print('sanity OK')"
 ```
 
-## 8. Stato al passaggio di consegne
+## 8. Stato al passaggio di consegne — aggiornato al run 009
 
-**Fatto:** raccolta dati via search · modello analitico · Monte Carlo · fusione col mercato · layer ML
-con CV · analisi di sensibilità · report HTML light/dark · log RESULTS.md · un bug di sampling trovato e corretto.
+**La strategia sharp-vs-soft è morta, e si sa di cosa.** Il run 008 misurava +7,36% su Premier
+League 2012-2020. Il run 009 la testa su **10.734 partite mai usate** (5 campionati europei,
+2020/21-2025/26): ROI **−2,79%**, contrasto +4,37 pp, **p = 0,138**. La barra pre-registrata era
+p < 0,01.
 
-**Non fatto, e perché:** nessun training su dati reali (rete bloccata) · nessuna validazione fuori
-campione su partite vere (stesso motivo) · infortuni di agosto 2026 non reperibili · formazioni
-ufficiali non ancora pubblicate.
+Il meccanismo è identificato, non ipotizzato: **l'overround di Pinnacle è passato da 2,02-2,05%
+(run 006, campioni 2012-2020) a 3,03% (2025/26)**, e nella stagione 2026/27 le colonne Pinnacle
+sono **sparite dal feed pubblico**. La strategia dipendeva interamente da quel riferimento.
 
-## LA BARRA, scritta prima di riprovare
+Il segnale **ordina** ancora (pendenza +0,920, t a grappolo +4,09; decili monotoni, corr +0,89) ma
+il livello è sotto lo zero (intercetta −0,0159). Ordinare e guadagnare sono due cose diverse.
 
-Il backtest del run 004 dice che il modello perde contro il mercato (0.9725 contro 0.9511) e che
-ogni filtro EV perde soldi in modo significativo. Prima di rimettere mano a soglie o parametri:
+**Due correzioni al run 008**, entrambe nella direzione di meno certezza, non di più:
+1. Il suo IC 95% [+1,18%, +13,65%] trattava 55.404 selezioni correlate come indipendenti. Con il
+   fattore di allargamento misurato (1,3-1,6×) diventa circa [−1,3%, +16,1%]: **lo zero torna dentro**.
+2. Il suo campione era 2012-2020, cioè esattamente l'epoca in cui il riferimento era affilato.
 
-**Criterio di stop dichiarato in anticipo:** un modello si considera utilizzabile solo se il suo log
-loss scende **sotto quello del mercato**, sul segmento specifico che si vuole giocare, su un test set
-**nuovo**. Non su questo: 3.031 partite sono state usate una volta e riutilizzarle per ritoccare
-parametri le brucia.
+**Fatto:** modello analitico · Monte Carlo · fusione col mercato · layer ML con CV · sensibilità ·
+auto-audit · backtest con quote reali · strategia dispersione (soffitto negativo) · strategia
+sharp-vs-soft (positiva 2012-2020, **nulla 2020-2026**) · acquisizione dati riproducibile.
 
-Non si simula nemmeno prima di aver superato quella soglia.
+**Non fatto, e perché:** incassabilità reale mai testata (serve un conto vero) · Argentina e Brasile
+non testabili (Pinnacle e B365 non si sovrappongono: 308 partite in comune) · Betfair Exchange come
+riferimento sostitutivo **promettente ma sotto-alimentato** (3.400 partite, compatibile con zero).
 
-**Prima cosa da fare al prossimo giro:** vedi RESULTS.md § "Prossimo run", punti 1 e 2.
+## LA BARRA, riscritta al run 009
+
+La vecchia barra («log loss del modello sotto quello del mercato») è superata: cinque run hanno
+stabilito che non è lì che si vince. La barra nuova riguarda l'unica strada rimasta.
+
+**Non si testa niente su dati già usati.** Le stagioni 2020-2026 sono adesso bruciate: sono state
+guardate. La prossima misura va fatta sulla **stagione 2026/27**, che si sta giocando ora.
+
+**Pre-registrazione per il prossimo run, da fissare prima che le partite si giochino:**
+
+> Riferimento `BFEC` (Betfair Exchange, chiusura). Bersagli `B365C`, `BWC`, `BVC`, `SKBC`.
+> Accoppiamento chiusura-chiusura. Ipotesi primaria: contrasto ROI(edge>0) − ROI(edge≤0) > 0
+> con **p < 0,01**, bootstrap raggruppato per partita. Nessun altro test conta.
+> Se fallisce, la questione è chiusa: non c'è più un riferimento privilegiato nei dati pubblici.
+
+**Prima cosa da fare al prossimo giro:** vedi RESULTS.md § run 009, "Cosa avrebbe senso fare adesso".
 
 ## 9. La regola che è costata un errore
 

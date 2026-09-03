@@ -48,12 +48,23 @@ from __future__ import annotations
 import glob
 import json
 import re
+import sys
 from math import erfc, sqrt
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+# ATTENZIONE (aggiunto al run 009).
+# Questo percorso e' lo scratchpad di una sessione che non esiste piu'. Il run
+# 008 e' stato eseguito da qui, e quindi NON e' riproducibile cosi' com'e':
+# senza quella directory `load()` restituisce un DataFrame vuoto e `run()`
+# risponde "nessun dato" invece di fallire. Un risultato che si degrada in
+# silenzio e' peggio di uno che si rompe.
+#
+# Il rimpiazzo e' `src/fetchdata.py` + `src/validate_oos.py`, che dichiarano
+# le sorgenti e le riscaricano. Questo modulo resta come documentazione del
+# metodo del run 008, ma avvisa invece di tacere.
 SCRATCH = Path("/tmp/claude-0/-home-user-Prova/f7c0655e-f766-5448-b6c5-7a7f2f6688ec"
                "/scratchpad")
 
@@ -133,7 +144,17 @@ def _read_dirs(dirs) -> pd.DataFrame:
     return d.reset_index(drop=True)
 
 
+def _warn_if_sources_missing() -> None:
+    if not SCRATCH.exists():
+        print("\n!! I dati del run 008 non sono raggiungibili: lo scratchpad della\n"
+              "!! sessione che li aveva e' stato distrutto.\n"
+              "!! Questo modulo non puo' riprodurre il run 008. Usa invece:\n"
+              "!!     python3 fetchdata.py && python3 validate_oos.py\n",
+              file=sys.stderr)
+
+
 def load(which: str = "discovery") -> pd.DataFrame:
+    _warn_if_sources_missing()
     if which == "discovery":
         return _read_dirs(DISCOVERY)
     if which == "holdout":

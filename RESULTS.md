@@ -922,3 +922,111 @@ Quello che il progetto ha stabilito, e che vale al netto di tutto:
 > Si batte, se si batte, **confrontando il prezzo di un book lento con quello di un book affilato**.
 > Il segnale è reale (p=2e−06), il vantaggio è +7.4%, e conta l'affilatezza del riferimento: con un
 > riferimento non affilato e 19 volte più dati, lo stesso metodo dà esattamente zero.
+
+---
+
+## Run 009 — 2026-09-03 · PRE-REGISTRAZIONE (scritta e committata prima di eseguire)
+
+> Questa sezione è stata scritta e committata **prima** di far girare l'analisi. I risultati
+> arrivano nella sezione successiva. Se le due non concordano, vince quello che c'è scritto qui.
+
+### Perché questo run esiste
+
+Il run 008 ha chiuso con due requisiti su tre soddisfatti e quattro rischi nominati. Tre dei quattro
+sono affermazioni empiriche verificabili, non limiti di principio:
+
+| Rischio del run 008 | Verificabile? |
+|---|---|
+| 3. «Pinnacle potrebbe non essere più affilato. **Il campione è 2012-2020 e non dice niente su oggi**» | **sì** |
+| 4. «Campione geograficamente stretto: quasi tutta Premier League. Che valga in Argentina non è testato» | **sì** |
+| 2. «La simultaneità dei prezzi è assunta, non verificata» | **in parte** |
+| 1. «I book che sbagliano chiudono i conti vincenti» | no — richiede un conto vero |
+
+Nessuno dei tre è stato testato perché mancavano i dati. **I dati ci sono**: `src/fetchdata.py`
+ne recupera 26.054 partite con quote per singolo bookmaker — **8,2× il campione del run 008** —
+su 7 campionati e 8 stagioni, fino alla stagione in corso.
+
+### Il difetto trovato per primo: il run 008 non era riproducibile
+
+I CSV del run 008 vivevano nello scratchpad di una sessione ormai distrutta, con il percorso
+hard-coded in `strategy_sharp_vs_soft.py`. Il risultato principale del progetto non si poteva
+rieseguire. `src/fetchdata.py` dichiara le sorgenti (nome, URL, contenuto atteso) e le riscarica in
+una cache verificabile. Un risultato che non si può rieseguire è un aneddoto.
+
+### Gli strati, definiti sui dati e non sui risultati
+
+| Strato | Cosa | Partite | Mai usato prima? |
+|---|---|---|---|
+| **A — fuori tempo** *(primario)* | E0·I1·SP1·D1·F1, stagioni 2020/21 → 2025/26 | ~10.900 | **sì**, il run 008 finiva nel 2020 |
+| **B — fuori lega** | I1·SP1·D1·F1, stagioni 2018/19 e 2019/20 | ~2.700 | **sì** (stessa epoca, campionati nuovi) |
+| **C — fuori continente** | Argentina + Brasile | ~11.800 | **sì** |
+| **D — sovrapposizione** | E0 2018/19 + 2019/20 | ~760 | no: è dentro il run 008 |
+
+Lo strato D **non è un test**. È il controllo di continuità del caricatore: se lì non ritrovo un
+numero compatibile con il run 008, ho un bug nel codice nuovo, non una scoperta.
+
+A e B insieme separano due spiegazioni che altrimenti si confondono: *è cambiata l'epoca* contro
+*è cambiato il campionato*.
+
+### L'accoppiamento dei prezzi — la correzione metodologica
+
+Il run 008 confrontava le quote di **apertura** di Pinnacle con quelle di apertura dei book soft, e
+dichiarava come rischio che la simultaneità fosse assunta. I file hanno anche le quote di
+**chiusura** (`PSC`, `B365C`, …), campionate tutte allo stesso istante definito: il calcio d'inizio.
+
+Quindi due accoppiamenti, tenuti separati:
+
+- **apertura contro apertura** — replica esatta del metodo del run 008
+- **chiusura contro chiusura** — simultaneità molto più difendibile
+
+**Mai misto.** Soft in apertura contro sharp in chiusura significa usare un prezzo futuro per
+valutarne uno passato: è lookahead, e produrrebbe un edge finto. Il codice lo vieta con un assert.
+
+### Ipotesi, con la barra dichiarata adesso
+
+**Test primario, uno solo:** sullo strato A, accoppiamento chiusura-chiusura, il contrasto
+`ROI(edge>0) − ROI(edge≤0)` è **positivo con p < 0.01** bilaterale — la stessa barra che il run 008
+chiamava `signal_is_real`.
+
+**Test secondari** (5: strato A apertura, strato B, strato C, e le due sostituzioni di riferimento):
+soglia Bonferroni **p < 0.002**.
+
+**Premessa H0**, da controllare prima di leggere qualsiasi altra cosa: Pinnacle de-viggato ha log
+loss minore di ogni book soft. Se cade, la premessa del metodo è caduta e il resto non va
+interpretato.
+
+### La predizione, scritta prima di guardare
+
+Non basta dichiarare la soglia: se non scrivo cosa mi aspetto, qualunque risultato sembrerà
+compatibile con l'attesa a posteriori.
+
+> Mi aspetto che il segnale **regga ma si riduca**. I mercati si sono fatti più efficienti dal 2016
+> e i book soft di oggi sono meno lenti di quelli di allora.
+>
+> **Contrasto atteso fra +4 e +12 pp** (era +15,81). **ROI a edge>0 fra +1% e +5%** (era +7,36%).
+>
+> Se esce **sopra +15 pp**, il mio primo sospetto è un errore di accoppiamento, non una scoperta.
+> Se esce **≤ 0 con p > 0.01**, con ~10.900 partite la potenza è molto superiore a quella del run
+> 008: quello non sarebbe «non lo vedo», sarebbe **«non c'è più»**, e il risultato del run 008
+> andrebbe riletto come vero-nel-2012-2020 e morto oggi.
+
+### Q4 — il riferimento affilato esiste ancora?
+
+Un fatto già verificato scaricando i dati, prima di ogni analisi: nei file della stagione **2026/27
+le colonne Pinnacle non ci sono più**. Il feed pubblico riporta B365, BW, BV, Betfair Exchange,
+SkyBet — non Pinnacle. Il rischio 3 del run 008 non era teorico: si è materializzato.
+
+Quindi la domanda che decide se il metodo è ancora eseguibile oggi:
+
+> **Betfair Exchange (`BFE`/`BFEC`) regge come riferimento affilato al posto di Pinnacle?**
+
+È presente dal 2024/25 in poi, e in Argentina e Brasile. Un exchange ha margine ≈ 0 sul prezzo
+(la commissione è sulla vincita netta, non nella quota), quindi in teoria dovrebbe essere **almeno
+pari** a Pinnacle. Test: log loss BFEC contro PSC sull'overlap 2024/25-2025/26, e poi la strategia
+completa con BFEC come riferimento.
+
+### Cosa questo run NON può stabilire
+
+Il rischio 1 — «i book che sbagliano limitano o chiudono i conti vincenti» — resta fuori portata con
+qualsiasi dato storico. Serve un conto vero, aperto, che scommette. Non è un buco di questo run:
+è il confine fra misurare un edge e incassarlo.

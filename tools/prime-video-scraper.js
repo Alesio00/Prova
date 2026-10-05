@@ -1,29 +1,31 @@
 /*
- * Prime Video: esporta la cronologia di visione, EPISODI COMPRESI (v2).
+ * Prime Video: esporta la cronologia di visione, EPISODI COMPRESI (v3).
  *
  * USO
- *   1. Vai su https://www.primevideo.com/settings/watch-history e RICARICA la
- *      pagina (F5), cosi tutte le serie sono chiuse.
- *   2. F12 > Console. Incolla TUTTO il file (apri il link "raw" e usa Ctrl+A,
- *      Ctrl+C), premi Invio. Se Chrome lo chiede, scrivi prima `allow pasting`.
- *   3. Aspetta: scorre la pagina e apre ogni "Episodi guardati" per leggere gli
- *      episodi. Con una cronologia lunga possono servire diversi minuti.
- *   4. Scarica: prime_video_cronologia_v2.csv e prime_video_cronologia_v2.json
- *      (il JSON contiene anche TUTTO il testo grezzo della pagina).
+ *   1. Vai su https://www.primevideo.com/settings/watch-history e ricarica (F5).
+ *   2. F12 > Console. Incolla TUTTO il file (apri il link "raw", Ctrl+A, Ctrl+C),
+ *      premi Invio. Se Chrome lo chiede, scrivi prima `allow pasting`.
+ *   3. Aspetta: carica tutta la cronologia scorrendo, poi apre ogni "Episodi
+ *      guardati" a gruppi di 20 e legge gli episodi. Alla fine scarica
+ *      prime_video_cronologia_v3.csv e prime_video_cronologia_v3.json.
  *
  * SICUREZZA
- *   Solo lettura. Non clicca mai su pulsanti con "elimina/rimuovi/delete/remove".
- *   Non invia nulla fuori dal tuo browser.
+ *   Solo lettura. Clicca soltanto le etichette "Episodi guardati" (aprono un
+ *   menu a tendina) e, se esiste, un pulsante "mostra altro". Non tocca mai
+ *   i pulsanti "Elimina ..." ne i form di cancellazione. Nulla esce dal browser.
  */
 (async () => {
   const CFG = {
     maxRounds: 800,
-    pauseMs: 1000,
-    stableRoundsToStop: 5,
+    pauseMs: 1200,       // attesa tra uno scroll e l'altro
+    stableRounds: 6,     // giri senza nuovi elementi prima di fermarsi
+    batch: 20,           // quante serie aprire alla volta
+    batchPauseMs: 500,
     sep: ';',
   };
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+  const linesOf = (el) => (el.innerText || '').split('\n').map(clean).filter(Boolean);
 
   // <parse>
   const MONTHS = {
@@ -50,106 +52,115 @@
     if (m && MONTHS[m[1].slice(0, 3)]) return iso(+m[3], MONTHS[m[1].slice(0, 3)], +m[2]);
     return null;
   }
-
-  // Ogni voce parte da una riga-data. Poi: titolo, "Episodi guardati"/"Elimina il
-  // film..." (tipo) e, se la serie e aperta, le righe degli episodi (dettagli).
-  const CONTROL = [
-    [/^episodi guardati$/i, 'serie'],
-    [/^watched episodes$/i, 'serie'],
-    [/^elimina il film/i, 'film'],
-    [/^remove (this )?(movie|film)/i, 'film'],
-    [/^elimina un evento/i, 'evento live'],
-    [/^elimina gli episodi/i, 'end'],
-    [/^remove (these )?episodes/i, 'end'],
-  ];
-  function parseLines(lines) {
-    const out = [];
-    let cur = null;
-    for (const l of lines) {
-      const d = parseDate(l);
-      if (d) {
-        cur = { data: d, data_testo: l, tipo: '', titolo: '', dettagli: [] };
-        out.push(cur);
-        continue;
-      }
-      if (!cur) continue;
-      const c = CONTROL.find(([rx]) => rx.test(l));
-      if (c) {
-        if (c[1] !== 'end' && !cur.tipo) cur.tipo = c[1];
-        continue;
-      }
-      if (!cur.titolo && !cur.tipo) cur.titolo = l;
-      else cur.dettagli.push(l);
-    }
-    return out;
-  }
   // </parse>
 
-  // ---------- raccolta: scroll + apertura di ogni "Episodi guardati" ----------
+  const ITEM = 'li[data-automation-id^="wh-item-"]';
   const container =
     document.querySelector('[data-automation-id="activity-history-items"]') ||
     document.querySelector('main') ||
     document.body;
+  const count = () => container.querySelectorAll(ITEM).length;
 
-  const TOGGLE = /^(episodi guardati|watched episodes|mostra altro|mostra di pi[uù]|mostra tutto|show more|show all|vedi altro|altri episodi|more episodes|espandi|expand)$/i;
+  // ---------- 1. carica tutta la cronologia ----------
+  const MORE = /^(mostra|carica|vedi|visualizza|show|load|view|see)\b.*\b(altr\w*|more|tutt\w*|all)\b/i;
   const DANGER = /elimin|rimuov|cancell|delete|remove|cancel|nascondi|hide/i;
-  const clicked = new WeakSet();
-  const toggles = [];
-
-  function expandAll() {
-    let n = 0;
-    for (const el of container.querySelectorAll('span, div, button, a, p, summary, li')) {
-      if (el.children.length > 0 || clicked.has(el)) continue;
-      const label = clean(el.textContent);
-      if (!label || label.length > 40 || !TOGGLE.test(label) || DANGER.test(label)) continue;
-      const host = el.closest('[aria-expanded]');
-      if (host && host.getAttribute('aria-expanded') === 'true') { clicked.add(el); continue; }
-      clicked.add(el);
-      toggles.push(el);
-      try { el.click(); n++; } catch (_) { /* ignora */ }
+  const clickLoadMore = () => {
+    for (const b of container.querySelectorAll('button, [role="button"], a[role="button"]')) {
+      const t = clean(b.innerText || b.getAttribute('aria-label'));
+      if (!t || t.length > 50 || DANGER.test(t) || !MORE.test(t) || b.closest('form')) continue;
+      try { b.click(); return true; } catch (_) { /* ignora */ }
     }
-    return n;
-  }
+    return false;
+  };
 
-  console.log('[prime] Avvio: non chiudere la scheda...');
-  let stable = 0, lastH = 0, lastLen = 0;
-  for (let i = 0; i < CFG.maxRounds && stable < CFG.stableRoundsToStop; i++) {
+  console.log('[prime] Carico la cronologia: non chiudere la scheda...');
+  let stable = 0, last = -1;
+  for (let i = 0; i < CFG.maxRounds && stable < CFG.stableRounds; i++) {
+    const items = container.querySelectorAll(ITEM);
+    if (items.length) items[items.length - 1].scrollIntoView({ block: 'end' });
     window.scrollTo(0, document.documentElement.scrollHeight);
-    const n = expandAll();
+    const clicked = clickLoadMore();
     await sleep(CFG.pauseMs);
-    const h = document.documentElement.scrollHeight;
-    const len = container.innerText.length;
-    stable = h === lastH && len === lastLen && n === 0 ? stable + 1 : 0;
-    lastH = h; lastLen = len;
-    if (i % 5 === 0) console.log(`[prime] giro ${i + 1}: ${len} caratteri, ${toggles.length} serie aperte`);
+    const c = count();
+    stable = c === last && !clicked ? stable + 1 : 0;
+    last = c;
+    if (i % 5 === 0) console.log(`[prime] giro ${i + 1}: ${c} elementi`);
   }
-  window.scrollTo(0, 0);
+  console.log(`[prime] Cronologia caricata: ${count()} elementi.`);
 
-  // ---------- estrazione ----------
-  const lines = container.innerText.split('\n').map(clean).filter(Boolean);
-  const entries = parseLines(lines);
+  // ---------- 2. apre ogni "Episodi guardati" ----------
+  const labels = [...container.querySelectorAll('[data-testid^="wh-episodes-watched"] label')]
+    .filter((l) => !(l.control && l.control.checked) && !DANGER.test(clean(l.textContent)));
+  console.log(`[prime] Serie da aprire: ${labels.length}`);
+
+  if (labels.length) {
+    // prova sul primo elemento: se non compaiono episodi, avvisa e stampa l'HTML
+    const first = labels[0];
+    const firstItem = first.closest(ITEM);
+    const before = linesOf(firstItem).length;
+    first.click();
+    await sleep(1500);
+    const after = linesOf(firstItem).length;
+    console.log(`[prime] Prova sul primo: righe ${before} -> ${after}`);
+    if (after <= before) {
+      console.warn('[prime] Dopo il click non compaiono nuove righe. HTML del primo elemento (incollamelo in chat):');
+      console.log(firstItem.outerHTML.slice(0, 4000));
+    }
+    for (let i = 1; i < labels.length; i += CFG.batch) {
+      labels.slice(i, i + CFG.batch).forEach((l) => { try { l.click(); } catch (_) { /* ignora */ } });
+      await sleep(CFG.batchPauseMs);
+      if (i % 200 < CFG.batch) console.log(`[prime] aperte ${Math.min(i + CFG.batch, labels.length)} / ${labels.length}`);
+    }
+    await sleep(2000);
+  }
+
+  // ---------- 3. estrazione dalla struttura reale ----------
+  const entries = [];
+  let curDate = '', curDateIso = '';
+  for (const li of container.querySelectorAll('li')) {
+    if (li.matches(ITEM)) {
+      const links = [...li.querySelectorAll('a[href*="/detail/"]')];
+      const titleA = links.find((a) => clean(a.textContent)) || links[0];
+      const title = clean(titleA ? titleA.textContent : '') || clean(li.querySelector('img') && li.querySelector('img').alt);
+      const href = titleA ? titleA.getAttribute('href') : '';
+      const asin = (href.match(/\/detail\/([A-Za-z0-9]+)/) || [])[1] || '';
+      const del = li.querySelector('form button[type="submit"]');
+      const delText = del ? clean(del.textContent) : '';
+      const tipo = /film/i.test(delText) ? 'film' : /episod/i.test(delText) ? 'serie' : /diretta|live/i.test(delText) ? 'evento live' : 'altro';
+      const righe = linesOf(li);
+      const dettagli = righe.filter(
+        (l) => l !== title && !/^episodi guardati$/i.test(l) && !/^watched episodes$/i.test(l) && !/^(elimina|remove|delete)\b/i.test(l)
+      );
+      entries.push({
+        data: curDateIso, data_testo: curDate, tipo, titolo: title, asin,
+        id: li.getAttribute('data-automation-id'), dettagli, righe,
+      });
+    } else {
+      const first = clean((li.innerText || '').split('\n')[0]);
+      const d = parseDate(first);
+      if (d) { curDate = first; curDateIso = d; }
+    }
+  }
+
   const series = entries.filter((e) => e.tipo === 'serie');
   const withEps = series.filter((e) => e.dettagli.length);
-  console.log(`[prime] Voci: ${entries.length} | serie: ${series.length} | con episodi: ${withEps.length} | film: ${entries.filter((e) => e.tipo === 'film').length}`);
-
+  console.log(`[prime] Voci: ${entries.length} | serie: ${series.length} (con episodi: ${withEps.length}) | film: ${entries.filter((e) => e.tipo === 'film').length} | senza data: ${entries.filter((e) => !e.data).length}`);
   if (series.length && withEps.length < series.length * 0.5) {
-    console.warn('[prime] Pochi episodi trovati. Mi serve questo HTML (copialo e incollalo in chat):');
-    const t = toggles[0];
-    const box = t && (t.closest('li') || (t.parentElement && t.parentElement.parentElement));
-    console.log(box ? box.outerHTML.slice(0, 3000) : '(nessun pulsante "Episodi guardati" trovato)');
+    console.warn('[prime] Pochi episodi letti. HTML di una serie dopo l\'apertura (incollamelo in chat):');
+    const li = container.querySelector(ITEM + ' [data-testid^="wh-episodes-watched"]');
+    console.log(li ? li.closest(ITEM).outerHTML.slice(0, 4000) : '(nessuna serie trovata)');
   }
 
-  // ---------- download ----------
+  // ---------- 4. download ----------
   const csvCell = (v) => {
     const s = String(v ?? '');
     return new RegExp(`[${CFG.sep}"\\n]`).test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const cols = ['data', 'data_testo', 'tipo', 'titolo', 'n_dettagli', 'dettagli'];
+  const cols = ['data', 'data_testo', 'tipo', 'titolo', 'n_episodi_letti', 'dettagli', 'asin'];
   const csv = '﻿' + [
     cols.join(CFG.sep),
-    ...entries.map((e) => [e.data, e.data_testo, e.tipo, e.titolo, e.dettagli.length, e.dettagli.join(' / ')].map(csvCell).join(CFG.sep)),
+    ...entries.map((e) => [e.data, e.data_testo, e.tipo, e.titolo, e.dettagli.length, e.dettagli.join(' / '), e.asin].map(csvCell).join(CFG.sep)),
   ].join('\n');
-
   const download = (name, content, type) => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([content], { type }));
@@ -158,14 +169,9 @@
     a.click();
     a.remove();
   };
-
-  window.__primeHistory = { entries, lines };
-  download('prime_video_cronologia_v2.csv', csv, 'text/csv;charset=utf-8');
+  window.__primeHistory = { entries };
+  download('prime_video_cronologia_v3.csv', csv, 'text/csv;charset=utf-8');
   await sleep(800);
-  download(
-    'prime_video_cronologia_v2.json',
-    JSON.stringify({ esportato_il: new Date().toISOString(), url: location.href, entries, lines }, null, 1),
-    'application/json'
-  );
-  console.log('[prime] Fatto. Scaricati prime_video_cronologia_v2.csv e .json');
+  download('prime_video_cronologia_v3.json', JSON.stringify({ esportato_il: new Date().toISOString(), url: location.href, entries }, null, 1), 'application/json');
+  console.log('[prime] Fatto. Scaricati prime_video_cronologia_v3.csv e .json');
 })();

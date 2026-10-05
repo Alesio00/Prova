@@ -1,42 +1,31 @@
 /*
- * Prime Video: esporta la cronologia di visione (serie, episodi, film).
+ * Prime Video: esporta la cronologia di visione, EPISODI COMPRESI (v2).
  *
  * USO
- *   1. Apri il browser, accedi ad Amazon e vai alla pagina della cronologia:
- *        https://www.primevideo.com/settings/watch-history
- *      (oppure, da Amazon.it: Prime Video > Impostazioni > Cronologia visualizzazioni)
- *   2. Apri la console degli strumenti sviluppatore (F12 > scheda "Console").
- *      Se Chrome chiede di digitare "allow pasting", fallo, poi incolla.
- *   3. Incolla TUTTO questo file e premi Invio.
- *   4. Aspetta: lo script scorre la pagina fino in fondo (anche qualche minuto
- *      se la cronologia e lunga). Al termine scarica due file:
- *        - prime_video_cronologia.csv   (una riga per titolo/episodio, separatore ";")
- *        - prime_video_cronologia.json  (righe + riepilogo per serie + dati grezzi)
- *      Se il browser blocca il secondo download, consenti "download multipli".
+ *   1. Vai su https://www.primevideo.com/settings/watch-history e RICARICA la
+ *      pagina (F5), cosi tutte le serie sono chiuse.
+ *   2. F12 > Console. Incolla TUTTO il file (apri il link "raw" e usa Ctrl+A,
+ *      Ctrl+C), premi Invio. Se Chrome lo chiede, scrivi prima `allow pasting`.
+ *   3. Aspetta: scorre la pagina e apre ogni "Episodi guardati" per leggere gli
+ *      episodi. Con una cronologia lunga possono servire diversi minuti.
+ *   4. Scarica: prime_video_cronologia_v2.csv e prime_video_cronologia_v2.json
+ *      (il JSON contiene anche TUTTO il testo grezzo della pagina).
  *
  * SICUREZZA
- *   Lo script legge soltanto la pagina. Non clicca MAI su pulsanti di
- *   eliminazione/rimozione: clicca solo su "mostra altro / espandi episodi".
- *   Non invia dati da nessuna parte: tutto resta nel tuo browser.
- *
- * Se qualche campo risulta vuoto, e normale: Amazon cambia spesso l'HTML.
- * Il JSON contiene anche il testo grezzo di ogni riga ("raw") per correggere
- * il parsing senza dover rifare la raccolta. Dopo l'esecuzione, in console
- * trovi `window.__primeHistory` e, con CFG.debug = true, l'HTML dei primi item.
+ *   Solo lettura. Non clicca mai su pulsanti con "elimina/rimuovi/delete/remove".
+ *   Non invia nulla fuori dal tuo browser.
  */
 (async () => {
   const CFG = {
-    maxRounds: 600,        // limite di sicurezza sui cicli di scroll
-    pauseMs: 1200,         // attesa dopo ogni scroll/click
-    stableRoundsToStop: 4, // cicli senza novita prima di fermarsi
-    debug: false,          // true: stampa l'HTML dei primi item in console
-    sep: ';',              // separatore CSV (";" per Excel italiano)
+    maxRounds: 800,
+    pauseMs: 1000,
+    stableRoundsToStop: 5,
+    sep: ';',
   };
-
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
 
-  // ---------- date ----------
+  // <parse>
   const MONTHS = {
     gen: 1, jan: 1, feb: 2, mar: 3, apr: 4, mag: 5, may: 5, giu: 6, jun: 6,
     lug: 7, jul: 7, ago: 8, aug: 8, set: 9, sep: 9, ott: 10, oct: 10,
@@ -46,7 +35,6 @@
     m >= 1 && m <= 12 && d >= 1 && d <= 31
       ? `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
       : null;
-
   function parseDate(str) {
     const s = clean(str).toLowerCase().replace(/\./g, '').replace(/,/g, '');
     let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
@@ -63,146 +51,92 @@
     return null;
   }
 
-  // ---------- raccolta: scroll + espansione ----------
+  // Ogni voce parte da una riga-data. Poi: titolo, "Episodi guardati"/"Elimina il
+  // film..." (tipo) e, se la serie e aperta, le righe degli episodi (dettagli).
+  const CONTROL = [
+    [/^episodi guardati$/i, 'serie'],
+    [/^watched episodes$/i, 'serie'],
+    [/^elimina il film/i, 'film'],
+    [/^remove (this )?(movie|film)/i, 'film'],
+    [/^elimina un evento/i, 'evento live'],
+    [/^elimina gli episodi/i, 'end'],
+    [/^remove (these )?episodes/i, 'end'],
+  ];
+  function parseLines(lines) {
+    const out = [];
+    let cur = null;
+    for (const l of lines) {
+      const d = parseDate(l);
+      if (d) {
+        cur = { data: d, data_testo: l, tipo: '', titolo: '', dettagli: [] };
+        out.push(cur);
+        continue;
+      }
+      if (!cur) continue;
+      const c = CONTROL.find(([rx]) => rx.test(l));
+      if (c) {
+        if (c[1] !== 'end' && !cur.tipo) cur.tipo = c[1];
+        continue;
+      }
+      if (!cur.titolo && !cur.tipo) cur.titolo = l;
+      else cur.dettagli.push(l);
+    }
+    return out;
+  }
+  // </parse>
+
+  // ---------- raccolta: scroll + apertura di ogni "Episodi guardati" ----------
   const container =
     document.querySelector('[data-automation-id="activity-history-items"]') ||
     document.querySelector('main') ||
     document.body;
 
-  const MORE = /(mostra|carica|vedi|visualizza|show|load|view|see)\s*(altri|altro|more|all|tutt)|altri episodi|more episodes|espandi|expand/i;
+  const TOGGLE = /^(episodi guardati|watched episodes|mostra altro|mostra di pi[uù]|mostra tutto|show more|show all|vedi altro|altri episodi|more episodes|espandi|expand)$/i;
   const DANGER = /elimin|rimuov|cancell|delete|remove|cancel|nascondi|hide/i;
   const clicked = new WeakSet();
+  const toggles = [];
 
-  function leavesCount() {
-    return [...container.querySelectorAll('li')].filter((li) => !li.querySelector('li')).length;
-  }
-
-  function clickExpanders() {
+  function expandAll() {
     let n = 0;
-    const cands = container.querySelectorAll('button, [role="button"], a[role="button"], [aria-expanded="false"]');
-    for (const el of cands) {
-      if (clicked.has(el)) continue;
-      const label = clean(el.innerText || el.getAttribute('aria-label') || '');
-      if (DANGER.test(label) || DANGER.test(el.getAttribute('aria-label') || '')) continue;
-      const isToggle = el.getAttribute('aria-expanded') === 'false';
-      if (!isToggle && !MORE.test(label)) continue;
+    for (const el of container.querySelectorAll('span, div, button, a, p, summary, li')) {
+      if (el.children.length > 0 || clicked.has(el)) continue;
+      const label = clean(el.textContent);
+      if (!label || label.length > 40 || !TOGGLE.test(label) || DANGER.test(label)) continue;
+      const host = el.closest('[aria-expanded]');
+      if (host && host.getAttribute('aria-expanded') === 'true') { clicked.add(el); continue; }
       clicked.add(el);
+      toggles.push(el);
       try { el.click(); n++; } catch (_) { /* ignora */ }
     }
     return n;
   }
 
-  console.log('[prime] Avvio raccolta: non chiudere la scheda...');
-  let stable = 0, lastH = 0, lastCount = 0;
+  console.log('[prime] Avvio: non chiudere la scheda...');
+  let stable = 0, lastH = 0, lastLen = 0;
   for (let i = 0; i < CFG.maxRounds && stable < CFG.stableRoundsToStop; i++) {
     window.scrollTo(0, document.documentElement.scrollHeight);
-    const clickedNow = clickExpanders();
+    const n = expandAll();
     await sleep(CFG.pauseMs);
     const h = document.documentElement.scrollHeight;
-    const c = leavesCount();
-    if (h === lastH && c === lastCount && clickedNow === 0) stable++;
-    else stable = 0;
-    lastH = h; lastCount = c;
-    if (i % 5 === 0) console.log(`[prime] giro ${i + 1}: ${c} elementi trovati`);
+    const len = container.innerText.length;
+    stable = h === lastH && len === lastLen && n === 0 ? stable + 1 : 0;
+    lastH = h; lastLen = len;
+    if (i % 5 === 0) console.log(`[prime] giro ${i + 1}: ${len} caratteri, ${toggles.length} serie aperte`);
   }
   window.scrollTo(0, 0);
-  console.log(`[prime] Scroll finito: ${lastCount} elementi. Estraggo i dati...`);
 
   // ---------- estrazione ----------
-  const EP_RE = /(?:episodio|episode|ep\.?)\s*(\d+)/i;
-  const SEASON_RE = /(?:stagione|season)\s*(\d+)/i;
-  const SE_COMPACT = /\bS(\d{1,2})\s*[,·\-]?\s*E(\d{1,3})\b/i;
+  const lines = container.innerText.split('\n').map(clean).filter(Boolean);
+  const entries = parseLines(lines);
+  const series = entries.filter((e) => e.tipo === 'serie');
+  const withEps = series.filter((e) => e.dettagli.length);
+  console.log(`[prime] Voci: ${entries.length} | serie: ${series.length} | con episodi: ${withEps.length} | film: ${entries.filter((e) => e.tipo === 'film').length}`);
 
-  const titleOf = (el) => {
-    const h = el.querySelector('h1,h2,h3,h4,[role="heading"],a[href*="/detail/"],a');
-    return clean(h ? h.innerText : (el.innerText || '').split('\n')[0]);
-  };
-  const asinOf = (el) => {
-    const a = el.querySelector('a[href*="/detail/"]');
-    const m = a && a.getAttribute('href').match(/\/detail\/([A-Z0-9]{10})/i);
-    return m ? m[1] : '';
-  };
-  const linesOf = (el) =>
-    (el.innerText || '').split('\n').map(clean).filter(Boolean);
-
-  let leaves = [...container.querySelectorAll('li')].filter((li) => !li.querySelector('li'));
-
-  // Fallback: nessuna <li>, usa i link ai titoli e risali finche non trovi una data
-  if (!leaves.length) {
-    const seen = new Set();
-    leaves = [...container.querySelectorAll('a[href*="/detail/"]')]
-      .map((a) => {
-        let el = a;
-        for (let i = 0; i < 5 && el.parentElement; i++) {
-          el = el.parentElement;
-          if (linesOf(el).some((l) => parseDate(l))) break;
-        }
-        return el;
-      })
-      .filter((el) => (seen.has(el) ? false : seen.add(el)));
-  }
-
-  const rows = [];
-  let currentDate = '';
-  for (const el of leaves) {
-    const lines = linesOf(el);
-    const raw = lines.join(' | ');
-    let dateLine = lines.find((l) => parseDate(l));
-    if (dateLine) currentDate = dateLine;      // la data vale anche per gli item successivi
-    const dateRaw = dateLine || currentDate;
-
-    const parentLi = el.parentElement && el.parentElement.closest('li');
-    const parentTitle = parentLi ? titleOf(parentLi) : '';
-    const ownTitle = titleOf(el);
-
-    const text = raw;
-    const sm = text.match(SE_COMPACT);
-    const season = sm ? +sm[1] : (text.match(SEASON_RE) || [])[1] || '';
-    const episode = sm ? +sm[2] : (text.match(EP_RE) || [])[1] || '';
-    const isEpisode = !!(season || episode || parentTitle);
-
-    // Titolo serie: dal li genitore se esiste, altrimenti il titolo dell'item
-    const series = isEpisode ? (parentTitle || ownTitle) : '';
-    // Titolo episodio: la riga che non e data/stagione/episodio-solo
-    const epTitle = isEpisode
-      ? lines.find((l) => !parseDate(l) && l !== series && !/^(stagione|season|episodio|episode)\s*\d+$/i.test(l)) || ''
-      : '';
-
-    rows.push({
-      tipo: isEpisode ? 'episodio' : 'film_o_titolo',
-      titolo: isEpisode ? series : ownTitle,
-      stagione: season,
-      episodio: episode,
-      titolo_episodio: isEpisode && epTitle !== series ? epTitle : '',
-      data_visione: parseDate(dateRaw || '') || '',
-      data_testo: dateRaw || '',
-      asin: asinOf(el),
-      raw,
-    });
-  }
-
-  // ---------- riepilogo per serie ----------
-  const bySeries = new Map();
-  for (const r of rows.filter((r) => r.tipo === 'episodio')) {
-    const s = bySeries.get(r.titolo) || { serie: r.titolo, episodi_visti: 0, stagioni: new Set(), prima: '', ultima: '' };
-    s.episodi_visti++;
-    if (r.stagione) s.stagioni.add(+r.stagione);
-    if (r.data_visione) {
-      if (!s.prima || r.data_visione < s.prima) s.prima = r.data_visione;
-      if (!s.ultima || r.data_visione > s.ultima) s.ultima = r.data_visione;
-    }
-    bySeries.set(r.titolo, s);
-  }
-  const summary = [...bySeries.values()]
-    .map((s) => ({ ...s, stagioni: [...s.stagioni].sort((a, b) => a - b) }))
-    .sort((a, b) => b.episodi_visti - a.episodi_visti);
-
-  const films = rows.filter((r) => r.tipo !== 'episodio');
-  console.log(`[prime] Totale righe: ${rows.length} | serie: ${summary.length} | film/altro: ${films.length}`);
-  console.table(summary.slice(0, 25));
-
-  if (CFG.debug) {
-    leaves.slice(0, 3).forEach((el, i) => console.log(`[prime][debug] item ${i}:`, el.outerHTML.slice(0, 1500)));
+  if (series.length && withEps.length < series.length * 0.5) {
+    console.warn('[prime] Pochi episodi trovati. Mi serve questo HTML (copialo e incollalo in chat):');
+    const t = toggles[0];
+    const box = t && (t.closest('li') || (t.parentElement && t.parentElement.parentElement));
+    console.log(box ? box.outerHTML.slice(0, 3000) : '(nessun pulsante "Episodi guardati" trovato)');
   }
 
   // ---------- download ----------
@@ -210,8 +144,11 @@
     const s = String(v ?? '');
     return new RegExp(`[${CFG.sep}"\\n]`).test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const cols = ['tipo', 'titolo', 'stagione', 'episodio', 'titolo_episodio', 'data_visione', 'data_testo', 'asin', 'raw'];
-  const csv = '﻿' + [cols.join(CFG.sep), ...rows.map((r) => cols.map((c) => csvCell(r[c])).join(CFG.sep))].join('\n');
+  const cols = ['data', 'data_testo', 'tipo', 'titolo', 'n_dettagli', 'dettagli'];
+  const csv = '﻿' + [
+    cols.join(CFG.sep),
+    ...entries.map((e) => [e.data, e.data_testo, e.tipo, e.titolo, e.dettagli.length, e.dettagli.join(' / ')].map(csvCell).join(CFG.sep)),
+  ].join('\n');
 
   const download = (name, content, type) => {
     const a = document.createElement('a');
@@ -222,13 +159,13 @@
     a.remove();
   };
 
-  window.__primeHistory = { rows, summary };
-  download('prime_video_cronologia.csv', csv, 'text/csv;charset=utf-8');
+  window.__primeHistory = { entries, lines };
+  download('prime_video_cronologia_v2.csv', csv, 'text/csv;charset=utf-8');
   await sleep(800);
   download(
-    'prime_video_cronologia.json',
-    JSON.stringify({ esportato_il: new Date().toISOString(), url: location.href, rows, summary }, null, 2),
+    'prime_video_cronologia_v2.json',
+    JSON.stringify({ esportato_il: new Date().toISOString(), url: location.href, entries, lines }, null, 1),
     'application/json'
   );
-  console.log('[prime] Fatto. File scaricati: prime_video_cronologia.csv e .json');
+  console.log('[prime] Fatto. Scaricati prime_video_cronologia_v2.csv e .json');
 })();

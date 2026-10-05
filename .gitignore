@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 .venv/
 data/I1_*.csv
+
+# Dati personali (cronologia Prime Video): restano solo in locale
+prime-video-output/
